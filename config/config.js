@@ -69,8 +69,7 @@ export default {
   targets: {
     ie: 11,
   },
-  publicPath:'/admin/',
-  // umi routes: https://umijs.org/zh/guide/router.html
+  publicPath:'/osAdmin/',
   routes: [
     {
       path: '/',
@@ -115,218 +114,92 @@ export default {
           routes: [
             {
               path: '/dashboard',
-              name: 'dashboard',
+              name: 'home',
               icon: 'dashboard',
               routes: [
                 {
-                  name: 'analysis',
+                  name: 'search',
                   icon: 'smile',
-                  path: '/dashboard/analysis',
+                  path: '/osAdmin/dashboard/analysis',
                   component: './dashboard/analysis',
                 },
-                // {
-                //   name: 'monitor',
-                //   icon: 'smile',
-                //   path: '/dashboard/monitor',
-                //   component: './dashboard/monitor',
-                // },
-                // {
-                //   name: 'workplace',
-                //   icon: 'smile',
-                //   path: '/dashboard/workplace',
-                //   component: './dashboard/workplace',
-                // },
+                {
+                  name: 'navigation',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/monitor',
+                  component: './dashboard/monitor',
+                },
+                {
+                  name: 'topbanner',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/workplace2',
+                  component: './dashboard/workplace',
+                },
+                {
+                  name: 'new',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/new',
+                  component: './dashboard/analysis',
+                },
+                {
+                  name: 'special',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/monitor1',
+                  component: './dashboard/monitor',
+                },
+                {
+                  name: 'cashsale',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/workplace',
+                  component: './dashboard/workplace',
+                },
+                {
+                  name: 'centerbanner',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/mid',
+                  component: './dashboard/analysis',
+                },
+                {
+                  name: 'designer',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/monitor2',
+                  component: './dashboard/monitor',
+                },
+                {
+                  name: 'recommend',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard/workplace3',
+                  component: './dashboard/workplace',
+                },
               ],
             },
             {
-              path: '/form',
+              path: '/osAdmin/form',
               icon: 'form',
-              name: 'form',
-              routes: [
-                {
-                  name: 'basic-form',
-                  icon: 'smile',
-                  path: '/form/basic-form',
-                  component: './form/basic-form',
-                },
-                // {
-                //   name: 'step-form',
-                //   icon: 'smile',
-                //   path: '/form/step-form',
-                //   component: './form/step-form',
-                // },
-                // {
-                //   name: 'advanced-form',
-                //   icon: 'smile',
-                //   path: '/form/advanced-form',
-                //   component: './form/advanced-form',
-                // },
-              ],
+              name: '商品分类管理',
+              component: './form/basic-form',
             },
             {
-              path: '/list',
-              icon: 'table',
-              name: 'list',
-              routes: [
-                {
-                  path: '/list/search',
-                  name: 'search-list',
-                  component: './list/search',
-                  routes: [
-                    {
-                      path: '/list/search',
-                      redirect: '/list/search/articles',
-                    },
-                    // {
-                    //   name: 'articles',
-                    //   icon: 'smile',
-                    //   path: '/list/search/articles',
-                    //   component: './list/search/articles',
-                    // },
-                    // {
-                    //   name: 'projects',
-                    //   icon: 'smile',
-                    //   path: '/list/search/projects',
-                    //   component: './list/search/projects',
-                    // },
-                    // {
-                    //   name: 'applications',
-                    //   icon: 'smile',
-                    //   path: '/list/search/applications',
-                    //   component: './list/search/applications',
-                    // },
-                  ],
-                },
-                {
-                  name: 'table-list',
-                  icon: 'smile',
-                  path: '/list/table-list',
-                  component: './list/table-list',
-                },
-                // {
-                //   name: 'basic-list',
-                //   icon: 'smile',
-                //   path: '/list/basic-list',
-                //   component: './list/basic-list',
-                // },
-                // {
-                //   name: 'card-list',
-                //   icon: 'smile',
-                //   path: '/list/card-list',
-                //   component: './list/card-list',
-                // },
-              ],
-            },
-            // {
-            //   path: '/profile',
-            //   name: 'profile',
-            //   icon: 'profile',
-            //   routes: [
-            //     {
-            //       name: 'basic',
-            //       icon: 'smile',
-            //       path: '/profile/basic',
-            //       component: './profile/basic',
-            //     },
-            //     {
-            //       name: 'advanced',
-            //       icon: 'smile',
-            //       path: '/profile/advanced',
-            //       component: './profile/advanced',
-            //     },
-            //   ],
-            // },
-            {
-              name: 'result',
-              icon: 'check-circle-o',
-              path: '/result',
-              routes: [
-                {
-                  name: 'success',
-                  icon: 'smile',
-                  path: '/result/success',
-                  component: './result/success',
-                },
-                {
-                  name: 'fail',
-                  icon: 'smile',
-                  path: '/result/fail',
-                  component: './result/fail',
-                },
-              ],
+              path: '/osAdmin/audit',
+              icon: 'form',
+              name: '商品上架审核',
+              component: './form/basic-form',
             },
             {
-              name: 'exception',
-              icon: 'warning',
-              path: '/exception',
-              routes: [
-                {
-                  name: '403',
-                  icon: 'smile',
-                  path: '/exception/403',
-                  component: './exception/403',
-                },
-                {
-                  name: '404',
-                  icon: 'smile',
-                  path: '/exception/404',
-                  component: './exception/404',
-                },
-                {
-                  name: '500',
-                  icon: 'smile',
-                  path: '/exception/500',
-                  component: './exception/500',
-                },
-              ],
+              path: '/osAdmin/client',
+              icon: 'form',
+              name: '客户信息管理',
+              component: './form/basic-form',
             },
-            // {
-            //   name: 'account',
-            //   icon: 'user',
-            //   path: '/account',
-            //   routes: [
-            //     {
-            //       name: 'center',
-            //       icon: 'smile',
-            //       path: '/account/center',
-            //       component: './account/center',
-            //     },
-            //     {
-            //       name: 'settings',
-            //       icon: 'smile',
-            //       path: '/account/settings',
-            //       component: './account/settings',
-            //     },
-            //   ],
-            // },
-            // {
-            //   name: 'editor',
-            //   icon: 'highlight',
-            //   path: '/editor',
-            //   routes: [
-            //     {
-            //       name: 'flow',
-            //       icon: 'smile',
-            //       path: '/editor/flow',
-            //       component: './editor/flow',
-            //     },
-            //     {
-            //       name: 'mind',
-            //       icon: 'smile',
-            //       path: '/editor/mind',
-            //       component: './editor/mind',
-            //     },
-            //     {
-            //       name: 'koni',
-            //       icon: 'smile',
-            //       path: '/editor/koni',
-            //       component: './editor/koni',
-            //     },
-            //   ],
-            // },
+            {
+              path: '/osAdmin/theme',
+              icon: 'form',
+              name: '模板商城管理',
+              component: './form/basic-form',
+            },
             {
               path: '/',
-              redirect: '/dashboard/analysis',
+              redirect: '/osAdmin/dashboard/analysis',
               authority: ['admin', 'user'],
             },
             {
@@ -335,6 +208,266 @@ export default {
           ],
         },
       ],
+      // routes: [
+      //   {
+      //     path: '/user',
+      //     component: '../layouts/UserLayout',
+      //     routes: [
+      //       {
+      //         path: '/user',
+      //         redirect: '/user/login',
+      //       },
+      //       {
+      //         name: 'login',
+      //         icon: 'smile',
+      //         path: '/user/login',
+      //         component: './user/login',
+      //       },
+      //       {
+      //         name: 'register-result',
+      //         icon: 'smile',
+      //         path: '/user/register-result',
+      //         component: './user/register-result',
+      //       },
+      //       {
+      //         name: 'register',
+      //         icon: 'smile',
+      //         path: '/user/register',
+      //         component: './user/register',
+      //       },
+      //       {
+      //         component: '404',
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     path: '/',
+      //     component: '../layouts/BasicLayout',
+      //     Routes: ['src/pages/Authorized'],
+      //     authority: ['admin', 'user'],
+      //     routes: [
+      //       {
+      //         path: '/dashboard',
+      //         name: 'dashboard',
+      //         icon: 'dashboard',
+      //         routes: [
+      //           {
+      //             name: 'analysis',
+      //             icon: 'smile',
+      //             path: '/osAdmin/dashboard/analysis',
+      //             component: './dashboard/analysis',
+      //           },
+      //           // {
+      //           //   name: 'monitor',
+      //           //   icon: 'smile',
+      //           //   path: '/osAdmin/dashboard/monitor',
+      //           //   component: './dashboard/monitor',
+      //           // },
+      //           // {
+      //           //   name: 'workplace',
+      //           //   icon: 'smile',
+      //           //   path: '/osAdmin/dashboard/workplace',
+      //           //   component: './dashboard/workplace',
+      //           // },
+      //         ],
+      //       },
+      //       {
+      //         path: '/form',
+      //         icon: 'form',
+      //         name: 'form',
+      //         routes: [
+      //           {
+      //             name: 'basic-form',
+      //             icon: 'smile',
+      //             path: '/form/basic-form',
+      //             component: './form/basic-form',
+      //           },
+      //           // {
+      //           //   name: 'step-form',
+      //           //   icon: 'smile',
+      //           //   path: '/form/step-form',
+      //           //   component: './form/step-form',
+      //           // },
+      //           // {
+      //           //   name: 'advanced-form',
+      //           //   icon: 'smile',
+      //           //   path: '/form/advanced-form',
+      //           //   component: './form/advanced-form',
+      //           // },
+      //         ],
+      //       },
+      //       {
+      //         path: '/list',
+      //         icon: 'table',
+      //         name: 'list',
+      //         routes: [
+      //           {
+      //             path: '/list/search',
+      //             name: 'search-list',
+      //             component: './list/search',
+      //             routes: [
+      //               {
+      //                 path: '/list/search',
+      //                 redirect: '/list/search/articles',
+      //               },
+      //               // {
+      //               //   name: 'articles',
+      //               //   icon: 'smile',
+      //               //   path: '/list/search/articles',
+      //               //   component: './list/search/articles',
+      //               // },
+      //               // {
+      //               //   name: 'projects',
+      //               //   icon: 'smile',
+      //               //   path: '/list/search/projects',
+      //               //   component: './list/search/projects',
+      //               // },
+      //               // {
+      //               //   name: 'applications',
+      //               //   icon: 'smile',
+      //               //   path: '/list/search/applications',
+      //               //   component: './list/search/applications',
+      //               // },
+      //             ],
+      //           },
+      //           {
+      //             name: 'table-list',
+      //             icon: 'smile',
+      //             path: '/list/table-list',
+      //             component: './list/table-list',
+      //           },
+      //           // {
+      //           //   name: 'basic-list',
+      //           //   icon: 'smile',
+      //           //   path: '/list/basic-list',
+      //           //   component: './list/basic-list',
+      //           // },
+      //           // {
+      //           //   name: 'card-list',
+      //           //   icon: 'smile',
+      //           //   path: '/list/card-list',
+      //           //   component: './list/card-list',
+      //           // },
+      //         ],
+      //       },
+      //       // {
+      //       //   path: '/profile',
+      //       //   name: 'profile',
+      //       //   icon: 'profile',
+      //       //   routes: [
+      //       //     {
+      //       //       name: 'basic',
+      //       //       icon: 'smile',
+      //       //       path: '/profile/basic',
+      //       //       component: './profile/basic',
+      //       //     },
+      //       //     {
+      //       //       name: 'advanced',
+      //       //       icon: 'smile',
+      //       //       path: '/profile/advanced',
+      //       //       component: './profile/advanced',
+      //       //     },
+      //       //   ],
+      //       // },
+      //       {
+      //         name: 'result',
+      //         icon: 'check-circle-o',
+      //         path: '/result',
+      //         routes: [
+      //           {
+      //             name: 'success',
+      //             icon: 'smile',
+      //             path: '/result/success',
+      //             component: './result/success',
+      //           },
+      //           {
+      //             name: 'fail',
+      //             icon: 'smile',
+      //             path: '/result/fail',
+      //             component: './result/fail',
+      //           },
+      //         ],
+      //       },
+      //       {
+      //         name: 'exception',
+      //         icon: 'warning',
+      //         path: '/exception',
+      //         routes: [
+      //           {
+      //             name: '403',
+      //             icon: 'smile',
+      //             path: '/exception/403',
+      //             component: './exception/403',
+      //           },
+      //           {
+      //             name: '404',
+      //             icon: 'smile',
+      //             path: '/exception/404',
+      //             component: './exception/404',
+      //           },
+      //           {
+      //             name: '500',
+      //             icon: 'smile',
+      //             path: '/exception/500',
+      //             component: './exception/500',
+      //           },
+      //         ],
+      //       },
+      //       // {
+      //       //   name: 'account',
+      //       //   icon: 'user',
+      //       //   path: '/account',
+      //       //   routes: [
+      //       //     {
+      //       //       name: 'center',
+      //       //       icon: 'smile',
+      //       //       path: '/account/center',
+      //       //       component: './account/center',
+      //       //     },
+      //       //     {
+      //       //       name: 'settings',
+      //       //       icon: 'smile',
+      //       //       path: '/account/settings',
+      //       //       component: './account/settings',
+      //       //     },
+      //       //   ],
+      //       // },
+      //       // {
+      //       //   name: 'editor',
+      //       //   icon: 'highlight',
+      //       //   path: '/editor',
+      //       //   routes: [
+      //       //     {
+      //       //       name: 'flow',
+      //       //       icon: 'smile',
+      //       //       path: '/editor/flow',
+      //       //       component: './editor/flow',
+      //       //     },
+      //       //     {
+      //       //       name: 'mind',
+      //       //       icon: 'smile',
+      //       //       path: '/editor/mind',
+      //       //       component: './editor/mind',
+      //       //     },
+      //       //     {
+      //       //       name: 'koni',
+      //       //       icon: 'smile',
+      //       //       path: '/editor/koni',
+      //       //       component: './editor/koni',
+      //       //     },
+      //       //   ],
+      //       // },
+      //       {
+      //         path: '/',
+      //         redirect: '/dashboard/analysis',
+      //         authority: ['admin', 'user'],
+      //       },
+      //       {
+      //         component: '404',
+      //       },
+      //     ],
+      //   },
+      // ],
     },
   ],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
@@ -378,25 +511,11 @@ export default {
   manifest: {
     basePath: '/',
   }, // chainWebpack: webpackPlugin,
-  // script = [
-  //   'https://gw.alipayobjects.com/os/lib/react/16.4.2/umd/react.production.min.js',
-  //   'https://gw.alipayobjects.com/os/lib/react-dom/16.4.2/umd/react-dom.production.min.js',
-  //   'https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.2.5/dist/g2.min.js',
-  //   'https://gw.alipayobjects.com/os/antv/assets/g2-plugin-slider/2.0.3/g2-plugin-slider.js',
-  //  'https://cdn.jsdelivr.net/npm/bizcharts@3.2.2/umd/BizCharts.min.js',
-  // ],
-  // externals = {
-  //   '@antv/g2': 'G2',
-  //   '@antv/data-set': 'DataSet',
-  //   react: 'React',
-  //   bizcharts: 'BizCharts',
-  //   'react-dom': 'ReactDOM',
-  // },
   proxy: {
-    '_os/': {
+    '/_os/': {
       target: 'http://beta.365fashion.com:8888/',
       changeOrigin: true,
-      pathRewrite: { '_os': '_os' },
+      pathRewrite: { '/_os/': '/_os/' },
     },
   },
 };

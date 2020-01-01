@@ -17,13 +17,15 @@ const UserModel = {
       const response = yield call(queryCurrent);
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: {
+          name: response.data.nickname,
+        },
       });
     },
   },
   reducers: {
     saveCurrentUser(state, action) {
-      return { ...state, currentUser: action.payload || {} };
+      return { ...state, currentUser: {...state.currentUser,...action.payload} || {} };
     },
 
     changeNotifyCount(

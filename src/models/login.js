@@ -16,11 +16,10 @@ const Model = {
         payload: response,
       }); // Login successfully
 
-      if (response.status === 'ok') {
+      if (response.code === 200) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
-
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
 
@@ -35,8 +34,19 @@ const Model = {
             return;
           }
         }
-
-        yield put(routerRedux.replace(redirect || '/'));
+        yield put({
+          type: 'changeLoginStatus',
+          payload: {
+            status: "ok",
+            type: "account",
+            currentAuthority: "admin"
+          },
+        }); // Login successfully
+        yield put(
+          routerRedux.replace({
+            pathname: '/osAdmin/dashboard/analysis',
+          }),
+        );
       }
     },
 

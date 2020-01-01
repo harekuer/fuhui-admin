@@ -226,8 +226,6 @@ const BasicLayout = props => {
 
   const onEdit = (targetKey, action) => {
     let aKey = activeKey
-    let oKey =routeKey
-    console.log(tabList)
     if(action === 'remove'){
       let lastIndex;
       tabList.forEach((pane, i) => {
@@ -238,12 +236,12 @@ const BasicLayout = props => {
       const aList = [],aListKey=[]
       tabList.map(pane => {
         if(pane.key !== targetKey){
-            tabList.push(pane)
+            aList.push(pane)
             aListKey.push(pane.key)
         }
       });
       if (lastIndex >= 0 && aKey === targetKey) {
-        aKey = tabList[lastIndex].key;
+        aKey = aList[lastIndex].key;
       }
       router.push(aKey)
       setActiveKey(aKey)
@@ -263,15 +261,15 @@ const BasicLayout = props => {
   };
   const menu = (
     <Menu onClick={onClickHover}>
-      <Menu.Item key="1">关闭当前标签页</Menu.Item>
-      <Menu.Item key="2">关闭其他标签页</Menu.Item>
-      <Menu.Item key="3">关闭全部标签页</Menu.Item>
+      <Menu.Item key="1">关闭当前菜单</Menu.Item>
+      <Menu.Item key="2">关闭其他菜单</Menu.Item>
+      <Menu.Item key="3">关闭全部菜单</Menu.Item>
     </Menu>
   );
   const operations = (
     <Dropdown overlay={menu} >
       <a className="ant-dropdown-link" href="#">
-        Tab 操作<Icon type="down" />
+        菜单操作<Icon type="down" />
       </a>
     </Dropdown>
   );
@@ -328,7 +326,9 @@ const BasicLayout = props => {
                 onEdit={onEdit}
               >
                 {tabList.map(item => (
-                  <TabPane tab={item.tab} key={item.key} closable={true}>
+                  <TabPane tab={formatMessage({
+                    id: `menu.home.${item.tab}`,
+                  })} key={item.key} closable={true}>
                     <Authorized authority={authorized.authority} noMatch={noMatch}>
                       {/*{item.content}*/}
                       <Route key={item.key} path={item.path} component={item.content} exact={item.exact} />

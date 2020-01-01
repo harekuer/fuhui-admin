@@ -9,30 +9,13 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      
       const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: {
-          status: "ok",
-          type: "account",
-          currentAuthority: "admin"
-        },
-      }); // Login successfully
-      yield put(
-        routerRedux.replace({
-          pathname: '/dashboard/analysis',
-        }),
-      );
-
-      if (response.status === 'ok') {
+      if (response.code === 200) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
-
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
-
           if (redirectUrlParams.origin === urlParams.origin) {
             redirect = redirect.substr(urlParams.origin.length);
 
@@ -44,8 +27,19 @@ const Model = {
             return;
           }
         }
-
-        yield put(routerRedux.replace(redirect || '/'));
+        yield put({
+          type: 'changeLoginStatus',
+          payload: {
+            status: "ok",
+            type: "account",
+            currentAuthority: "admin"
+          },
+        }); // Login successfully
+        yield put(
+          routerRedux.replace({
+            pathname: '/osAdmin/dashboard/analysis',
+          }),
+        );
       }
     },
 

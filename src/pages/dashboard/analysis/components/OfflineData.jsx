@@ -53,9 +53,6 @@ const OfflineData = ({ activeKey, loading, offlineData, offlineChartData, handle
     loading={loading}
     className={styles.offlineCard}
     bordered={false}
-    style={{
-      marginTop: 32,
-    }}
   >
     <Tabs activeKey={activeKey} onChange={handleTabChange}>
       {offlineData.map(shop => (
