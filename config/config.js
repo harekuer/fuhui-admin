@@ -114,7 +114,7 @@ export default {
           routes: [
             {
               path: '/dashboard',
-              name: 'home',
+              name: 'tab',
               icon: 'dashboard',
               routes: [
                 {
@@ -174,27 +174,27 @@ export default {
               ],
             },
             {
-              path: '/osAdmin/form',
-              icon: 'form',
-              name: '商品分类管理',
-              component: './form/basic-form',
+              path: '/osAdmin/category',
+              icon: 'unordered-list',
+              name: 'tab.category',
+              component: './category',
             },
             {
               path: '/osAdmin/audit',
               icon: 'form',
-              name: '商品上架审核',
+              name: 'tab.audit',
               component: './form/basic-form',
             },
             {
               path: '/osAdmin/client',
               icon: 'form',
-              name: '客户信息管理',
+              name: 'tab.client',
               component: './form/basic-form',
             },
             {
               path: '/osAdmin/theme',
               icon: 'form',
-              name: '模板商城管理',
+              name: 'tab.theme',
               component: './form/basic-form',
             },
             {
