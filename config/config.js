@@ -120,14 +120,14 @@ export default {
                 {
                   name: 'search',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/analysis',
-                  component: './dashboard/analysis',
+                  path: '/osAdmin/home/search',
+                  component: './homePage/search',
                 },
                 {
                   name: 'navigation',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/monitor',
-                  component: './dashboard/monitor',
+                  path: '/osAdmin/home/navigation',
+                  component: './homePage/nav',
                 },
                 {
                   name: 'topbanner',
@@ -176,25 +176,32 @@ export default {
             {
               path: '/osAdmin/category',
               icon: 'unordered-list',
-              name: 'tab.category',
+              name: 'category',
               component: './category',
+              routes: [
+                {
+                  //name: 'categoryEdit',
+                  path: '/osAdmin/category/detail',
+                  component: './category/detail',
+                },
+              ],
             },
             {
               path: '/osAdmin/audit',
               icon: 'form',
-              name: 'tab.audit',
+              name: 'audit',
               component: './form/basic-form',
             },
             {
               path: '/osAdmin/client',
               icon: 'form',
-              name: 'tab.client',
+              name: 'client',
               component: './form/basic-form',
             },
             {
               path: '/osAdmin/theme',
               icon: 'form',
-              name: 'tab.theme',
+              name: 'theme',
               component: './form/basic-form',
             },
             {

@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
-import { UEditor } from 'components'
-import { Form, Input, InputNumber, Button, TreeSelect } from 'antd'
-import Intl from 'react-intl-universal'
-import { timeFormat, getNowFormatDate } from 'utils'
+import { Form, Input, Button, TreeSelect, Card } from 'antd'
+import { GridContent } from '@ant-design/pro-layout';
+import moment from 'moment'
+
 import styles from './index.less'
 
 const FormItem = Form.Item;
@@ -25,9 +25,8 @@ const Detail = ({
   },
 }) => {
   const { data, categoryList } = categoryDetail;
-  const { query } = location;
-  const dataLoading = query.type === 'update'? loading.effects['categoryDetail/query'] : loading.effects['categoryDetail/getCategoryTree'];
-  const nowTime = getNowFormatDate();
+  const { state } = location;
+  const dataLoading = state.type === 'update'? loading.effects['categoryDetail/query'] : loading.effects['categoryDetail/getCategoryTree'];
   const formItemLayout =  {
     labelCol: { span: 3 },
     wrapperCol: {
@@ -94,7 +93,7 @@ const Detail = ({
 
   const categoryForm = [
     {
-      label: Intl.get('cg-edit-parent'),
+      label: '父类目',
       name: 'parent_id',
       value: data.parent_id === '0'? '' : data.parent_id,
       rules: [],
@@ -111,36 +110,17 @@ const Detail = ({
       )
     },
     {
-      label: Intl.get('cg-edit-cname'),
+      label: '分类名称',
       name: 'categories_name',
       value: data.categories_name,
-      rules: [{ required: true, message: Intl.get('cg-edit-cname-error'), max: 255,}],
+      rules: [{ required: true, message: '请输入分类名称', max: 255,}],
       hasFeedback: true,
       node: (
         <Input maxLength="255"/>
       )
     },
     {
-      label: Intl.get('cg-edit-desc'),
-      name: 'categories_description',
-      value: data.categories_description,
-      rules: [],
-      hasFeedback: false,
-      node: (
-        <div>
-          {
-            dataLoading ? "" :
-            <UEditor
-               name="description"
-               content={data.categories_description}
-               height="350"
-             />
-          }
-        </div>
-      )
-    },
-    {
-      label: Intl.get('cg-edit-meta-title'),
+      label: 'Meta title',
       name: 'meta_title',
       value: data.meta_title,
       rules: [{max: 255}],
@@ -150,7 +130,7 @@ const Detail = ({
       )
     },
     {
-      label: Intl.get('cg-edit-meta-kw'),
+      label: 'Meta keywords',
       name: 'meta_keyword',
       value: data.meta_keyword,
       rules: [{max: 255}],
@@ -160,7 +140,7 @@ const Detail = ({
       )
     },
     {
-      label: Intl.get('cg-edit-meta-desc'),
+      label: 'Meta description',
       name: 'meta_description',
       value: data.meta_description,
       rules: [{max: 500}],
@@ -172,39 +152,42 @@ const Detail = ({
   ]
 
   return (
-    <div className="content-inner">
-      <div className={styles.detail}>
-        <Form layout="horizontal">
-          {
-            categoryForm.map(item => {
-              return (
-                <FormItem
-                  key={item.name}
-                  {...formItemLayout}
-                  label={item.label}
-                  hasFeedback={item.hasFeedback}
-                >
-                  {getFieldDecorator(item.name, {
-                    initialValue: item.value,
-                    rules: item.rules,
-                  })(item.node)}
-                </FormItem>
-              )
-            })
-          }
-          <FormItem label={Intl.get('cg-edit-date')} {...formItemLayout}>
+    <Card bordered={false}>
+      <div className="content-inner">
+        <div className={styles.detail}>
+          <Form layout="horizontal">
             {
-              query.type === 'create' ?
-              <span>{nowTime}</span> : <span>{timeFormat(Number(data.add_time))}</span>
+              categoryForm.map(item => {
+                return (
+                  <FormItem
+                    key={item.name}
+                    {...formItemLayout}
+                    label={item.label}
+                    hasFeedback={item.hasFeedback}
+                  >
+                    {getFieldDecorator(item.name, {
+                      initialValue: item.value,
+                      rules: item.rules,
+                    })(item.node)}
+                  </FormItem>
+                )
+              })
             }
-          </FormItem>
-          <FormItem {...buttonItemLayout}>
-            <Button type="primary" onClick={() => saveEdit()}>{Intl.get('btn.save')}</Button>
-            <Button style={{ marginLeft: '15px' }} onClick={() => goBack()}>{Intl.get('btn.back')}</Button>
-          </FormItem>
-        </Form>
+            <FormItem label='Date' {...formItemLayout}>
+              {
+                state.type === 'create' ?
+                <span>{nowTime}</span> : <span>{moment(data.add_time).format('YYYY-MM-DD')}</span>
+              }
+            </FormItem>
+            <FormItem {...buttonItemLayout}>
+              <Button type="primary" onClick={() => saveEdit()}>Save</Button>
+              <Button style={{ marginLeft: '15px' }} onClick={() => goBack()}>Back</Button>
+            </FormItem>
+          </Form>
+        </div>
       </div>
-    </div>
+    </Card>
+    
   )
 }
 

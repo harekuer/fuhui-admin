@@ -1,6 +1,6 @@
 
+import { query, remove, update, categoryTree, updateCategory, removeDefaultCate, checkDefaultCate } from './service'
 import { message } from 'antd'
-import { query, remove, childList, categoryTree, updateCategory, removeDefaultCate, checkDefaultCate } from './service'
 
 //数据添加nav_id数组
 function addTreeNode(list, id, pid) {
@@ -45,7 +45,6 @@ export default {
       history.listen((location) => {
           
         if (location.pathname === '/osAdmin/category') {
-            console.log('aa')
           dispatch({
             type: 'updateState',
             payload: {
@@ -105,12 +104,12 @@ export default {
 
     * saveCategory ({ payload }, { call, put }) {
       const result = yield call(updateCategory, payload)
-      const { code, message } = result;
+      const { code } = result;
       if (code === 200) {
-        message.success(message)
         yield put({
            type: 'query',
          })
+         message.success(result.message)
       } else if (code === 401) {
         let from = location.pathname
         window.location = `${location.origin}/admin/login?from=${from}`
@@ -119,44 +118,6 @@ export default {
       }
     },
 
-    * removeDefaultData ({ payload }, { call, put }) {
-      const result = yield call(removeDefaultCate, payload)
-      const { code, message } = result;
-      if (code === 200) {
-        message.success(message)
-        yield put({
-           type: 'query',
-         })
-         yield put({
-           type: 'updateState',
-           payload: {
-             status: 0,
-           },
-         })
-      } else if (code === 401) {
-        window.location = `${location.origin}/admin/login`
-      } else {
-        throw message
-      }
-    },
-
-    * checkDefaultProduct ({ payload }, { call, put }) {
-      const result = yield call(checkDefaultData, payload)
-      const { code, data, message } = result;
-      if (code === 200) {
-        if(Number(data.status) == 1) {
-          message.error('该分类已包含产品，无法删除')
-        } else {
-          yield put({
-             type: 'removeDefaultData',
-           })
-        }
-      } else if (code === 401) {
-        window.location = `${location.origin}/admin/login`
-      } else {
-        throw message
-      }
-    },
 
   },
 

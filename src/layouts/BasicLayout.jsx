@@ -121,7 +121,7 @@ const BasicLayout = props => {
       pathname: '/',
     },
   } = props;
-  const {routes} = props.route,key = '/dashboard/analysis',tabName = '首页'; // routeKey 为设置首页设置
+  const {routes} = props.route,key = '/osAdmin/dashboard/analysis',tabName = 'search'; // routeKey 为设置首页设置
   let tabLists = updateTree(routes);
   let aList=[],aListArr=[];
   tabLists.map((v) => {
@@ -177,12 +177,12 @@ const BasicLayout = props => {
       router.push('/exception/404')
     }
     setActiveKey(key)
+    
     tabLists.map((v) => {
       if(v.key === key){
         if(tabList.length === 0){
           v.closable = false
           setTabList([...tabList,v])
-          //console.log(setTabList)
         }else{
           if(!tabListKey.includes(v.key)){
             setTabList([...tabList,v])
@@ -327,7 +327,7 @@ const BasicLayout = props => {
               >
                 {tabList.map(item => (
                   <TabPane tab={formatMessage({
-                    id: `menu.home.${item.tab}`,
+                    id: `menu.tab.${item.tab}`,
                   })} key={item.key} closable={true}>
                     <Authorized authority={authorized.authority} noMatch={noMatch}>
                       {/*{item.content}*/}

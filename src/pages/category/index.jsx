@@ -18,15 +18,15 @@ const Category = ({ location, dispatch, category, loading }) => {
     ids: expandedRowKeys,
     defaultStatus: status,
     addItem() {
-      dispatch(routerRedux.push({
-        pathname: '/admin/category/detail',
-        query: {
+      dispatch(routerRedux.replace({
+        pathname: '/osAdmin/category/detail',
+        state: {
           type: 'create',
         },
       }))
     },
     toEditPage(id) {
-      dispatch(routerRedux.push({
+      dispatch(routerRedux.replace({
         pathname: '/admin/category/detail',
         query: {
           category: id,

@@ -17,19 +17,15 @@ export default class SortList extends Component {
 
   showDeleteConfirm = (node) => {
     const { onDeleteItem } = this.props;
-    if(node.child_num != '0') {
-      message.error('该分类已包含产品，无法删除');
-    } else {
-      confirm({
-        title: '确定删除该分类吗？',
-        okText: '确定',
-        okType: 'danger',
-        cancelText: '取消',
-        onOk() {
-          onDeleteItem(node.categories_id)
-        },
-      });
-    }
+    confirm({
+      title: '确定删除该分类吗？',
+      okText: '确定',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        onDeleteItem(node.categories_id)
+      },
+    });
   }
 
   expand(expanded) {
@@ -133,8 +129,8 @@ export default class SortList extends Component {
                 buttons: [
                   <div>
                     <div className="operate">
-                      <a href="javascript:;" onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
-                      <a href="javascript:;" onClick={() => this.showDeleteConfirm(node)}>删除</a>
+                      <a  onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
+                      <a onClick={() => this.showDeleteConfirm(node)}>删除</a>
                     </div>
                   </div>
                 ],
