@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
 import {  Modal, Button, message, Popconfirm } from 'antd'
+import 'react-sortable-tree/style.css';
 import styles from './SortList.less'
 
 const confirm = Modal.confirm
@@ -79,7 +80,7 @@ export default class SortList extends Component {
   render() {
     const getNodeKey = ({ treeIndex }) => treeIndex;
     const { expendedKeys } = this.state;
-    const { onSave, ids, toEditPage, addItem, onRemoveDefault, defaultStatus } = this.props;
+    const {  toEditPage, addItem } = this.props;
     return (
       <div>
         <div className={styles.addBtnLeft}>
@@ -126,14 +127,14 @@ export default class SortList extends Component {
                     <div style={{ width: '100%', textAlign: 'left' }}>{node.categories_name}<a href={node.url} target="_blank"> [预览]</a></div>
                   </div>
                 ),
-                buttons: [
-                  <div>
-                    <div className="operate">
-                      <a  onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
-                      <a onClick={() => this.showDeleteConfirm(node)}>删除</a>
-                    </div>
-                  </div>
-                ],
+                // buttons: [
+                //   <div>
+                //     <div className="operate">
+                //       <a  onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
+                //       <a onClick={() => this.showDeleteConfirm(node)}>删除</a>
+                //     </div>
+                //   </div>
+                // ],
               })}
             />
           </div>

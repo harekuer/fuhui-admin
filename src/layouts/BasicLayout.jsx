@@ -183,6 +183,7 @@ const BasicLayout = props => {
         if(tabList.length === 0){
           v.closable = false
           setTabList([...tabList,v])
+          setTabListKey([...tabListKey,v.key])
         }else{
           if(!tabListKey.includes(v.key)){
             setTabList([...tabList,v])

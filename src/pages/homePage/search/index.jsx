@@ -1,4 +1,4 @@
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm } from 'antd';
+  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button } from 'antd';
   import React, { Component, Fragment } from 'react';
   import { connect } from 'dva';
   import moment from 'moment';
@@ -128,26 +128,7 @@ class TableList extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
-            data: [
-                {
-                  id: '1',
-                  name: 'John Brown',
-                  age: 32,
-                  address: 'New York No. 1 Lake Park',
-                },
-                {
-                  id: '2',
-                  name: 'Jim Green',
-                  age: 42,
-                  address: 'London No. 1 Lake Park',
-                },
-                {
-                  id: '3',
-                  name: 'Joe Black',
-                  age: 32,
-                  address: 'Sidney No. 1 Lake Park',
-                },
-            ],
+            data: props.list,
             editingKey: '' 
         };
         this.columns = [
@@ -158,8 +139,8 @@ class TableList extends React.Component {
             },
             {
               title: '推荐词',
-              dataIndex: 'name',
-              key: 'name',
+              dataIndex: 'title',
+              key: 'title',
               editable: true,
             },
             {
@@ -177,32 +158,34 @@ class TableList extends React.Component {
                             onClick={() => this.save(form, record.id)}
                             style={{ marginRight: 8 }}
                           >
-                            Save
+                            保存
                           </a>
                         )}
                       </EditableContext.Consumer>
-                      <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.id)}>
-                        <a>Cancel</a>
+                      <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(record.id)}>
+                        <a>取消</a>
                       </Popconfirm>
                     </span>
                   ) : (
-                    <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)}>
-                      Edit
-                    </a>
+                    <span>
+                        <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)} style={{ marginRight: 8 }}>
+                        编辑
+                        </a>
+                        <a onClick={() => this.onDelete(record.id)}>
+                        删除
+                        </a>
+                    </span>
                   );
                 },
             },
           ];
       }
-
-
-    
-
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
           type: 'search/fetch',
         });
+
     }
   
     components = {
@@ -212,16 +195,16 @@ class TableList extends React.Component {
     };
   
     moveRow = (dragIndex, hoverIndex) => {
-      const { data } = this.state;
-      const dragRow = data[dragIndex];
-  
-      this.setState(
-        update(this.state, {
-          data: {
-            $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
-          },
-        }),
-      );
+      const { dispatch, search} = this.props;
+      let { list } = search;
+      const dragRow = list[dragIndex];
+      list = update(list, {$splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]]})
+      dispatch({
+        type: 'search/updateState',
+        payload: {
+            list,
+        },
+      })
     };
 
     isEditing = record => record.id === this.state.editingKey;
@@ -232,27 +215,79 @@ class TableList extends React.Component {
 
     save(form, key) {
         form.validateFields((error, row) => {
-        if (error) {
-            return;
-        }
-        const newData = [...this.state.data];
-        const index = newData.findIndex(item => key === item.id);
-        if (index > -1) {
-            const item = newData[index];
-            newData.splice(index, 1, {
-            ...item,
-            ...row,
-            });
-            this.setState({ data: newData, editingKey: '' });
-        } else {
-            newData.push(row);
-            this.setState({ data: newData, editingKey: '' });
-        }
-        });
+            if (error) {
+              return;
+            }
+            const { dispatch, search} = this.props;
+            let { list } = search;
+            const newData = list;
+            const index = newData.findIndex(item => key === item.id);
+            
+            if (index > -1) {
+              const item = newData[index];
+              newData.splice(index, 1, { ...item, ...row });
+                dispatch({
+                    type: 'search/update',
+                    payload: {
+                        id: key !== '0'? key : undefined,
+                        title: row.title
+                    },
+                })
+                this.setState({
+                    editingKey: '',
+                });
+              
+            } else {
+              this.setState({
+                editingKey: '',
+              });
+      
+            }
+          });
     }
 
     edit(key) {
         this.setState({ editingKey: key });
+    }
+    onDelete(key) {
+        const { dispatch } = this.props;
+        dispatch({
+            type: 'search/remove',
+            payload: {
+                id: key,
+            }
+        })
+    }
+
+    onAdd = () => {
+        const { dispatch, search} = this.props;
+        let {list } = search;
+        let obj ={
+            id: '0',
+            title: ''
+        }
+        list.push(obj)
+        dispatch({
+            type: 'search/queryList',
+            payload: list
+        })
+        this.setState({ editingKey: '0'});
+    }
+
+    onSaveSort = () => {
+        const { dispatch, search} = this.props;
+        let { list } = search;
+        let sort= []
+        let id = []
+        list.forEach((item,index) => {
+            sort.push({id:item.id,sort:index})
+        })
+        dispatch({
+            type: 'search/updateSort',
+            payload: {
+              sort_array: sort,
+            }
+        })
     }
   
     render() {
@@ -288,12 +323,14 @@ class TableList extends React.Component {
             <Alert message="*备注：搜索推荐词最多可设置10个，页面外显最多6个；推荐词6个的情况下，外显的搜索词将从设置的内容中随机抽取显示，用户每次刷新将会重新抽取，搜索词排序随机" type="error" />
 
             <EditableContext.Provider value={this.props.form}>
-                <DndProvider backend={HTML5Backend}>
+                <DndProvider backend={HTML5Backend} context={window}>
                 <Table
                     columns={columns}
                     bordered
-                    dataSource={this.state.data}
+                    dataSource={list}
                     components={components}
+                    pagination={false}
+                    rowKey={(record, index) => index}
                     rowClassName="editable-row"
                     onRow={(record, index) => ({
                         index,
@@ -302,6 +339,14 @@ class TableList extends React.Component {
                 />
                 </DndProvider>
             </EditableContext.Provider>
+            {
+                list.length < 10 ? 
+                <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
+                 : null
+            }
+            <div className={styles.btnWrap}>
+                <Button onClick={this.onSaveSort}>保存排序</Button>
+            </div>
         </Card>
       );
     }
