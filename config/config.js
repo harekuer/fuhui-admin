@@ -132,8 +132,8 @@ export default {
                 {
                   name: 'topbanner',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/workplace2',
-                  component: './dashboard/workplace',
+                  path: '/osAdmin/home/banner',
+                  component: './homePage/banner',
                 },
                 {
                   name: 'new',
