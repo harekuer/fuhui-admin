@@ -81,8 +81,8 @@ export default class SingleUpload extends React.Component {
       newFile = newFile.map((file) => {
         if (file.response) {
           // Component will show file.url as link
-          file.url = file.response.data.img_url || file.response.data.original_img
-          file.path = file.response.data.img_path || file.response.data.original_path
+          file.url = file.response.data.file_url
+          file.path = file.response.data.file_key
         }
         return file
       })
@@ -104,17 +104,17 @@ export default class SingleUpload extends React.Component {
       return (
         <div className="clearfix">
           <Upload
-            action={action || '/_os/index.php?com=common&t=imageUpload&module='}
-            name={name || 'file'}
+            action={action || '/_os/index.php?com=common&t=imageUpload&module=index-spot-image'}
+            name={name || 'upload_file'}
             listType="picture-card"
-            fileList={this.props.file}
+            fileList={fileList}
             beforeUpload={this.beforeUpload}
             onPreview={this.handlePreview}
             onChange={isEdit? this.handleChange : null}
             showUploadList={{ showRemoveIcon: isEdit, showPreviewIcon: true }}
             className={className || 'defaultPic'}
           >
-            {this.props.file.length >= this.props.limit ? null : uploadButton}
+            {fileList.length >= this.props.limit ? null : uploadButton}
           </Upload>
           <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} width={width}>
             <img alt="example" style={{ width: '100%' }} src={previewImage} />

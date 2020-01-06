@@ -138,14 +138,14 @@ export default {
                 {
                   name: 'new',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/new',
-                  component: './dashboard/analysis',
+                  path: '/osAdmin/home/newProduct',
+                  component: './homePage/newProduct',
                 },
                 {
                   name: 'special',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/monitor1',
-                  component: './dashboard/monitor',
+                  path: '/osAdmin/home/entrance',
+                  component: './homePage/entrance',
                 },
                 {
                   name: 'cashsale',

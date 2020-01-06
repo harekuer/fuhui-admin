@@ -1,15 +1,16 @@
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button } from 'antd';
-  import React, { Component, Fragment } from 'react';
+
+  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button, Tabs } from 'antd';
+  import React from 'react';
   import { connect } from 'dva';
   import { DndProvider, DragSource, DropTarget } from 'react-dnd';
   import HTML5Backend from 'react-dnd-html5-backend';
-  import SingleUpload from '@/components/SinglePicture/SingleUpload.js' 
   import update from 'immutability-helper';
   import styles from './index.less';
   
 
 
 let dragingIndex = -1;
+const { TabPane } = Tabs;
 
 class BodyRow extends React.Component {
   render() {
@@ -129,11 +130,7 @@ const rowTarget = {
 
     // Time to actually perform the action
     props.moveRow(dragIndex, hoverIndex);
-
-    // Note: we're mutating the monitor item here!
-    // Generally it's better to avoid mutations,
-    // but it's good here for the sake of performance
-    // to avoid expensive index banneres.
+    
     monitor.getItem().index = hoverIndex;
   },
 };
@@ -149,15 +146,14 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ banner, loading }) => ({
-    banner,
-    loading: loading.models.banner,
+@connect(({ entrance, loading }) => ({
+    entrance,
+    loading: loading.models.entrance,
 }))
 class TableList extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
-            data: props.list,
             editingKey: '' 
         };
         this.columns = [
@@ -167,22 +163,13 @@ class TableList extends React.Component {
               key: 'id',
             },
             {
-              title: 'banner图片',
+              title: '单品图片',
               dataIndex: 'image',
               key: 'image',
               editable: true,
-              render: (text,record) => {
-                return (
-                  <SingleUpload
-                    limit={1}
-                    file={text}
-                    isEdit={false}
-                  />
-                )
-              }
             },
             {
-              title: 'banner链接',
+              title: '单品链接',
               dataIndex: 'url',
               key: 'url',
               editable: true,
@@ -202,34 +189,32 @@ class TableList extends React.Component {
                             onClick={() => this.save(form, record.id)}
                             style={{ marginRight: 8 }}
                           >
-                            保存
+                            Save
                           </a>
                         )}
                       </EditableContext.Consumer>
-                      <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(record.id)}>
-                        <a>取消</a>
+                      <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.id)}>
+                        <a>Cancel</a>
                       </Popconfirm>
                     </span>
                   ) : (
-                    <span>
-                        <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)} style={{ marginRight: 8 }}>
-                        编辑
-                        </a>
-                        <a onClick={() => this.onDelete(record.id)}>
-                        删除
-                        </a>
-                    </span>
+                    <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)}>
+                      Edit
+                    </a>
                   );
                 },
             },
           ];
       }
+
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
-          type: 'banner/fetch',
+          type: 'entrance/fetch',
+          payload: {
+            module: 'index-entrance-design',
+          }
         });
-
     }
   
     components = {
@@ -239,12 +224,12 @@ class TableList extends React.Component {
     };
   
     moveRow = (dragIndex, hoverIndex) => {
-      const { dispatch, banner} = this.props;
-      let { list } = banner;
+      const { dispatch, entrance} = this.props;
+      let { list } = entrance;
       const dragRow = list[dragIndex];
       list = update(list, {$splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]]})
       dispatch({
-        type: 'banner/updateState',
+        type: 'entrance/updateState',
         payload: {
             list,
         },
@@ -257,24 +242,25 @@ class TableList extends React.Component {
         this.setState({ editingKey: '' });
     };
 
-    save(form, key) {
+    save(form, currentKey) {
         form.validateFields((error, row) => {
             if (error) {
               return;
             }
-            const { dispatch, banner} = this.props;
-            let { list } = banner;
+            const { dispatch, entrance} = this.props;
+            let { list,key } = entrance;
             const newData = list;
-            const index = newData.findIndex(item => key === item.id);
+            const index = newData.findIndex(item => currentKey === item.id);
             
             if (index > -1) {
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
-                    type: 'banner/update',
+                    type: 'entrance/update',
                     payload: {
-                        id: key !== '0'? key : undefined,
-                        image: row.image,
+                        module: key,
+                        id: currentKey !== '0'? currentKey : undefined,
+                        title: row.title,
                         url: row.url,
                     },
                 })
@@ -289,56 +275,64 @@ class TableList extends React.Component {
       
             }
           });
+        
     }
 
     edit(key) {
         this.setState({ editingKey: key });
     }
-    onDelete(key) {
-        const { dispatch } = this.props;
-        dispatch({
-            type: 'banner/remove',
-            payload: {
-                id: key,
-            }
-        })
-    }
 
     onAdd = () => {
-        const { dispatch, banner} = this.props;
-        let {list } = banner;
+        const { dispatch, entrance} = this.props;
+        let {list, key } = entrance;
         let obj ={
             id: '0',
-            image: '',
-            url: '',
+            title: ''
         }
         list.push(obj)
         dispatch({
-            type: 'banner/queryList',
-            payload: list
+            type: 'entrance/queryList',
+            payload: list,
         })
         this.setState({ editingKey: '0'});
     }
 
     onSaveSort = () => {
-        const { dispatch, banner} = this.props;
-        let { list } = banner;
-        let sort= []
-        let id = []
-        list.forEach((item,index) => {
-            sort.push({id:item.id,sort:index})
-        })
-        dispatch({
-            type: 'banner/updateSort',
-            payload: {
-              sort_array: sort,
-            }
-        })
+      const { dispatch, entrance} = this.props;
+      let { list,key } = entrance;
+      let sort= []
+      list.forEach((item,index) => {
+          sort.push({id:item.id,sort:index})
+      })
+      dispatch({
+          type: 'entrance/updateSort',
+          payload: {
+            module: key,
+            sort_array: sort,
+          }
+      })
+  }
+
+    onChangeTab = (key) => {
+      const { dispatch } = this.props;
+      this.setState({ editingKey: ''});
+      dispatch({
+        type: 'entrance/fetch',
+        payload: {
+          module: key,
+        }
+      })
+      dispatch({
+        type: 'entrance/updateState',
+        payload: {
+          key,
+        }
+      })
     }
   
     render() {
         const {
-            banner: { list},
+            entrance: { list},
             loading,
             dispatch,
         } = this.props;
@@ -358,45 +352,102 @@ class TableList extends React.Component {
                 ...col,
                 onCell: record => ({
                 record,
-                inputType: col.dataIndex === 'image' ? 'upload' : 'text',
+                inputType: 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: this.isEditing(record),
-                list,
                 dispatch,
+                list,
                 }),
             };
         });
+
       return (
         <Card bordered={false}>
-            <Alert message="*备注：顶部banner最多可添加5个" type="error" />
+          <Tabs  onChange={this.onChangeTab} type="card">
+            <TabPane tab="设计专区" key="index-entrance-design">
 
-            <EditableContext.Provider value={this.props.form}>
-                <DndProvider backend={HTML5Backend} context={window}>
-                <Table
-                    columns={columns}
-                    bordered
-                    dataSource={list}
-                    components={components}
-                    pagination={false}
-                    loading={loading}
-                    rowKey={(record, index) => index}
-                    rowClassName="editable-row"
-                    onRow={(record, index) => ({
-                        index,
-                        moveRow: this.moveRow,
-                    })}
-                />
-                </DndProvider>
-            </EditableContext.Provider>
-            {
-                list.length < 5 ? 
-                <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
-                 : null
-            }
-            <div className={styles.btnWrap}>
-                <Button onClick={this.onSaveSort}>保存排序</Button>
-            </div>
+              <EditableContext.Provider value={this.props.form}>
+                  <DndProvider backend={HTML5Backend}>
+                  <Table
+                      columns={columns}
+                      bordered
+                      dataSource={list}
+                      components={components}
+                      pagination={false}
+                      loading={loading}
+                      rowKey={(record, index) => index}
+                      rowClassName="editable-row"
+                      onRow={(record, index) => ({
+                          index,
+                          moveRow: this.moveRow,
+                      })}
+                  />
+                  </DndProvider>
+              </EditableContext.Provider>
+              {
+                  list.length < 5 ? 
+                  <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
+                  : null
+              }
+            </TabPane>
+            <TabPane tab="现货专区" key="index-entrance-spot">
+              <EditableContext.Provider value={this.props.form}>
+                  <DndProvider backend={HTML5Backend}>
+                  <Table
+                      columns={columns}
+                      bordered
+                      dataSource={list}
+                      components={components}
+                      loading={loading}
+                      pagination={false}
+                      rowKey={(record, index) => index}
+                      rowClassName="editable-row"
+                      onRow={(record, index) => ({
+                          index,
+                          moveRow: this.moveRow,
+                      })}
+                  />
+                  </DndProvider>
+              </EditableContext.Provider>
+              {
+                  list.length < 8? 
+                  <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
+                  : null
+              }
+            </TabPane>
+            <TabPane tab="定制专区" key="index-entrance-customized">
+              <EditableContext.Provider value={this.props.form}>
+                  <DndProvider backend={HTML5Backend}>
+                  <Table
+                      columns={columns}
+                      bordered
+                      dataSource={list}
+                      components={components}
+                      loading={loading}
+                      pagination={false}
+                      rowKey={(record, index) => index}
+                      rowClassName="editable-row"
+                      onRow={(record, index) => ({
+                          index,
+                          moveRow: this.moveRow,
+                      })}
+                  />
+                  </DndProvider>
+              </EditableContext.Provider>
+              {
+                  list.length < 8? 
+                  <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
+                  : null
+              }
+            </TabPane>
+          </Tabs>
+          
+          <div className={styles.btnWrap}>
+              <Button onClick={this.onSaveSort}>保存排序</Button>
+          </div>
+            
+            
         </Card>
       );
     }

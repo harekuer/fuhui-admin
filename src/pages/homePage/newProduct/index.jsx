@@ -133,7 +133,7 @@ const rowTarget = {
     // Note: we're mutating the monitor item here!
     // Generally it's better to avoid mutations,
     // but it's good here for the sake of performance
-    // to avoid expensive index banneres.
+    // to avoid expensive index newProductes.
     monitor.getItem().index = hoverIndex;
   },
 };
@@ -149,9 +149,9 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ banner, loading }) => ({
-    banner,
-    loading: loading.models.banner,
+@connect(({ newProduct, loading }) => ({
+    newProduct,
+    loading: loading.models.newProduct,
 }))
 class TableList extends React.Component {
     constructor(props) {
@@ -167,7 +167,7 @@ class TableList extends React.Component {
               key: 'id',
             },
             {
-              title: 'banner图片',
+              title: '新品图片',
               dataIndex: 'image',
               key: 'image',
               editable: true,
@@ -182,7 +182,7 @@ class TableList extends React.Component {
               }
             },
             {
-              title: 'banner链接',
+              title: '新品链接',
               dataIndex: 'url',
               key: 'url',
               editable: true,
@@ -227,7 +227,7 @@ class TableList extends React.Component {
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
-          type: 'banner/fetch',
+          type: 'newProduct/fetch',
         });
 
     }
@@ -239,12 +239,12 @@ class TableList extends React.Component {
     };
   
     moveRow = (dragIndex, hoverIndex) => {
-      const { dispatch, banner} = this.props;
-      let { list } = banner;
+      const { dispatch, newProduct} = this.props;
+      let { list } = newProduct;
       const dragRow = list[dragIndex];
       list = update(list, {$splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]]})
       dispatch({
-        type: 'banner/updateState',
+        type: 'newProduct/updateState',
         payload: {
             list,
         },
@@ -262,8 +262,8 @@ class TableList extends React.Component {
             if (error) {
               return;
             }
-            const { dispatch, banner} = this.props;
-            let { list } = banner;
+            const { dispatch, newProduct} = this.props;
+            let { list } = newProduct;
             const newData = list;
             const index = newData.findIndex(item => key === item.id);
             
@@ -271,11 +271,10 @@ class TableList extends React.Component {
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
-                    type: 'banner/update',
+                    type: 'newProduct/update',
                     payload: {
                         id: key !== '0'? key : undefined,
-                        image: row.image,
-                        url: row.url,
+                        title: row.title
                     },
                 })
                 this.setState({
@@ -297,7 +296,7 @@ class TableList extends React.Component {
     onDelete(key) {
         const { dispatch } = this.props;
         dispatch({
-            type: 'banner/remove',
+            type: 'newProduct/remove',
             payload: {
                 id: key,
             }
@@ -305,8 +304,8 @@ class TableList extends React.Component {
     }
 
     onAdd = () => {
-        const { dispatch, banner} = this.props;
-        let {list } = banner;
+        const { dispatch, newProduct} = this.props;
+        let {list } = newProduct;
         let obj ={
             id: '0',
             image: '',
@@ -314,22 +313,22 @@ class TableList extends React.Component {
         }
         list.push(obj)
         dispatch({
-            type: 'banner/queryList',
+            type: 'newProduct/queryList',
             payload: list
         })
         this.setState({ editingKey: '0'});
     }
 
     onSaveSort = () => {
-        const { dispatch, banner} = this.props;
-        let { list } = banner;
+        const { dispatch, newProduct} = this.props;
+        let { list } = newProduct;
         let sort= []
         let id = []
         list.forEach((item,index) => {
             sort.push({id:item.id,sort:index})
         })
         dispatch({
-            type: 'banner/updateSort',
+            type: 'newProduct/updateSort',
             payload: {
               sort_array: sort,
             }
@@ -338,7 +337,7 @@ class TableList extends React.Component {
   
     render() {
         const {
-            banner: { list},
+            newProduct: { list},
             loading,
             dispatch,
         } = this.props;
@@ -362,14 +361,14 @@ class TableList extends React.Component {
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: this.isEditing(record),
-                list,
                 dispatch,
+                list,
                 }),
             };
         });
       return (
         <Card bordered={false}>
-            <Alert message="*备注：顶部banner最多可添加5个" type="error" />
+            <Alert message="*备注：顶部newProduct最多可添加5个" type="error" />
 
             <EditableContext.Provider value={this.props.form}>
                 <DndProvider backend={HTML5Backend} context={window}>
