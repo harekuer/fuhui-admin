@@ -205,6 +205,23 @@ export default {
               component: './form/basic-form',
             },
             {
+              path: '/osAdmin/menu',
+              icon: 'unordered-list',
+              name: 'menu',
+              routes: [
+                {
+                  name: 'osMenu',
+                  path: '/osAdmin/menu/centerMenu',
+                  component: './menuManage/centerMenu',
+                },
+                // {
+                //   name: 'shopMenu',
+                //   path: '/osAdmin/menu/shopMenu',
+                //   component: './menuManage/shopMenu',
+                // },
+              ],
+            },
+            {
               path: '/',
               redirect: '/osAdmin/dashboard/analysis',
               authority: ['admin', 'user'],
@@ -520,8 +537,9 @@ export default {
   }, // chainWebpack: webpackPlugin,
   proxy: {
     '/_os/': {
-      target: 'http://beta.365fashion.com:8888/',
+      target: 'https://beta.365fashion.com:8888/',
       changeOrigin: true,
+      secure: false,
       pathRewrite: { '/_os/': '/_os/' },
     },
   },

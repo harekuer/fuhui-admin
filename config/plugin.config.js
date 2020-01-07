@@ -23,7 +23,7 @@ function getModulePackageName(module) {
 export default config => {
   // optimize chunks
   config.optimization // share the same chunks across different modules
-    .runtimeChunk(false)
+    .runtimeChunk(true)
     .splitChunks({
       chunks: 'async',
       name: 'vendors',
@@ -40,6 +40,7 @@ export default config => {
                 'gg-editor',
                 'g6',
                 '@antv',
+                'antd',
                 'gg-editor-core',
                 'bizcharts-plugin-slider',
               ].includes(packageName);

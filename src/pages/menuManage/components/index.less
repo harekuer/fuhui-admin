@@ -1,0 +1,64 @@
+:global {
+  .rst__nodeContent{
+    right: 0;
+  }
+  .rst__rowLabel {
+    width: 93%;
+  }
+  .ReactVirtualized__Grid__innerScrollContainer {
+    border-bottom: none;
+    border-top: none;
+  }
+  .rst__node{
+    border-bottom: 1px solid #eee;
+  }
+  .rst__rowContents{
+    border:none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  .rst__lineHalfHorizontalRight::before, .rst__lineFullVertical::after, .rst__lineHalfVerticalTop::after, .rst__lineHalfVerticalBottom::after {
+    background-color: #bbb;
+  }
+  .rst__lineChildren::after{
+    background-color: #bbb;
+  }
+}
+
+.treeWrap{
+  height: 800px;
+
+  .line{
+    width: 100%;
+    position: relative;
+
+    .icon{
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: normal;
+      color:#999;
+      margin-right:5px;
+    }
+    .name{
+      line-height: 20px;
+    }
+
+    .opt {
+      float: right;
+      font-weight: normal;
+
+      a{
+        margin:0 5px;
+      }
+    }
+  }
+}
+
+.minForm{
+  > div {
+    margin-bottom: 14px;
+  }
+}
+
+
+
