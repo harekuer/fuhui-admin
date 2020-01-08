@@ -9,9 +9,34 @@ import { connect } from 'dva'
 import SortList from './component/SortList'
 import styles from './List.less'
 
-const Category = ({ location, dispatch, category, loading }) => {
-  const { data, expandedRowKeys, status } = category
-  const listLoading = loading.effects['category/query'];
+@connect(({ category, loading }) => ({
+  category,
+  loading: loading.models.category,
+}))
+
+class Category extends React.Component {
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'updateState',
+      payload: {
+        expandedRowKeys: [],
+      },
+    })
+    dispatch({
+      type: 'query',
+      payload: {
+        ...location.query,
+      },
+    })
+  }
+
+
+  render(){
+    const { location, dispatch, category, loading } = this.props
+    const { data, expandedRowKeys, status } = category
+    const listLoading = loading
 
   const sortProps = {
     data: data,
@@ -91,13 +116,8 @@ const Category = ({ location, dispatch, category, loading }) => {
     </GridContent>
     
   )
+  }
 }
 
-Category.propTypes = {
-  category: PropTypes.object,
-  location: PropTypes.object,
-  dispatch: PropTypes.func,
-  loading: PropTypes.object,
-}
 
-export default connect(({ category, loading }) => ({ category, loading }))(Category)
+export default Category

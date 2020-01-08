@@ -147,9 +147,9 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ entrance, loading }) => ({
-    entrance,
-    loading: loading.models.entrance,
+@connect(({ cashsale, loading }) => ({
+    cashsale,
+    loading: loading.models.cashsale,
 }))
 class TableList extends React.Component {
     constructor(props) {
@@ -157,66 +157,14 @@ class TableList extends React.Component {
         this.state = { 
             editingKey: '' 
         };
-        this.columns = [
-            {
-              title: 'ID',
-              dataIndex: 'id',
-              key: 'id',
-            },
-            {
-              title: '单品图片',
-              dataIndex: 'image',
-              key: 'image',
-              editable: true,
-              render: (text, record) => {
-                return <SingleUpload limit={1} file={text} isEdit={false} />;
-              },
-            },
-            {
-              title: '单品链接',
-              dataIndex: 'url',
-              key: 'url',
-              editable: true,
-            },
-            {
-              title: '操作',
-              dataIndex: 'operate',
-              key: 'operate',
-              render: (text, record) => {
-                  const { editingKey } = this.state;
-                  const editable = this.isEditing(record);
-                  return editable ? (
-                    <span>
-                      <EditableContext.Consumer>
-                        {form => (
-                          <a
-                            onClick={() => this.save(form, record.id)}
-                            style={{ marginRight: 8 }}
-                          >
-                            Save
-                          </a>
-                        )}
-                      </EditableContext.Consumer>
-                      <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.id)}>
-                        <a>Cancel</a>
-                      </Popconfirm>
-                    </span>
-                  ) : (
-                    <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)}>
-                      Edit
-                    </a>
-                  );
-                },
-            },
-          ];
       }
 
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
-          type: 'entrance/fetch',
+          type: 'cashsale/fetch',
           payload: {
-            module: 'index-entrance-design',
+            module: 'index-spot-image',
           }
         });
     }
@@ -228,17 +176,85 @@ class TableList extends React.Component {
     };
   
     moveRow = (dragIndex, hoverIndex) => {
-      const { dispatch, entrance} = this.props;
-      let { list } = entrance;
+      const { dispatch, cashsale} = this.props;
+      let { list } = cashsale;
       const dragRow = list[dragIndex];
       list = update(list, {$splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]]})
       dispatch({
-        type: 'entrance/updateState',
+        type: 'cashsale/updateState',
         payload: {
             list,
         },
       })
     };
+
+
+    columnList = () => {
+      const { cashsale } = this.props
+      const { key } = cashsale
+      let column = [
+        {
+          title: 'ID',
+          dataIndex: 'id',
+          key: 'id',
+        },
+        {
+          title: '图片',
+          dataIndex: 'image',
+          key: 'image',
+          editable: true,
+          render: (text, record) => {
+            return <SingleUpload limit={1} file={text} isEdit={false} />;
+          },
+        },
+        {
+          title: '链接',
+          dataIndex: 'url',
+          key: 'url',
+          editable: true,
+        },
+        {
+          title: '操作',
+          dataIndex: 'operate',
+          key: 'operate',
+          render: (text, record) => {
+              const { editingKey } = this.state;
+              const editable = this.isEditing(record);
+              return editable ? (
+                <span>
+                  <EditableContext.Consumer>
+                    {form => (
+                      <a
+                        onClick={() => this.save(form, record.id)}
+                        style={{ marginRight: 8 }}
+                      >
+                        Save
+                      </a>
+                    )}
+                  </EditableContext.Consumer>
+                  <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.id)}>
+                    <a>Cancel</a>
+                  </Popconfirm>
+                </span>
+              ) : (
+                <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)}>
+                  Edit
+                </a>
+              );
+            },
+        },
+      ];
+      if(key === 'index-spot-cate'){
+        let obj = {
+          title: '分类',
+          dataIndex: 'title',
+          key: 'title',
+          editable: true,
+        }
+        column.splice(2, 0, obj);
+      }
+      return column
+    }
 
     isEditing = record => record.id === this.state.editingKey;
 
@@ -251,8 +267,8 @@ class TableList extends React.Component {
             if (error) {
               return;
             }
-            const { dispatch, entrance} = this.props;
-            let { list,key } = entrance;
+            const { dispatch, cashsale} = this.props;
+            let { list,key } = cashsale;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
             
@@ -260,12 +276,13 @@ class TableList extends React.Component {
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
-                    type: 'entrance/update',
+                    type: 'cashsale/update',
                     payload: {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: row.image,
                         url: row.url,
+                        title: key === 'index-spot-cate'? row.title : undefined,
                     },
                 })
                 this.setState({
@@ -287,29 +304,29 @@ class TableList extends React.Component {
     }
 
     onAdd = () => {
-        const { dispatch, entrance} = this.props;
-        let {list, key } = entrance;
+        const { dispatch, cashsale} = this.props;
+        let {list, key } = cashsale;
         let obj ={
             id: '0',
             title: ''
         }
         list.push(obj)
         dispatch({
-            type: 'entrance/queryList',
+            type: 'cashsale/queryList',
             payload: list,
         })
         this.setState({ editingKey: '0'});
     }
 
     onSaveSort = () => {
-      const { dispatch, entrance} = this.props;
-      let { list,key } = entrance;
+      const { dispatch, cashsale} = this.props;
+      let { list,key } = cashsale;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
       })
       dispatch({
-          type: 'entrance/updateSort',
+          type: 'cashsale/updateSort',
           payload: {
             module: key,
             sort_array: sort,
@@ -321,13 +338,13 @@ class TableList extends React.Component {
       const { dispatch } = this.props;
       this.setState({ editingKey: ''});
       dispatch({
-        type: 'entrance/fetch',
+        type: 'cashsale/fetch',
         payload: {
           module: key,
         }
       })
       dispatch({
-        type: 'entrance/updateState',
+        type: 'cashsale/updateState',
         payload: {
           key,
         }
@@ -336,40 +353,40 @@ class TableList extends React.Component {
   
     render() {
         const {
-            entrance: { list},
+            cashsale: { list, key},
             loading,
             dispatch,
         } = this.props;
-
+        console.log('key',key)
         const components = {
             body: {
               cell: EditableCell,
               row: DragableBodyRow,
             },
           };
-      
-        const columns = this.columns.map(col => {
+        
+        const columns = this.columnList().map(col => {
             if (!col.editable) {
                 return col;
             }
             return {
-                ...col,
-                onCell: record => ({
-                record,
-                inputType: col.dataIndex === 'image' ? 'upload' : 'text',
-                dataIndex: col.dataIndex,
-                title: col.title,
-                editing: this.isEditing(record),
-                dispatch,
-                list,
-                }),
+              ...col,
+              onCell: record => ({
+              record,
+              inputType: col.dataIndex === 'image' ? 'upload' : 'text',
+              dataIndex: col.dataIndex,
+              title: col.title,
+              editing: this.isEditing(record),
+              dispatch,
+              list,
+              }),
             };
         });
 
       return (
         <Card bordered={false}>
           <Tabs  onChange={this.onChangeTab} type="card">
-            <TabPane tab="设计专区" key="index-entrance-design">
+            <TabPane tab="侧边大图" key="index-customized-image">
 
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
@@ -390,12 +407,12 @@ class TableList extends React.Component {
                   </DndProvider>
               </EditableContext.Provider>
               {
-                  list.length < 5 ? 
+                  list.length < 1 ? 
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }
             </TabPane>
-            <TabPane tab="现货专区" key="index-entrance-spot">
+            <TabPane tab="右侧分类" key="index-customized-cate">
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
                   <Table
@@ -415,43 +432,18 @@ class TableList extends React.Component {
                   </DndProvider>
               </EditableContext.Provider>
               {
-                  list.length < 8? 
-                  <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
-                  : null
-              }
-            </TabPane>
-            <TabPane tab="定制专区" key="index-entrance-customized">
-              <EditableContext.Provider value={this.props.form}>
-                  <DndProvider backend={HTML5Backend}>
-                  <Table
-                      columns={columns}
-                      bordered
-                      dataSource={list}
-                      components={components}
-                      loading={loading}
-                      pagination={false}
-                      rowKey={(record, index) => index}
-                      rowClassName="editable-row"
-                      onRow={(record, index) => ({
-                          index,
-                          moveRow: this.moveRow,
-                      })}
-                  />
-                  </DndProvider>
-              </EditableContext.Provider>
-              {
-                  list.length < 8? 
+                  list.length < 16? 
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }
             </TabPane>
           </Tabs>
-          
-          <div className={styles.btnWrap}>
+          {
+            key === 'index-customized-cate'? 
+            <div className={styles.btnWrap}>
               <Button onClick={this.onSaveSort}>保存排序</Button>
-          </div>
-            
-            
+          </div> : null
+          }
         </Card>
       );
     }

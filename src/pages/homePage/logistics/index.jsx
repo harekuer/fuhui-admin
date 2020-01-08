@@ -147,9 +147,9 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ entrance, loading }) => ({
-    entrance,
-    loading: loading.models.entrance,
+@connect(({ logistics, loading }) => ({
+    logistics,
+    loading: loading.models.logistics,
 }))
 class TableList extends React.Component {
     constructor(props) {
@@ -164,19 +164,13 @@ class TableList extends React.Component {
               key: 'id',
             },
             {
-              title: '单品图片',
+              title: '图片',
               dataIndex: 'image',
               key: 'image',
               editable: true,
               render: (text, record) => {
                 return <SingleUpload limit={1} file={text} isEdit={false} />;
               },
-            },
-            {
-              title: '单品链接',
-              dataIndex: 'url',
-              key: 'url',
-              editable: true,
             },
             {
               title: '操作',
@@ -214,9 +208,9 @@ class TableList extends React.Component {
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
-          type: 'entrance/fetch',
+          type: 'logistics/fetch',
           payload: {
-            module: 'index-entrance-design',
+            module: 'index-check-supplier',
           }
         });
     }
@@ -228,12 +222,12 @@ class TableList extends React.Component {
     };
   
     moveRow = (dragIndex, hoverIndex) => {
-      const { dispatch, entrance} = this.props;
-      let { list } = entrance;
+      const { dispatch, logistics} = this.props;
+      let { list } = logistics;
       const dragRow = list[dragIndex];
       list = update(list, {$splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]]})
       dispatch({
-        type: 'entrance/updateState',
+        type: 'logistics/updateState',
         payload: {
             list,
         },
@@ -251,8 +245,8 @@ class TableList extends React.Component {
             if (error) {
               return;
             }
-            const { dispatch, entrance} = this.props;
-            let { list,key } = entrance;
+            const { dispatch, logistics} = this.props;
+            let { list,key } = logistics;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
             
@@ -260,12 +254,11 @@ class TableList extends React.Component {
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
-                    type: 'entrance/update',
+                    type: 'logistics/update',
                     payload: {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: row.image,
-                        url: row.url,
                     },
                 })
                 this.setState({
@@ -287,29 +280,29 @@ class TableList extends React.Component {
     }
 
     onAdd = () => {
-        const { dispatch, entrance} = this.props;
-        let {list, key } = entrance;
+        const { dispatch, logistics} = this.props;
+        let {list, key } = logistics;
         let obj ={
             id: '0',
             title: ''
         }
         list.push(obj)
         dispatch({
-            type: 'entrance/queryList',
+            type: 'logistics/queryList',
             payload: list,
         })
         this.setState({ editingKey: '0'});
     }
 
     onSaveSort = () => {
-      const { dispatch, entrance} = this.props;
-      let { list,key } = entrance;
+      const { dispatch, logistics} = this.props;
+      let { list,key } = logistics;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
       })
       dispatch({
-          type: 'entrance/updateSort',
+          type: 'logistics/updateSort',
           payload: {
             module: key,
             sort_array: sort,
@@ -321,13 +314,13 @@ class TableList extends React.Component {
       const { dispatch } = this.props;
       this.setState({ editingKey: ''});
       dispatch({
-        type: 'entrance/fetch',
+        type: 'logistics/fetch',
         payload: {
           module: key,
         }
       })
       dispatch({
-        type: 'entrance/updateState',
+        type: 'logistics/updateState',
         payload: {
           key,
         }
@@ -336,7 +329,7 @@ class TableList extends React.Component {
   
     render() {
         const {
-            entrance: { list},
+            logistics: { list},
             loading,
             dispatch,
         } = this.props;
@@ -369,8 +362,8 @@ class TableList extends React.Component {
       return (
         <Card bordered={false}>
           <Tabs  onChange={this.onChangeTab} type="card">
-            <TabPane tab="设计专区" key="index-entrance-design">
-
+            <TabPane tab="验货商推荐" key="index-check-supplier">
+              <Alert message="*备注：验货商最多可添加15个" type="error" style={{marginBottom: '15px'}}/>
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
                   <Table
@@ -390,37 +383,13 @@ class TableList extends React.Component {
                   </DndProvider>
               </EditableContext.Provider>
               {
-                  list.length < 5 ? 
+                  list.length < 15 ? 
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }
             </TabPane>
-            <TabPane tab="现货专区" key="index-entrance-spot">
-              <EditableContext.Provider value={this.props.form}>
-                  <DndProvider backend={HTML5Backend}>
-                  <Table
-                      columns={columns}
-                      bordered
-                      dataSource={list}
-                      components={components}
-                      loading={loading}
-                      pagination={false}
-                      rowKey={(record, index) => index}
-                      rowClassName="editable-row"
-                      onRow={(record, index) => ({
-                          index,
-                          moveRow: this.moveRow,
-                      })}
-                  />
-                  </DndProvider>
-              </EditableContext.Provider>
-              {
-                  list.length < 8? 
-                  <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
-                  : null
-              }
-            </TabPane>
-            <TabPane tab="定制专区" key="index-entrance-customized">
+            <TabPane tab="物流商推荐" key="index-logistics-supplier">
+            <Alert message="*备注：物流商最多可添加8个" type="error" style={{marginBottom: '15px'}}/>
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
                   <Table

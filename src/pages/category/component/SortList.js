@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
-import {  Modal, Button, message, Popconfirm } from 'antd'
+//import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
+import SortableTree, { toggleExpandedForAll }  from 'react-sortable-tree/dist/index.cjs.js';
+import {  Modal, Button} from 'antd'
 import 'react-sortable-tree/style.css';
 import styles from './SortList.less'
 

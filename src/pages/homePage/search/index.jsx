@@ -320,7 +320,7 @@ class TableList extends React.Component {
         });
       return (
         <Card bordered={false}>
-            <Alert message="*备注：搜索推荐词最多可设置10个，页面外显最多6个；推荐词6个的情况下，外显的搜索词将从设置的内容中随机抽取显示，用户每次刷新将会重新抽取，搜索词排序随机" type="error" />
+            <Alert style={{marginBottom: '15px'}} message="*备注：搜索推荐词最多可设置10个，页面外显最多6个。" type="error" />
 
             <EditableContext.Provider value={this.props.form}>
                 <DndProvider backend={HTML5Backend} context={window}>

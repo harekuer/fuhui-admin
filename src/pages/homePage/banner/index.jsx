@@ -378,7 +378,7 @@ class TableList extends React.Component {
     });
     return (
       <Card bordered={false}>
-        <Alert message="*备注：顶部banner最多可添加5个" type="error" />
+        <Alert message="*备注：顶部banner最多可添加5个" type="error" style={{marginBottom: '15px'}}/>
 
         <EditableContext.Provider value={this.props.form}>
           <DndProvider backend={HTML5Backend} context={window}>
