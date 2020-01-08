@@ -37,7 +37,7 @@ const Model = {
         }); // Login successfully
         yield put(
           routerRedux.replace({
-            pathname: '/osAdmin/dashboard/analysis',
+            pathname: '/osAdmin/home/search',
           }),
         );
       }

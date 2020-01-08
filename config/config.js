@@ -130,19 +130,19 @@ export default {
                   component: './homePage/nav',
                 },
                 {
-                  name: 'topbanner',
+                  name: 'banner',
                   icon: 'border',
                   path: '/osAdmin/home/banner',
                   component: './homePage/banner',
                 },
                 {
-                  name: 'new',
+                  name: 'newProduct',
                   icon: 'smile',
                   path: '/osAdmin/home/newProduct',
                   component: './homePage/newProduct',
                 },
                 {
-                  name: 'special',
+                  name: 'entrance',
                   icon: 'fire',
                   path: '/osAdmin/home/entrance',
                   component: './homePage/entrance',
@@ -162,7 +162,7 @@ export default {
                 {
                   name: 'designer',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/monitor2',
+                  path: '/osAdmin/dashboard/designer',
                   component: './dashboard/monitor',
                 },
                 {

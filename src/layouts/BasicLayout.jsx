@@ -121,7 +121,8 @@ const BasicLayout = props => {
       pathname: '/',
     },
   } = props;
-  const {routes} = props.route,key = '/osAdmin/dashboard/analysis',tabName = 'search'; // routeKey 为设置首页设置
+  const initTab = location.pathname.split('/')
+  const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
   let tabLists = updateTree(routes);
   let aList=[],aListArr=[];
   tabLists.map((v) => {
