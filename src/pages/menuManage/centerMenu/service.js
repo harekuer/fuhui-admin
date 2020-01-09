@@ -14,7 +14,7 @@ export async function query (params) {
 // 菜单列表
 export async function menuInfo (params) {
   return request('/_os/index.php?com=menu&t=info', {
-    method: 'get',
+    method: 'post',
     data: qs.stringify(params),
   });
 }

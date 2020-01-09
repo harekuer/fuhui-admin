@@ -10,7 +10,6 @@ import Link from 'umi/link';
 import router from 'umi/router';
 import { connect } from 'dva';
 import { Icon, Result, Button,Tabs,Dropdown,Menu } from 'antd';
-import memoizeOne from 'memoize-one';
 import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';

@@ -14,6 +14,11 @@ const plugins = [
       dva: {
         hmr: true,
       },
+      treeShaking: true,
+      dynamicImport: {
+        webpackChunkName: true,
+      },
+      chunks: ['vendors', 'umi'],
       locale: {
         // default false
         enable: true,
@@ -53,22 +58,27 @@ const plugins = [
   ],
 ];
 
-if (isAntDesignProPreview) {
-  plugins.push([
-    'umi-plugin-ga',
-    {
-      code: 'UA-72788897-6',
-    },
-  ]);
-  plugins.push(['umi-plugin-antd-theme', themePluginConfig]);
-}
 
 export default {
+  chainWebpack(config) {
+    config.optimization.splitChunks({
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          chunks: 'all',
+          test: /\.css$/,
+          minChunks: 1,
+          minSize: 0,
+        },
+      },
+    });
+  },
   plugins,
   hash: true,
   targets: {
     ie: 11,
   },
+  disableDynamicImport: false,
   publicPath:'/osAdmin/',
   routes: [
     {
@@ -120,43 +130,43 @@ export default {
                 {
                   name: 'search',
                   icon: 'search',
-                  path: '/osAdmin/home/search',
+                  path: '/osAdmin/homePage/search',
                   component: './homePage/search',
                 },
                 {
                   name: 'navigation',
                   icon: 'menu',
-                  path: '/osAdmin/home/navigation',
+                  path: '/osAdmin/homePage/navigation',
                   component: './homePage/nav',
                 },
                 {
                   name: 'banner',
                   icon: 'border',
-                  path: '/osAdmin/home/banner',
+                  path: '/osAdmin/homePage/banner',
                   component: './homePage/banner',
                 },
                 {
                   name: 'newProduct',
                   icon: 'smile',
-                  path: '/osAdmin/home/newProduct',
+                  path: '/osAdmin/homePage/newProduct',
                   component: './homePage/newProduct',
                 },
                 {
                   name: 'entrance',
                   icon: 'fire',
-                  path: '/osAdmin/home/entrance',
+                  path: '/osAdmin/homePage/entrance',
                   component: './homePage/entrance',
                 },
                 {
                   name: 'cashsale',
                   icon: 'appstore',
-                  path: '/osAdmin/home/cashsale',
+                  path: '/osAdmin/homePage/cashsale',
                   component: './homePage/cashsale',
                 },
                 {
                   name: 'customized',
                   icon: 'profile',
-                  path: '/osAdmin/home/customized',
+                  path: '/osAdmin/homePage/customized',
                   component: './homePage/customized',
                 },
                 {
@@ -203,6 +213,12 @@ export default {
               icon: 'form',
               name: 'theme',
               component: './form/basic-form',
+            },
+            {
+              path: '/osAdmin/tool',
+              icon: 'tool',
+              name: 'tool',
+              component: './tool',
             },
             {
               path: '/osAdmin/menu',
@@ -494,13 +510,12 @@ export default {
       // ],
     },
   ],
-  // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   theme: {
     // ...darkTheme,
   },
   define: {
     ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION:
-      ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION || '', // preview.pro.ant.design only do not use in your production ; preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
+      ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION || '',
   },
   ignoreMomentLocale: true,
   lessLoaderOptions: {
@@ -534,7 +549,7 @@ export default {
   },
   manifest: {
     basePath: '/',
-  }, // chainWebpack: webpackPlugin,
+  },
   proxy: {
     '/_os/': {
       target: 'https://beta.365fashion.com:8888/',

@@ -55,7 +55,8 @@ export default {
     // 请求获取菜单列表
     * getMenuInfo({ payload = {} }, { call, put }) {
 
-      const { code, data, message } = yield call(menuInfo, payload);
+      const response = yield call(menuInfo, payload);
+      const { code, data} = response
 
       if (code === 200) {
         yield put({
@@ -71,7 +72,8 @@ export default {
 
     // 新增菜单
     * addMenu({ payload }, { select, call, put }) {
-      const { code, data, message } = yield call(addOrEditMenu, payload);
+      const response = yield call(addOrEditMenu, payload);
+      const { code, data} = response
 
       if (code === 200) {
         yield put({
@@ -85,7 +87,7 @@ export default {
         yield put({ type: 'query' })
 
       } else {
-        message.error(message);
+        message.error(response.message);
       }
 
 
@@ -93,7 +95,8 @@ export default {
 
     // 编辑菜单
     * editMenu({ payload }, { select, call, put }) {
-      const { code, data, message } = yield call(addOrEditMenu, payload);
+      const response = yield call(addOrEditMenu, payload);
+      const { code, data} = response
 
       if (code === 200) {
 
@@ -108,20 +111,21 @@ export default {
         yield put({ type: 'query' })
 
       } else {
-        message.error(message);
+        message.error(response.message);
       }
     },
 
     // 删除菜单
     * deleteMenu({ payload }, { select, call, put }) {
-      const { code, data, message } = yield call(deleteMenu, payload);
+      const response = yield call(deleteMenu, payload);
+      const { code, data} = response
 
       if (code === 200) {
 
         yield put({ type: 'query' })
 
       } else {
-        message.error(message);
+        message.error(response.message);
       }
     },
   },

@@ -53,6 +53,7 @@ class editModal extends Component {
         handleSaveMenu({
           ...values,
           menu_id: menuInfo.menu_id,
+          type: 1,
           is_show: values.is_show ? 1 : 0     // true=1,否则为0
         })
       })
@@ -117,6 +118,14 @@ class editModal extends Component {
         label: '后端路由',
         name: 'route_backend',
         value: menuInfo && menuInfo.route_backend,
+        node: (
+          <Input placeholder="" />
+        )
+      },
+      {
+        label: '请求接口',
+        name: 'url',
+        value: menuInfo&& menuInfo.url,
         node: (
           <Input placeholder="" />
         )

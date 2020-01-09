@@ -96,6 +96,14 @@ class addModal extends Component {
         )
       },
       {
+        label: '请求接口',
+        name: 'url',
+        value: addInfo && addInfo.url,
+        node: (
+          <Input placeholder="" />
+        )
+      },
+      {
         label: '排序',
         name: 'sort',
         value: addInfo && addInfo.sort,

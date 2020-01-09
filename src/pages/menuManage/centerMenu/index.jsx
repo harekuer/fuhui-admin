@@ -48,12 +48,13 @@ class CenterMenu extends Component {
       handleChangeEditVisible: function (id, state) {
         // 打开弹窗
         onChangeVisible({ editModalVisible: state })
-
+        console.log(id)
         // 获取菜单详情
         dispatch({
           type: 'centerMenu/getMenuInfo',
           payload: {
-            menu_id: id
+            menu_id: id,
+            type: 1,
           }
         })
 
