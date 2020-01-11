@@ -482,6 +482,7 @@ class BasicLayout extends React.PureComponent {
       fixedHeader,
       hidenAntTabs,
     } = this.props;
+    console.log(menuData)
     let {activeKey,routeKey} = this.state;
     if(pathname === '/'){
           // router.push(routeKey)

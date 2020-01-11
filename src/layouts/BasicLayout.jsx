@@ -115,6 +115,7 @@ const BasicLayout = props => {
     dispatch,
     children,
     settings,
+    menuList,
     hidenAntTabs,
     location = {
       pathname: '/',
@@ -149,6 +150,9 @@ const BasicLayout = props => {
     if (dispatch) {
       dispatch({
         type: 'user/fetchCurrent',
+      });
+      dispatch({
+        type: 'user/fetchMenu',
       });
     }
 
@@ -193,9 +197,7 @@ const BasicLayout = props => {
       }
     })
   }
-
-
-  
+ 
   const onClickHover=(e)=>{
     let { key } = e
     let aList = tabList
@@ -274,6 +276,8 @@ const BasicLayout = props => {
       </a>
     </Dropdown>
   );
+
+  console.log(menuList)
   return (
     <>
       <ProLayout
@@ -353,7 +357,8 @@ const BasicLayout = props => {
   );
 };
 
-export default connect(({ global, settings }) => ({
+export default connect(({ global, settings,user }) => ({
   collapsed: global.collapsed,
   settings,
+  menuList: user.menuList
 }))(BasicLayout);
