@@ -3,7 +3,7 @@
  * You can view component api by:
  * https://github.com/ant-design/ant-design-pro-layout
  */
-import ProLayout, { DefaultFooter, SettingDrawer } from '@ant-design/pro-layout';
+import ProLayout, { DefaultFooter, SettingDrawer,MenuDataItem, } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 import Link from 'umi/link';
@@ -115,13 +115,14 @@ const BasicLayout = props => {
     dispatch,
     children,
     settings,
-    menuList,
+    user,
     hidenAntTabs,
     location = {
       pathname: '/',
     },
   } = props;
   const initTab = location.pathname.split('/')
+  console.log(props)
   const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
   let tabLists = updateTree(routes);
   let aList=[],aListArr=[];
@@ -277,7 +278,7 @@ const BasicLayout = props => {
     </Dropdown>
   );
 
-  console.log(menuList)
+  //console.log(user.currentUser.menuList)
   return (
     <>
       <ProLayout
@@ -287,6 +288,9 @@ const BasicLayout = props => {
             {titleDom}
           </Link>
         )}
+        route={{
+          routes: user.currentUser.menuList,
+        }}
         openKeys={false}
         onCollapse={handleMenuCollapse}
         menuItemRender={(menuItemProps, defaultDom) => {
@@ -305,7 +309,8 @@ const BasicLayout = props => {
             <span>{route.breadcrumbName}</span>
           );
         }}
-        menuDataRender={menuDataRender}
+        //menuDataRender={menuDataRender}
+        menuDataRender={() => user.currentUser.menuList}
         formatMessage={formatMessage}
         rightContentRender={rightProps => <RightContent {...rightProps} />}
         {...props}
@@ -360,5 +365,5 @@ const BasicLayout = props => {
 export default connect(({ global, settings,user }) => ({
   collapsed: global.collapsed,
   settings,
-  menuList: user.menuList
+  user
 }))(BasicLayout);

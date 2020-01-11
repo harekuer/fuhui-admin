@@ -136,7 +136,7 @@ export default {
                 {
                   name: 'navigation',
                   icon: 'menu',
-                  path: '/osAdmin/homePage/navigation',
+                  path: '/osAdmin/homePage/nav',
                   component: './homePage/nav',
                 },
                 {
