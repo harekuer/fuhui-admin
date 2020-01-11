@@ -16,7 +16,6 @@ const Model = {
         type: 'changeLoginStatus',
         payload: response,
       }); // Login successfully
-
       if (response.code === 200) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -38,12 +37,12 @@ const Model = {
         yield put({
           type: 'changeLoginStatus',
           payload: {
-            status: "ok",
-            type: "account",
-            currentAuthority: "admin"
+            status: 'ok',
+            type: 'account',
+            currentAuthority: 'admin',
           },
         }); // Login successfully
-        reloadAuthorized()
+        reloadAuthorized();
         yield put(
           routerRedux.replace({
             pathname: '/osAdmin/dashboard/analysis',

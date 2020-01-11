@@ -80,7 +80,7 @@ const UserModel = {
   },
   reducers: {
     saveCurrentUser(state, action) {
-      return { ...state, currentUser: {...state.currentUser,...action.payload} || {} };
+      return { ...state, currentUser: { ...state.currentUser, ...action.payload } || {} };
     },
 
     changeNotifyCount(

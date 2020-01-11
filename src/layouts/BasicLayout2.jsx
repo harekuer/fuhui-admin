@@ -7,7 +7,7 @@ import ProLayout, { DefaultFooter, SettingDrawer } from '@ant-design/pro-layout'
 import React, { useEffect } from 'react';
 import Link from 'umi/link';
 import { connect } from 'dva';
-import { Icon, Result, Button, Menu, Layout,Tabs,Dropdown } from 'antd';
+import { Icon, Result, Button, Menu, Layout, Tabs, Dropdown } from 'antd';
 import DocumentTitle from 'react-document-title';
 import isEqual from 'lodash/isEqual';
 import memoizeOne from 'memoize-one';
@@ -40,12 +40,7 @@ const menuDataRender = menuList =>
     return Authorized.check(item.authority, localItem, null);
   });
 
-const defaultFooterDom = (
-  <DefaultFooter
-    copyright="2019 Fu Hui Admin"
-    links={[]}
-  />
-);
+const defaultFooterDom = <DefaultFooter copyright="2019 Fu Hui Admin" links={[]} />;
 
 const footerRender = () => {
   if (isAntDesignPro()) {
@@ -82,21 +77,24 @@ const BasicLayout = props => {
       pathname: '/',
     },
   } = props;
-  const {routes} = props.route,routeKey = '/dashboard/analysis',tabName = 'dashboard';
+  const { routes } = props.route,
+    routeKey = '/dashboard/analysis',
+    tabName = 'dashboard';
   const tabLists = this.updateTree(routes);
-    let tabList=[],tabListArr=[];
-    tabLists.map((v) => {
-      if(v.key === routeKey){
-        if(tabList.length === 0){
-          v.closable = false
-          v.tab = tabName
-          tabList.push(v);
-        }
+  let tabList = [],
+    tabListArr = [];
+  tabLists.map(v => {
+    if (v.key === routeKey) {
+      if (tabList.length === 0) {
+        v.closable = false;
+        v.tab = tabName;
+        tabList.push(v);
       }
-      if(v.key){
-        tabListArr.push(v.key)
-      }
-    });
+    }
+    if (v.key) {
+      tabListArr.push(v.key);
+    }
+  });
   /**
    * constructor
    */
@@ -107,10 +105,17 @@ const BasicLayout = props => {
     // 递归获取树列表
     const getTreeList = data => {
       data.forEach(node => {
-        if(!node.level){
-          treeList.push({ tab: node.name, key: node.path,locale:node.locale,closable:true,content:node.component });
+        if (!node.level) {
+          treeList.push({
+            tab: node.name,
+            key: node.path,
+            locale: node.locale,
+            closable: true,
+            content: node.component,
+          });
         }
-        if (node.routes && node.routes.length > 0) { //!node.hideChildrenInMenu &&
+        if (node.routes && node.routes.length > 0) {
+          //!node.hideChildrenInMenu &&
           getTreeList(node.routes);
         }
       });
@@ -146,11 +151,7 @@ const BasicLayout = props => {
     <>
       <ProLayout
         logo={logo}
-        menuHeaderRender={(logoDom, titleDom) => (
-          <Link to="/">
-            {titleDom}
-          </Link>
-        )}
+        menuHeaderRender={(logoDom, titleDom) => <Link to="/">{titleDom}</Link>}
         onCollapse={handleMenuCollapse}
         menuItemRender={(menuItemProps, defaultDom) => {
           if (menuItemProps.isUrl || menuItemProps.children) {
@@ -203,36 +204,39 @@ const BasicLayout = props => {
 class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
-    const {routes} = props.route,routeKey = '/home/home',tabName = '首页'; // routeKey 为设置首页设置 试试 '/dashboard/analysis' 或其他key值
+    const { routes } = props.route,
+      routeKey = '/home/home',
+      tabName = '首页'; // routeKey 为设置首页设置 试试 '/dashboard/analysis' 或其他key值
     const tabLists = this.updateTree(routes);
-    let tabList=[],tabListArr=[];
-    tabLists.map((v) => {
-      if(v.key === routeKey){
-        if(tabList.length === 0){
-          v.closable = false
-          v.tab = tabName
+    let tabList = [],
+      tabListArr = [];
+    tabLists.map(v => {
+      if (v.key === routeKey) {
+        if (tabList.length === 0) {
+          v.closable = false;
+          v.tab = tabName;
           tabList.push(v);
         }
       }
-      if(v.key){
-        tabListArr.push(v.key)
+      if (v.key) {
+        tabListArr.push(v.key);
       }
     });
     //获取所有已存在key值
-    this.state = ({
-        tabList:tabList,
-        tabListKey:[routeKey],
-        activeKey:routeKey,
-        tabListArr,
-        routeKey
-    })
+    this.state = {
+      tabList: tabList,
+      tabListKey: [routeKey],
+      activeKey: routeKey,
+      tabListArr,
+      routeKey,
+    };
 
     this.getPageTitle = memoizeOne(this.getPageTitle);
     this.matchParamsPath = memoizeOne(this.matchParamsPath, isEqual);
   }
 
   componentDidMount() {
-    this.props.history.push({ pathname : '/'  })
+    this.props.history.push({ pathname: '/' });
     const {
       dispatch,
       route: { routes, authority },
@@ -255,10 +259,17 @@ class BasicLayout extends React.PureComponent {
     // 递归获取树列表
     const getTreeList = data => {
       data.forEach(node => {
-        if(!node.level){
-          treeList.push({ tab: node.name, key: node.path,locale:node.locale,closable:true,content:node.component });
+        if (!node.level) {
+          treeList.push({
+            tab: node.name,
+            key: node.path,
+            locale: node.locale,
+            closable: true,
+            content: node.component,
+          });
         }
-        if (node.routes && node.routes.length > 0) { //!node.hideChildrenInMenu &&
+        if (node.routes && node.routes.length > 0) {
+          //!node.hideChildrenInMenu &&
           getTreeList(node.routes);
         }
       });
@@ -346,134 +357,143 @@ class BasicLayout extends React.PureComponent {
     return <SettingDrawer />;
   };
 
-  onHandlePage =(e)=>{//点击左侧菜单
-    let {menuData} = this.props,{key,search=''} = e;
+  onHandlePage = e => {
+    //点击左侧菜单
+    let { menuData } = this.props,
+      { key, search = '' } = e;
     const tabLists = this.updateTreeList(menuData);
-    const {tabListKey,tabList,tabListArr} =  this.state;
-    if(tabListArr.includes(key)){
-      if(!search){
-        router.push(key)
-      }else{
-        router.push({pathname:key,search})
+    const { tabListKey, tabList, tabListArr } = this.state;
+    if (tabListArr.includes(key)) {
+      if (!search) {
+        router.push(key);
+      } else {
+        router.push({ pathname: key, search });
       }
-
-    }else{
-      key = '/exception/404'
-      router.push('/exception/404')
+    } else {
+      key = '/exception/404';
+      router.push('/exception/404');
     }
 
     this.setState({
-      activeKey:key
-    })
-    tabLists.map((v) => {
-      if(v.key === key){
-        if(tabList.length === 0){
-          v.closable = false
+      activeKey: key,
+    });
+    tabLists.map(v => {
+      if (v.key === key) {
+        if (tabList.length === 0) {
+          v.closable = false;
           this.setState({
-            tabList:[...tabList,v]
-          })
-        }else{
-          if(!tabListKey.includes(v.key)){
+            tabList: [...tabList, v],
+          });
+        } else {
+          if (!tabListKey.includes(v.key)) {
             this.setState({
-              tabList:[...tabList,v],
-              tabListKey:[...tabListKey,v.key]
-            })
+              tabList: [...tabList, v],
+              tabListKey: [...tabListKey, v.key],
+            });
           }
         }
       }
-    })
+    });
     // this.setState({
     //   tabListKey:this.state.tabList.map((va)=>va.key)
     // })
-  }
+  };
 
-    // 切换 tab页 router.push(key);
-    onChange = key => {
-        this.setState({ activeKey:key });
-        router.push(key)
-    };
+  // 切换 tab页 router.push(key);
+  onChange = key => {
+    this.setState({ activeKey: key });
+    router.push(key);
+  };
 
-    onEdit = (targetKey, action) => {
-        this[action](targetKey);
+  onEdit = (targetKey, action) => {
+    this[action](targetKey);
+  };
+
+  remove = targetKey => {
+    let { activeKey } = this.state;
+    let lastIndex;
+    this.state.tabList.forEach((pane, i) => {
+      if (pane.key === targetKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const tabList = [],
+      tabListKey = [];
+    this.state.tabList.map(pane => {
+      if (pane.key !== targetKey) {
+        tabList.push(pane);
+        tabListKey.push(pane.key);
+      }
+    });
+    if (lastIndex >= 0 && activeKey === targetKey) {
+      activeKey = tabList[lastIndex].key;
     }
+    router.push(activeKey);
+    this.setState({ tabList, activeKey, tabListKey });
+  };
 
-    remove = (targetKey) => {
-        let {activeKey} = this.state;
-        let lastIndex;
-        this.state.tabList.forEach((pane, i) => {
-            if (pane.key === targetKey) {
-                lastIndex = i - 1;
-            }
-        });
-        const tabList = [],tabListKey=[]
-        this.state.tabList.map(pane => {
-          if(pane.key !== targetKey){
-              tabList.push(pane)
-              tabListKey.push(pane.key)
-          }
-        });
-        if (lastIndex >= 0 && activeKey === targetKey) {
-            activeKey = tabList[lastIndex].key;
+  updateTreeList = data => {
+    const treeData = data;
+    const treeList = [];
+    // 递归获取树列表
+    const getTreeList = data => {
+      data.forEach(node => {
+        if (!node.level) {
+          treeList.push({
+            tab: node.name,
+            key: node.path,
+            locale: node.locale,
+            closable: true,
+            content: node.component,
+          });
         }
-        router.push(activeKey)
-        this.setState({ tabList, activeKey,tabListKey });
-    }
-
-    updateTreeList = data => {
-        const treeData = data;
-        const treeList = [];
-        // 递归获取树列表
-        const getTreeList = data => {
-            data.forEach(node => {
-              if(!node.level){
-                treeList.push({ tab: node.name, key: node.path,locale:node.locale,closable:true,content:node.component });
-              }
-                if (node.children && node.children.length > 0) { //!node.hideChildrenInMenu &&
-                    getTreeList(node.children);
-                }
-            });
-        };
-        getTreeList(treeData);
-        return treeList;
+        if (node.children && node.children.length > 0) {
+          //!node.hideChildrenInMenu &&
+          getTreeList(node.children);
+        }
+      });
     };
+    getTreeList(treeData);
+    return treeList;
+  };
 
-    onClickHover=(e)=>{
+  onClickHover = e => {
     // message.info(`Click on item ${key}`);
-    let { key } = e,{activeKey,tabList,tabListKey,routeKey} = this.state;
+    let { key } = e,
+      { activeKey, tabList, tabListKey, routeKey } = this.state;
 
-    if(key === '1'){
-      tabList= tabList.filter((v)=>v.key !== activeKey || v.key === routeKey)
-      tabListKey = tabListKey.filter((v)=>v !== activeKey || v === routeKey)
+    if (key === '1') {
+      tabList = tabList.filter(v => v.key !== activeKey || v.key === routeKey);
+      tabListKey = tabListKey.filter(v => v !== activeKey || v === routeKey);
       this.setState({
-        activeKey:routeKey,
+        activeKey: routeKey,
         tabList,
-        tabListKey
-      })
-    }else if(key === '2'){
-      tabList= tabList.filter((v)=>v.key === activeKey || v.key === routeKey)
-      tabListKey = tabListKey.filter((v)=>v === activeKey || v === routeKey)
+        tabListKey,
+      });
+    } else if (key === '2') {
+      tabList = tabList.filter(v => v.key === activeKey || v.key === routeKey);
+      tabListKey = tabListKey.filter(v => v === activeKey || v === routeKey);
       this.setState({
         activeKey,
         tabList,
-        tabListKey
-      })
-    }else if(key === '3'){
-      tabList= tabList.filter((v)=>v.key === routeKey)
-      tabListKey = tabListKey.filter((v)=>v === routeKey)
+        tabListKey,
+      });
+    } else if (key === '3') {
+      tabList = tabList.filter(v => v.key === routeKey);
+      tabListKey = tabListKey.filter(v => v === routeKey);
       this.setState({
-        activeKey:routeKey,
+        activeKey: routeKey,
         tabList,
-        tabListKey
-      })
+        tabListKey,
+      });
     }
-
-  }
+  };
 
   render() {
     const {
       navTheme,
       layout: PropsLayout,
-      location: { pathname,search },
+      location: { pathname, search },
       isMobile,
       children,
       menuData,
@@ -482,14 +502,14 @@ class BasicLayout extends React.PureComponent {
       fixedHeader,
       hidenAntTabs,
     } = this.props;
-    console.log(menuData)
-    let {activeKey,routeKey} = this.state;
-    if(pathname === '/'){
-          // router.push(routeKey)
-          activeKey = routeKey
-      }
+    console.log(menuData);
+    let { activeKey, routeKey } = this.state;
+    if (pathname === '/') {
+      // router.push(routeKey)
+      activeKey = routeKey;
+    }
     const isTop = PropsLayout === 'topmenu';
-    const routerConfig = this.getRouterAuthority(pathname+search, routes);
+    const routerConfig = this.getRouterAuthority(pathname + search, routes);
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     this.props.location.onHandlePage = this.onHandlePage;
     const menu = (
@@ -500,9 +520,10 @@ class BasicLayout extends React.PureComponent {
       </Menu>
     );
     const operations = (
-      <Dropdown overlay={menu} >
+      <Dropdown overlay={menu}>
         <a className="ant-dropdown-link" href="#">
-          Hover me<Icon type="down" />
+          Hover me
+          <Icon type="down" />
         </a>
       </Dropdown>
     );
@@ -517,7 +538,7 @@ class BasicLayout extends React.PureComponent {
             menuData={menuData}
             isMobile={isMobile}
             {...this.props}
-            onHandlePage ={this.onHandlePage}
+            onHandlePage={this.onHandlePage}
           />
         )}
         <Layout
@@ -534,17 +555,17 @@ class BasicLayout extends React.PureComponent {
             {...this.props}
           />
           <Content className={styles.content} style={contentStyle}>
-            {hidenAntTabs ?
-              (<Authorized authority={routerConfig} noMatch={<Exception403 />}>
-              {children}
-                </Authorized>) :
-              (this.state.tabList && this.state.tabList.length ? (
+            {hidenAntTabs ? (
+              <Authorized authority={routerConfig} noMatch={<Exception403 />}>
+                {children}
+              </Authorized>
+            ) : this.state.tabList && this.state.tabList.length ? (
               <Tabs
                 // className={styles.tabs}
                 activeKey={activeKey}
                 onChange={this.onChange}
                 tabBarExtraContent={operations}
-                tabBarStyle={{background:'#fff'}}
+                tabBarStyle={{ background: '#fff' }}
                 tabPosition="top"
                 tabBarGutter={-1}
                 hideAdd
@@ -553,14 +574,19 @@ class BasicLayout extends React.PureComponent {
               >
                 {this.state.tabList.map(item => (
                   <TabPane tab={item.tab} key={item.key} closable={item.closable}>
-                    <Authorized  noMatch={<Exception403 />}>
+                    <Authorized noMatch={<Exception403 />}>
                       {/*{item.content}*/}
-                      <Route key={item.key} path={item.path} component={item.content} exact={item.exact} />
+                      <Route
+                        key={item.key}
+                        path={item.path}
+                        component={item.content}
+                        exact={item.exact}
+                      />
                     </Authorized>
                   </TabPane>
                 ))}
               </Tabs>
-            ) : null)}
+            ) : null}
           </Content>
           <Footer />
         </Layout>
@@ -569,7 +595,7 @@ class BasicLayout extends React.PureComponent {
     return (
       <React.Fragment>
         <DocumentTitle title={this.getPageTitle(pathname, breadcrumbNameMap)}>
-         {params => (
+          {params => (
             <Context.Provider value={this.getContext()}>
               <div className={classNames(params)}>{layout}</div>
             </Context.Provider>
