@@ -3,6 +3,8 @@ import { stringify } from 'querystring';
 import { fakeAccountLogin, getFakeCaptcha } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
+import { reloadAuthorized } from '@/utils/Authorized';
+
 const Model = {
   namespace: 'login',
   state: {
@@ -37,11 +39,12 @@ const Model = {
         yield put({
           type: 'changeLoginStatus',
           payload: {
-            status: "ok",
-            type: "account",
-            currentAuthority: "admin"
+            status: 'ok',
+            type: 'account',
+            currentAuthority: 'admin',
           },
         }); // Login successfully
+        reloadAuthorized();
         yield put(
           routerRedux.replace({
             pathname: '/osAdmin/dashboard/analysis',

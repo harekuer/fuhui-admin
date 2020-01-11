@@ -1,6 +1,7 @@
 import { routerRedux } from 'dva/router';
 import { fakeAccountLogin, getFakeCaptcha } from './service';
 import { getPageQuery, setAuthority } from './utils/utils';
+import { reloadAuthorized } from '@/utils/Authorized';
 
 const Model = {
   namespace: 'userAndlogin',
@@ -30,11 +31,13 @@ const Model = {
         yield put({
           type: 'changeLoginStatus',
           payload: {
-            status: "ok",
-            type: "account",
-            currentAuthority: "admin"
+            status: 'ok',
+            type: 'account',
+            currentAuthority: 'admin',
           },
         }); // Login successfully
+        reloadAuthorized();
+
         yield put(
           routerRedux.replace({
             pathname: '/osAdmin/home/search',
