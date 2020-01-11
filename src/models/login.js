@@ -16,7 +16,7 @@ const Model = {
         type: 'changeLoginStatus',
         payload: response,
       }); // Login successfully
-      console.log("test")
+      console.log("test12")
       if (response.code === 200) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
