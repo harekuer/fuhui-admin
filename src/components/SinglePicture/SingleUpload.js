@@ -81,14 +81,13 @@ export default class SingleUpload extends React.Component {
       newFile = newFile.map((file) => {
         if (file.response) {
           // Component will show file.url as link
-          file.url = file.response.data.file_url
+          file.url = `//:${file.response.data.file_url}`
           file.path = file.response.data.file_key
         }
         return file
       })
 
       // always setState
-      //  console.log(fileList)
       this.setState({ fileList })
       this.props.changeImage(newFile)
     }

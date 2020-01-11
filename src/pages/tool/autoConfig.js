@@ -1,5 +1,5 @@
 import { Link } from 'dva/router'
-import { Input, Select, Switch, Icon, Tooltip, Radio, Checkbox } from 'antd'
+import { Input, Select, Switch, Icon, Tooltip, Radio, Checkbox} from 'antd'
 import classnames from 'classnames'
 import styles from './autoConfig.less'
 import SingleUpload from '@/components/SinglePicture/SingleUpload.js';

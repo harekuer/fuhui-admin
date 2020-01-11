@@ -6,6 +6,7 @@
   import HTML5Backend from 'react-dnd-html5-backend';
   import update from 'immutability-helper';
   import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
+  import SinglePicture from '@/components/SinglePicture/SinglePicture.js';
   import styles from './index.less';
   
 
@@ -169,7 +170,7 @@ class TableList extends React.Component {
               key: 'image',
               editable: true,
               render: (text, record) => {
-                return <SingleUpload limit={1} file={text} isEdit={false} />;
+                return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
               },
             },
             {

@@ -26,9 +26,9 @@ const List = ({ listData, column, onOperateItem, location, langIndex, statusLoad
     column.forEach((item) => {
       let obj = {}
       if(item.hasTooltips){
-        obj.title = makeTooltip(item.title[langIndex], item.tips);
+        obj.title = makeTooltip(item.title, item.tips);
       }else{
-        obj.title = item.title[langIndex]
+        obj.title = item.title
       }
       
       obj.dataIndex = item.key

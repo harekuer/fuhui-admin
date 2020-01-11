@@ -128,14 +128,14 @@ export default class SortList extends Component {
                     <div style={{ width: '100%', textAlign: 'left' }}>{node.categories_name}<a href={node.url} target="_blank"> [预览]</a></div>
                   </div>
                 ),
-                // buttons: [
-                //   <div>
-                //     <div className="operate">
-                //       <a  onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
-                //       <a onClick={() => this.showDeleteConfirm(node)}>删除</a>
-                //     </div>
-                //   </div>
-                // ],
+                buttons: [
+                  <div>
+                    <div className="operate">
+                      <a  onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
+                      <a onClick={() => this.showDeleteConfirm(node)}>删除</a>
+                    </div>
+                  </div>
+                ],
               })}
             />
           </div>

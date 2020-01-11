@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
+import SinglePicture from '@/components/SinglePicture/SinglePicture.js';
 import update from 'immutability-helper';
 import styles from './index.less';
 let dragingIndex = -1;
@@ -54,9 +55,8 @@ class EditableCell extends React.Component {
 
             newList.map(item => {
               if (item.id === newData.id) {
-                item.image = `//:${fileList[0].url}`;
+                item.image = fileList[0].url;
               }
-
               return item;
             });
             dispatch({
@@ -175,7 +175,7 @@ class TableList extends React.Component {
         key: 'image',
         editable: true,
         render: (text, record) => {
-          return <SingleUpload limit={1} file={text} isEdit={false} />;
+          return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
         },
       },
       {
@@ -279,7 +279,8 @@ class TableList extends React.Component {
           type: 'newProduct/update',
           payload: {
             id: key !== '0' ? key : undefined,
-            title: row.title,
+            url: row.url,
+            image: row.image,
           },
         });
         this.setState({
@@ -378,7 +379,6 @@ class TableList extends React.Component {
     return (
       <Card bordered={false}>
         <Alert message="*备注：顶部newProduct最多可添加5个" type="error" />
-
 
         <EditableContext.Provider value={this.props.form}>
           <DndProvider backend={HTML5Backend} context={window}>

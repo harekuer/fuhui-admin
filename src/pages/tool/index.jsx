@@ -27,9 +27,8 @@ class Tool extends Component {
   render(){
     const { location, dispatch, tool, loading } = this.props;
     const { list, column, pagination, search, dateRange, filterForm, langIndex, isPaging } = tool
-    console.log(search)
+
   const listProps = {
-    langIndex,
     dataSource: list,
     listData: list,
     column,

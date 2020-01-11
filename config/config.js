@@ -227,6 +227,7 @@ export default {
               routes: [
                 {
                   name: 'osMenu',
+                  icon: 'menu',
                   path: '/osAdmin/menu/centerMenu',
                   component: './menuManage/centerMenu',
                 },

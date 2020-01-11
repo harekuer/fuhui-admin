@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
+import SinglePicture from '@/components/SinglePicture/SinglePicture.js';
 import update from 'immutability-helper';
 import styles from './index.less';
 let dragingIndex = -1;
@@ -175,7 +176,7 @@ class TableList extends React.Component {
         key: 'image',
         editable: true,
         render: (text, record) => {
-          return <SingleUpload limit={1} file={text} isEdit={false} />;
+          return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
         },
       },
       {

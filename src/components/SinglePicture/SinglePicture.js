@@ -8,10 +8,6 @@ export default class SinglePicture extends React.Component {
    * @type {{width: (大图弹窗大小),fileList: (图片列表), height: 图片限制最大高度, showRemove: (是否显示删除按钮), className: (特殊样式),onRemove: (删除事件回调),}}
    */
 
-  static propTypes = {
-    limit: PropTypes.number.isRequired,
-    fileList: PropTypes.array.isRequired,
-  };
 
   constructor (props, context) {
     super(props, context)

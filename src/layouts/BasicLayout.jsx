@@ -283,6 +283,7 @@ const BasicLayout = props => {
             {titleDom}
           </Link>
         )}
+        openKeys={false}
         onCollapse={handleMenuCollapse}
         menuItemRender={(menuItemProps, defaultDom) => {
           if (menuItemProps.isUrl || menuItemProps.children) {
