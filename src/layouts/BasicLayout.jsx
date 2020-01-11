@@ -130,16 +130,8 @@ const BasicLayout = props => {
       pathname: '/',
     },
   } = props;
-<<<<<<< HEAD
   const initTab = location.pathname.split('/')
-  console.log(props)
   const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
-=======
-  const initTab = location.pathname.split('/');
-  const { routes } = props.route,
-    key = location.pathname,
-    tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
->>>>>>> 04db935a937d66b6ff1326642ec31841694da3ce
   let tabLists = updateTree(routes);
   let aList = [],
     aListArr = [];
@@ -395,9 +387,5 @@ const BasicLayout = props => {
 export default connect(({ global, settings, user }) => ({
   collapsed: global.collapsed,
   settings,
-<<<<<<< HEAD
   user
-=======
-  menuList: user.menuList,
->>>>>>> 04db935a937d66b6ff1326642ec31841694da3ce
 }))(BasicLayout);
