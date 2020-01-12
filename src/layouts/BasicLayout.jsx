@@ -132,7 +132,9 @@ const BasicLayout = props => {
   } = props;
   const initTab = location.pathname.split('/')
   const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
+  //const {menuList:routes} = user.currentUser,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
   let tabLists = updateTree(routes);
+
   let aList = [],
     aListArr = [];
   tabLists.map(v => {
@@ -358,7 +360,6 @@ const BasicLayout = props => {
                 closable={true}
               >
                 <Authorized authority={authorized.authority} noMatch={noMatch}>
-                  {/*{item.content}*/}
                   <Route
                     key={item.key}
                     path={item.path}

@@ -53,7 +53,6 @@ const Filter = ({
           ...date,
         }
       })
-      console.log(searchData)
       onFilterChange(searchData)
     } else {
       onFilterChange(fields)

@@ -1,5 +1,5 @@
 
-import { query, getList  } from './service'
+import { query, getList,getConfig  } from './service'
 
 const langIndex = 0 
 
@@ -13,6 +13,11 @@ export default {
     search: {},
     filter: {},
     filterForm: {},
+    currentItem: {},
+    editConfig: {
+      data: []
+    },
+    modalVisible: false,
     isPaging: false,
     url:'/_os/index.php?com=index&t=tableConfig',
     list: [],
@@ -112,6 +117,39 @@ export default {
         } else {
             Error(message)
         }
+    },
+
+    * editConfig({ payload = {} }, { select, call, put }) {
+      const result = yield call(getConfig, payload.data, payload.url)
+      const { code, data, message, } = result
+      if (code === 200) {
+          yield put({
+            type: 'updateState',
+            payload: {
+              editConfig: {
+                data: data.data,
+              }
+            },
+          })
+      } else {
+          Error(message)
+      }
+    },
+
+    * getDetail({ payload = {} }, { select, call, put }) {
+      const result = yield call(getList, payload.data, payload.url)
+      const { code, data, message, } = result
+
+      if (code === 200) {
+          yield put({
+            type: 'updateState',
+            payload: {
+              currentItem: data
+            },
+          })
+      } else {
+          Error(message)
+      }
     },
 
 

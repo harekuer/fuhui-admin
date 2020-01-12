@@ -7,7 +7,7 @@ import { Success } from '@/utils/warn'
 
 const confirm = Modal.confirm
 
-const List = ({ listData, column, onOperateItem, location, langIndex, statusLoading, ...tableProps }) => {
+const List = ({ listData, column, onOperateItem, location, dispatch,langIndex, statusLoading, ...tableProps }) => {
   const { query } = location
   const onView = (record) => {
     let win = window.open(record.view_url, '_blank')
@@ -18,6 +18,41 @@ const List = ({ listData, column, onOperateItem, location, langIndex, statusLoad
   const onCopyLink = (url) => {
     copy(url)
     Success('Copy success')
+  }
+
+  const onShowModal =(record, item) => {
+    let obj = {}
+    item.query.forEach((option) => {
+      obj[option] = record[option]
+    })
+    if(item.configUrl){
+      dispatch({
+        type: 'tool/editConfig',
+        payload: {
+          data: {},
+          url: item.configUrl
+        }
+      });
+    }
+    if(item.url){
+      dispatch({
+        type: 'tool/getDetail',
+        payload: {
+          data: {
+            ...obj,
+          },
+          url: item.url
+        }
+      });
+    }
+    // modal显示
+    dispatch({
+      type: 'tool/updateState',
+      payload: {
+        modalVisible: true,
+      }
+    })
+    
   }
 
 
@@ -37,13 +72,13 @@ const List = ({ listData, column, onOperateItem, location, langIndex, statusLoad
         obj.width = 220
       }
       if (item.render) {
-        if (item.render === 'popover') {
-          obj.render = tableConfig(item, onShowModal, langIndex)
+        if (item.render === 'modal') {
+          obj.render = tableConfig(item, onShowModal)
         } else if(item.render === 'switch'){
             obj.render = tableConfig(item, onChangeStatus, langIndex, null, statusLoading);
             obj.width = 80;
         } else {
-          obj.render = tableConfig(item, onOperateItem, langIndex, onCopyLink)
+          obj.render = tableConfig(item, onShowModal)
         }
       }
       columns.push(obj)

@@ -7,7 +7,7 @@ export default {
   'menu.register': '注册',
   'menu.register.result': '注册结果',
   'menu.tab.search': '搜索词',
-  'menu.tab.navigation': '导航',
+  'menu.tab.nav': '导航',
   'menu.tab.banner': '顶部Banner',
   'menu.tab.newProduct': '新品专区',
   'menu.tab.centerMenu': '平台菜单',

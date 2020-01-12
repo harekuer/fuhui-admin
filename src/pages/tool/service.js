@@ -18,3 +18,11 @@ export async function getList (params,url) {
     data: qs.stringify(params),
   });
 }
+
+// 列表数据
+export async function getConfig (params,url) {
+  return request(url, {
+    method: 'get',
+    data: qs.stringify(params),
+  });
+}

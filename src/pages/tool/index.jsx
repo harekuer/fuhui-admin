@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import List from './List'
 import Filter from './Filter'
+import Modal from './Modal'
 import reqwest from 'reqwest'
 import { Error, Success } from '@/utils/warn'
 
@@ -26,7 +27,7 @@ class Tool extends Component {
   }
   render(){
     const { location, dispatch, tool, loading } = this.props;
-    const { list, column, pagination, search, dateRange, filterForm, langIndex, isPaging } = tool
+    const { list, column, pagination, search, dateRange, filterForm, langIndex, isPaging,modalVisible,currentItem, editConfig } = tool
 
   const listProps = {
     dataSource: list,
@@ -34,6 +35,7 @@ class Tool extends Component {
     column,
     loading: loading.effects['tool/query'],
     pagination: isPaging === false ? false : pagination,
+    dispatch,
     location,
     onChange (page) {
       const { query, pathname } = location
@@ -127,10 +129,32 @@ class Tool extends Component {
     }
   }
 
+  const modalProps = {
+    currentItem,
+    editConfig,
+    visible: modalVisible,
+    maskClosable: false,
+    title: '编辑/查看',
+    wrapClassName: 'vertical-center-modal',
+    onOk (item) {
+      
+    },
+    onCancel () {
+      // 关闭modal显示
+      dispatch({
+        type: 'tool/updateState',
+        payload: {
+          modalVisible: false,
+        }
+      })
+    },
+  }
+
   return (
     <div className="content-inner">
       {search && <Filter {...filterProps} />}
       {column.length && <List {...listProps} />}
+      {modalVisible && <Modal {...modalProps}/>}
     </div>
   )
   }

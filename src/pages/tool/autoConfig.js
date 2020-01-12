@@ -18,7 +18,7 @@ const CheckboxGroup = Checkbox.Group
  * @param   {bool}   loading  switch 切换状态时loading值
  * @return  {func}
  */
-const tableConfig = (item, renderItem, langIndex, onCopyLink, loading) => { // 根据参数配置显示相应的UI组件，
+const tableConfig = (item, renderItem, onCopyLink, loading) => { // 根据参数配置显示相应的UI组件，
   const config = {
     html: (text) => {
       return (
@@ -81,46 +81,46 @@ const tableConfig = (item, renderItem, langIndex, onCopyLink, loading) => { // �
         <div className="operate">
           {
             item.action && item.action.map((item, index) => {
-              let url = ''
-              if (item.query) { // 将返回的query数组拼接成字符串
-                item.query.forEach((option,index) => {
-                  url += `${index > 0 ? '&' : ''}${option}=${record[option]}`
-                })
-              }
+              // let url = ''
+              // if (item.query) { // 将返回的query数组拼接成字符串
+              //   item.query.forEach((option,index) => {
+              //     url += `${index > 0 ? '&' : ''}${option}=${record[option]}`
+              //   })
+              // }
 
-              if (!item.target || item.target === '_self') {
-                if (item.callback === 'delete' || item.callback === 'refresh') { // 删除处理或刷新
-                  if (Number(record.is_can_delete) === 0) {
-                    return null
-                  }
-                  return (
-                    <a href='javascript:;' onClick={() => renderItem(record, item, item.callback)} key={index}>
-                      {Array.isArray(item.text) ? item.text[langIndex] : item.text}
-                    </a>
-                  )
-                } else if(item.callback === 'copy') { //根据query值复制链接
-                  return (
-                    <a href={item.url} onClick={() => onCopyLink(record[item.query[0]])} key={index}>
-                      {Array.isArray(item.text) ? item.text[langIndex] : item.text}
-                    </a>
-                  )
-                }
-                // 当前页无刷新跳转，一般是跳转至编辑页
-                if(record.coupon_id){ //优惠券列表需提交type参数 update see
-                  return (<Link
-                    to={{ pathname: item.url, search: `?${url}`, query: {type: record.coupon_code_type == '2' && record.show_audit == 0 ? 'see' : 'update'} }}
-                    key={index}
-                  >{record.coupon_code_type == '2' && record.show_audit == 0 ? '查看' : '编辑'}</Link>)
-                } else {
-                  return (<Link
-                    to={{ pathname: item.url, search: `?${url}` }}
-                    key={index}
-                  >{Array.isArray(item.text) ? item.text[langIndex] : item.text}</Link>)
-                }
-              } // 外链或新开窗口
-                <a href={`${item.url}?${url}`} target={item.target} style={{ marginRight: '10px' }} key={index}>
-                {Array.isArray(item.text) ? item.text[langIndex] : item.text}
-              </a>
+              // if (!item.target || item.target === '_self') {
+              //   if (item.callback === 'delete' || item.callback === 'refresh') { // 删除处理或刷新
+              //     if (Number(record.is_can_delete) === 0) {
+              //       return null
+              //     }
+              //     return (
+              //       <a onClick={() => renderItem(record, item, item.callback)} key={index}>
+              //         {Array.isArray(item.text) ? item.text : item.text}
+              //       </a>
+              //     )
+              //   } else if(item.callback === 'copy') { //根据query值复制链接
+              //     return (
+              //       <a onClick={() => renderItem(record, item, item.callback)} key={index}>
+              //         {item.text}
+              //       </a>
+              //     )
+              //   }else {
+              //     return (
+              //       <a onClick={() => renderItem(record, item)} key={index}>
+              //         {item.text}
+              //       </a>
+              //     )
+              //   }
+                
+              // } // 外链或新开窗口
+              //   <a href={`${item.url}?${url}`} target={item.target} style={{ marginRight: '10px' }} key={index}>
+              //   {Array.isArray(item.text) ? item.text : item.text}
+              // </a>
+              return (
+                <a onClick={() => renderItem(record, item)} key={index}>
+                  {item.text}
+                </a>
+              )
             })
           }
         </div>
@@ -148,6 +148,21 @@ const tableConfig = (item, renderItem, langIndex, onCopyLink, loading) => { // �
 const createMarkup = (text) => {
   return { __html: text }
 }
+
+/**
+ * 操作栏按钮操作
+ * @param   {Object}   action  
+ * @return  {html}   
+ */
+const operateConfig = (item,record) => {
+  const config = {
+    modal: (item,record) => {
+
+    }
+  }
+  return config
+}
+
 
 /**
  * 搜索组件配置
