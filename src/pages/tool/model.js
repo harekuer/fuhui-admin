@@ -128,6 +128,7 @@ export default {
             payload: {
               editConfig: {
                 data: data.data,
+                operate: data.operate,
               }
             },
           })

@@ -134,6 +134,7 @@ class Tool extends Component {
     editConfig,
     visible: modalVisible,
     maskClosable: false,
+    width: 620,
     title: '编辑/查看',
     wrapClassName: 'vertical-center-modal',
     onOk (item) {
