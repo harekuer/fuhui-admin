@@ -22,18 +22,10 @@ const List = ({ listData, column, onOperateItem, location, dispatch,langIndex, s
 
   const onShowModal =(record, item) => {
     let obj = {}
+    let currentItem = {}
     item.query.forEach((option) => {
       obj[option] = record[option]
     })
-    if(item.configUrl){
-      dispatch({
-        type: 'tool/editConfig',
-        payload: {
-          data: {},
-          url: item.configUrl
-        }
-      });
-    }
     if(item.url){
       dispatch({
         type: 'tool/getDetail',
@@ -44,12 +36,25 @@ const List = ({ listData, column, onOperateItem, location, dispatch,langIndex, s
           url: item.url
         }
       });
+    }else {
+      currentItem = record
     }
+    if(item.configUrl){
+      dispatch({
+        type: 'tool/editConfig',
+        payload: {
+          data: {},
+          url: item.configUrl
+        }
+      });
+    }
+    
     // modal显示
     dispatch({
       type: 'tool/updateState',
       payload: {
         modalVisible: true,
+        currentItem,
       }
     })
     

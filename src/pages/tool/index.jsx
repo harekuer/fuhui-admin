@@ -134,11 +134,18 @@ class Tool extends Component {
     editConfig,
     visible: modalVisible,
     maskClosable: false,
+    loading,
     width: 620,
     title: '编辑/查看',
     wrapClassName: 'vertical-center-modal',
-    onOk (item) {
-      
+    onOk (item, url) {
+      dispatch({
+        type: 'tool/saveEdit',
+        payload: {
+          data: item,
+          url,
+        }
+      })
     },
     onCancel () {
       // 关闭modal显示

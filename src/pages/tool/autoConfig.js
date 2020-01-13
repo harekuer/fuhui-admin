@@ -207,65 +207,63 @@ const makeTooltip = (text, tips) => {
  * @param   {Object}   item  单项配置内容
  * @return  {html}
  */
-const FormConfig = (item, langIndex) => {
-  const config = {
-    Input: (item) => {
-     return <Input placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder} size="large" />
-    },
-    TextArea: (item) => {
-      return <TextArea rows={item.rows ? item.rows : 5} />
-    },
-    Select:(item) => {
-      return (
-        <Select placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder}  size="large" style={{ width: '100%' }} allowClear>
-          {
-            item.options.map((option, index) => {
-              return (
-                <Option value={String(option.value)} key={index}>{option.label}</Option>
-              )
-            })
-          }
-        </Select>
-      )
-    },
-    Select_multiple:(item) => {
-      return (
-        <Select placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder} mode="multiple" size="large" style={{ width: '100%' }} allowClear>
-          {
-            item.options.map((option, index) => {
-              return (
-                <Option value={String(option.value)} key={index}>{option.label}</Option>
-              )
-            })
-          }
-        </Select>
-      )
-    },
-    Radio: (item) => {
-      return (
-        <RadioGroup >
-          {
-            item.options.map((option, index) => {
-              return (
-                <Radio value={String(option.value)} key={index}>{option.label}</Radio>
-              )
-            })
-          }
-      </RadioGroup>
-      )
-    },
-    Checkbox: (item) => {
-      return (
-        <CheckboxGroup options={item.options} />
-      )
-    },
-
+const FormConfig = (item, currentItem,langIndex) => {
+  if(item.type === 'Input'){
+    return <Input placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder} size="large" />
   }
- return config[item.render]
+  if(item.type === 'TextArea'){
+    return <TextArea rows={item.rows ? item.rows : 5} />
+  }
+  if(item.type === 'Select'){
+    return (
+      <Select placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder}  size="large" style={{ width: '100%' }} allowClear>
+        {
+          item.options.map((option, index) => {
+            return (
+              <Option value={String(option.value)} key={index}>{option.label}</Option>
+            )
+          })
+        }
+      </Select>
+    )
+  }
+  if(item.type === 'Select_multiple'){
+    return (
+      <Select placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder} mode="multiple" size="large" style={{ width: '100%' }} allowClear>
+        {
+          item.options.map((option, index) => {
+            return (
+              <Option value={String(option.value)} key={index}>{option.label}</Option>
+            )
+          })
+        }
+      </Select>
+    )
+  }
+  if(item.type === 'Radio'){
+    return (
+      <RadioGroup >
+        {
+          item.options.map((option, index) => {
+            return (
+              <Radio value={String(option.value)} key={index}>{option.label}</Radio>
+            )
+          })
+        }
+    </RadioGroup>
+    )
+  }
+  if(item.type === 'TextArea'){
+    return <CheckboxGroup options={item.options} />
+  }
+  if(!item.type || item.type === ''){
+    return <span> {currentItem[item.key]} </span>
+  }
 }
 
 module.exports = {
   tableConfig,
   searchConfig,
-  makeTooltip
+  makeTooltip,
+  FormConfig
 }

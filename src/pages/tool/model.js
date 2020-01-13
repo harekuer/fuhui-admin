@@ -153,6 +153,22 @@ export default {
       }
     },
 
+    * saveEdit({ payload = {} }, { select, call, put }) {
+      const result = yield call(getList, payload.data, payload.url)
+      const { code, data, message, } = result
+
+      if (code === 200) {
+          yield put({
+            type: 'updateState',
+            payload: {
+              modalVisible: false,
+            },
+          })
+      } else {
+          Error(message)
+      }
+    },
+
 
   },
 

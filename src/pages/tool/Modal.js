@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Form, Input,  Modal, Tooltip, Icon, Switch,Radio,Checkbox ,Button} from 'antd'
+import { FormConfig } from './autoConfig'
+import { Form, Input,  Modal,Button,Radio} from 'antd'
 
 const FormItem = Form.Item
 
@@ -15,44 +16,56 @@ const formItemLayout = {
 
 
 
+
 const modal = ({
-  currentItem = {},
+  currentItem,
   editConfig,
   onOk,
   onCancel,
+  loading,
   form: {
     getFieldDecorator,
+    getFieldsValue,
     validateFields,
-    setFieldsValue,
   },
   ...modalProps
 }) => {
-  const btns = () => {
-    let arr = []
-    editConfig.operate && editConfig.operate.map((item,index) => {
-      let obj = (
-        <Button key={index} type="primary"  onClick={()=>onOk(item.url)}>
-        {item.text}
-      </Button>
-      )
-      arr.push(obj)
+console.log(currentItem)
+  const handleOk = (url) => {
+    validateFields((errors) => {
+      if (errors) {
+        return
+      }
+      const item = {
+        ...getFieldsValue(),
+        id: currentItem.suppliers_id,
+      }
+      onOk(item, url)
     })
-    return arr
   }
 
+  const btns = (
+    <div>
+      <Button onClick={onCancel}>
+      取消
+      </Button>
+      {
+        editConfig.operate && editConfig.operate.map((item,index) => {
+          return (
+            <Button key={index} type="primary" loading={loading.models.tool} onClick={()=>handleOk(item.url)}>
+            {item.text}
+            </Button>
+          )
+        })
+      }
+    </div>
+  )
 
   return (
     <Modal 
     {...modalProps}
     onCancel={onCancel}
-    footer={[
-      <Button key="cancel" onClick={onCancel}>
-        取消
-      </Button>,
-      <Button key="submit" type="primary" onClick={onOk}>
-        确定
-      </Button>,
-    ]}
+    footer={btns}
     >
       <Form layout="horizontal">
         {
@@ -65,24 +78,9 @@ const modal = ({
                 hasFeedback={false}
               >
                 {getFieldDecorator(item.key, {
-                  initialValue: item.value,
+                  initialValue: currentItem[item.key],
                   rules: item.rules,
-                })(
-                  <div>
-                    {
-                      item.type && item.type !== '' ?
-                      <Radio.Group>
-                        {
-                          item.options.map(option => {
-                            return <Radio value={option.value} key={option.value}> {option.label} </Radio>
-                          })
-                        }
-                      </Radio.Group>
-                      :<span>{currentItem[item.key]}</span>
-                    }
-                  </div>
-                )}
-
+                })(FormConfig(item,currentItem,0))}
               </FormItem>
             )
           })
