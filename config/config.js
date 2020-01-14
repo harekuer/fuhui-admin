@@ -172,8 +172,8 @@ export default {
                 {
                   name: 'designer',
                   icon: 'smile',
-                  path: '/osAdmin/dashboard/designer',
-                  component: './dashboard/monitor',
+                  path: '/osAdmin/homePage/designer',
+                  component: './homePage/designer',
                 },
                 {
                   name: 'logistics',
