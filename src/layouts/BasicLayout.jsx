@@ -78,6 +78,7 @@ const updateTree = data => {
       if (!node.level) {
         treeList.push({
           tab: node.name,
+          tabName: node.tabName,
           key: node.path,
           locale: node.locale,
           closable: true,
@@ -118,6 +119,24 @@ const updateTreeList = data => {
   return treeList;
 };
 
+const getTabList = (routeList, menuList) => {
+  menuList.map(item => {
+    let key = '';
+    if(item.autoConfig !== ''){
+      key = item.autoConfig 
+    } else {
+      key = item.key
+    }
+    routeList.forEach(option => {
+      if(key === option.key) {
+        item.content = option.content
+      }
+    })
+    return item
+  })
+  return menuList
+}
+
 
 const BasicLayout = props => {
   const {
@@ -134,19 +153,19 @@ const BasicLayout = props => {
   } = props;
   const initTab = location.pathname.split('/')
   const {routes} = route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
-  const {menuList} = user.currentUser
-  let tabLists = []
+  const {menuList, tabMenuList} = user.currentUser
   let routeLists = updateTree(routes);
-  let menuLists = updateTreeList(menuList);
-  console.log(routeLists,menuLists)
+  let tabLists = getTabList(routeLists,tabMenuList)
+  //console.log(tabLists)
+  
 
   let aList = [],
     aListArr = [];
-  tabLists.map(v => {
+    tabLists.map(v => {
     if (v.key === key) {
       if (aList.length === 0) {
         v.closable = false;
-        v.tab = tabName;
+        //v.tab = tabName;
         aList.push(v);
       }
     }
@@ -154,6 +173,7 @@ const BasicLayout = props => {
       aListArr.push(v.key);
     }
   });
+ console.log(aList)
   /**
    * constructor
    */
@@ -162,6 +182,9 @@ const BasicLayout = props => {
   const [tabListArr, setTabListArr] = useState(aListArr);
   const [routeKey, setRouteKey] = useState(key);
   const [activeKey, setActiveKey] = useState(key);
+  console.log(tabList, tabListArr)
+
+
 
   useEffect(() => {
     if (dispatch) {
@@ -195,7 +218,7 @@ const BasicLayout = props => {
     } else {
       key = props.path
     }
-    const tabLists = updateList(routes);
+    console.log(tabListArr,key)
     if (tabListArr.includes(key)) {
       router.push({ pathname: key });
     } else {
@@ -300,8 +323,7 @@ const BasicLayout = props => {
     </Dropdown>
   );
 
-
-  console.log(tabList)
+//console.log(tabList)
   return (
     <>
       <ProLayout
@@ -365,14 +387,14 @@ const BasicLayout = props => {
           >
             {tabList.map(item => (
               <TabPane
-                tab={item.tabName}
+                tab={item.tab}
                 key={item.key}
                 closable={true}
               >
                 <Authorized authority={authorized.authority} noMatch={noMatch}>
                   <Route
                     key={item.key}
-                    path={item.path}
+                    path={item.key}
                     component={item.content}
                     exact={item.exact}
                   />

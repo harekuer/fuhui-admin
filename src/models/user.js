@@ -16,9 +16,9 @@ const getTreeList = (nodeList) => {
       }
       obj.key = item.menu_id
       obj.icon = item.icon
-      obj.name= item.name_en
-      obj.tabName= item.name_zh
-      obj.antoConfig = item.route_backend
+      obj.name= item.name_zh
+      obj.tabName= item.name_en
+      obj.autoConfig = item.route_backend
       if (item.children) {
         // 递归处理树状结构
         obj.children = getTreeList(item.children)
@@ -29,12 +29,37 @@ const getTreeList = (nodeList) => {
   return list
 }
 
+const updateTreeList = data => {
+  const treeData = data;
+  const treeList = [];
+  // 递归获取树列表
+  const getTreeList = data => {
+    data.forEach(node => {
+      treeList.push({
+        tab: node.name,
+        key: node.path,
+        locale: node.locale,
+        closable: true,
+        autoConfig: node.autoConfig,
+        content: node.component,
+      });
+      if (node.children && node.children.length > 0) {
+        //!node.hideChildrenInMenu &&
+        getTreeList(node.children);
+      }
+    });
+  };
+  getTreeList(treeData);
+  return treeList;
+};
+
 const UserModel = {
   namespace: 'user',
   state: {
     currentUser: {
       name:'',
       menuList: [],
+      tabMenuList: [],
     },
   },
   effects: {
@@ -52,11 +77,13 @@ const UserModel = {
       if(code === 200){
         let list = []
         list = getTreeList(data)
+        const tabMenuList = updateTreeList(list)
 
         yield put({
           type: 'saveCurrentUser',
           payload: {
             menuList: list,
+            tabMenuList,
           },
         });
       } else if(code === 401){
