@@ -18,6 +18,7 @@ const getTreeList = (nodeList) => {
       obj.icon = item.icon
       obj.name= item.name_zh
       obj.tabName= item.name_en
+      obj.antoConfig = item.route_backend
       if (item.children) {
         // 递归处理树状结构
         obj.children = getTreeList(item.children)

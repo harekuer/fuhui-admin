@@ -3,7 +3,7 @@
  * You can view component api by:
  * https://github.com/ant-design/ant-design-pro-layout
  */
-import ProLayout, { DefaultFooter, SettingDrawer,MenuDataItem, } from '@ant-design/pro-layout';
+import ProLayout, { DefaultFooter, SettingDrawer,MenuDataItem, getMenuData} from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import { Route } from 'react-router-dom';
 import Link from 'umi/link';
@@ -119,21 +119,25 @@ const updateTreeList = data => {
   return treeList;
 };
 
+
 const BasicLayout = props => {
   const {
     dispatch,
     children,
     settings,
     user,
+    route, 
+    menuData,
     hidenAntTabs,
     location = {
       pathname: '/',
     },
   } = props;
   const initTab = location.pathname.split('/')
-  const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
+  const {routes} = route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
   //const {menuList:routes} = user.currentUser,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
   let tabLists = updateTree(routes);
+  console.log(tabLists)
 
   let aList = [],
     aListArr = [];
@@ -181,9 +185,16 @@ const BasicLayout = props => {
     }
   }; // get children authority
 
-  const onHandlePage = path => {
+  const onHandlePage = (props) => {
+    
     //点击左侧菜单
-    let key = path;
+    let key = '';
+    if(props.autoConfig !== ''){
+      key = props.autoConfig 
+    } else {
+      key = props.path
+    }
+   console.log(key)
     const tabLists = updateTreeList(routes);
     if (tabListArr.includes(key)) {
       router.push({ pathname: key });
@@ -289,7 +300,8 @@ const BasicLayout = props => {
     </Dropdown>
   );
 
-  //console.log(user.currentUser.menuList)
+
+  console.log(user.currentUser.menuList)
   return (
     <>
       <ProLayout
@@ -310,7 +322,7 @@ const BasicLayout = props => {
           }
 
           return (
-            <Link to={menuItemProps.path} onClick={() => onHandlePage(menuItemProps.path)}>
+            <Link to={menuItemProps.path} onClick={() => onHandlePage(menuItemProps)}>
               {defaultDom}
             </Link>
           );
