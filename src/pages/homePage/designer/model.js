@@ -6,6 +6,7 @@ const Model = {
   namespace: 'designer',
   state: {
     list: [],
+    editModalVisible: false,   // 编辑弹窗
   },
   effects: {
     *fetch({ payload }, { call, put }) {

@@ -6,6 +6,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
 import SinglePicture from '@/components/SinglePicture/SinglePicture.js';
 import update from 'immutability-helper';
+import EditModal from './components/editModal'
 import styles from './index.less';
 let dragingIndex = -1;
 
@@ -151,7 +152,7 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
 
 @connect(({ designer, loading }) => ({
   designer,
-  loading: loading.models.designer,
+  loading
 }))
 class TableList extends React.Component {
   constructor(props) {
@@ -181,9 +182,7 @@ class TableList extends React.Component {
         key: 'content',
         render: (text, record) => {
           return (
-            <a onClick={() => this.edit(record.id)}>
-              编辑
-            </a>
+            <a  onClick={() =>this.handleChangeEditVisible(record.id, true)}>编辑</a>
           )
         }
       },
@@ -237,6 +236,7 @@ class TableList extends React.Component {
       type: 'designer/fetch',
     });
   }
+
 
   components = {
     body: {
@@ -349,12 +349,31 @@ class TableList extends React.Component {
     });
   };
 
+  handleChangeEditVisible = (id, state) => {
+    const { dispatch, designer } = this.props;
+    
+    dispatch({
+      type: 'designer/updateState',
+      payload: {
+        editModalVisible: state
+      }
+    })
+    dispatch({
+      type: 'designer/fetch',
+      payload: { }
+    })
+   }
+
+
+
   render() {
     const {
+      designer,
       designer: { list },
       loading,
       dispatch,
     } = this.props;
+    const { editModalVisible } = designer
     const components = {
       body: {
         cell: EditableCell,
@@ -379,6 +398,39 @@ class TableList extends React.Component {
         }),
       };
     });
+
+    // 编辑菜单props
+    const editProps = {
+      editModalVisible,
+      // menuInfo
+      infoLoading: loading.effects['designer/fetch'],
+      handleCancel: function (params) {
+        onChangeVisible({ editModalVisible: params })
+      },
+      handleSaveMenu: function (params) {
+        // 保存菜单
+        // dispatch({
+        //   type: 'siteMenu/editMenu',
+        //   payload: { ...params }
+        // })
+      }
+    }
+    const onChangeVisible = (params) => {
+      dispatch({
+        type: 'designer/updateState',
+        payload: {
+          
+        }
+      })
+
+      dispatch({
+        type: 'designer/updateState',
+        payload: {
+          ...params
+        }
+      })
+    }
+
     return (
       <Card bordered={false}>
         <Alert message="*备注：最多可添加5个分类" type="error" style={{marginBottom: '15px'}}/>
@@ -391,7 +443,7 @@ class TableList extends React.Component {
               dataSource={list}
               components={components}
               pagination={false}
-              loading={loading}
+              loading={loading.effects['designer/fetch']}
               rowKey={(record, index) => index}
               rowClassName="editable-row"
               onRow={(record, index) => ({
@@ -399,8 +451,12 @@ class TableList extends React.Component {
                 moveRow: this.moveRow,
               })}
             />
+            
           </DndProvider>
         </EditableContext.Provider>
+
+        <EditModal {...editProps} />
+
         {list.length < 5 ? (
           <div
             style={{
@@ -416,6 +472,7 @@ class TableList extends React.Component {
         <div className={styles.btnWrap}>
           <Button onClick={this.onSaveSort}>保存排序</Button>
         </div>
+        
       </Card>
     );
   }
