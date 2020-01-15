@@ -134,7 +134,7 @@ export default {
                   component: './homePage/search',
                 },
                 {
-                  name: 'navigation',
+                  name: 'nav',
                   icon: 'menu',
                   path: '/osAdmin/homePage/nav',
                   component: './homePage/nav',

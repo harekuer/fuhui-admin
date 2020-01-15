@@ -100,18 +100,17 @@ const updateTreeList = data => {
   // 递归获取树列表
   const getTreeList = data => {
     data.forEach(node => {
-      if (!node.level) {
-        treeList.push({
-          tab: node.name,
-          key: node.path,
-          locale: node.locale,
-          closable: true,
-          content: node.component,
-        });
-      }
-      if (node.routes && node.routes.length > 0) {
+      treeList.push({
+        tab: node.name,
+        key: node.path,
+        locale: node.locale,
+        closable: true,
+        autoConfig: node.autoConfig,
+        content: node.component,
+      });
+      if (node.children && node.children.length > 0) {
         //!node.hideChildrenInMenu &&
-        getTreeList(node.routes);
+        getTreeList(node.children);
       }
     });
   };
@@ -135,9 +134,11 @@ const BasicLayout = props => {
   } = props;
   const initTab = location.pathname.split('/')
   const {routes} = route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
-  //const {menuList:routes} = user.currentUser,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
-  let tabLists = updateTree(routes);
-  console.log(tabLists)
+  const {menuList} = user.currentUser
+  let tabLists = []
+  let routeLists = updateTree(routes);
+  let menuLists = updateTreeList(menuList);
+  console.log(routeLists,menuLists)
 
   let aList = [],
     aListArr = [];
@@ -194,8 +195,7 @@ const BasicLayout = props => {
     } else {
       key = props.path
     }
-   console.log(key)
-    const tabLists = updateTreeList(routes);
+    const tabLists = updateList(routes);
     if (tabListArr.includes(key)) {
       router.push({ pathname: key });
     } else {
@@ -301,7 +301,7 @@ const BasicLayout = props => {
   );
 
 
-  console.log(user.currentUser.menuList)
+  console.log(tabList)
   return (
     <>
       <ProLayout
@@ -365,9 +365,7 @@ const BasicLayout = props => {
           >
             {tabList.map(item => (
               <TabPane
-                tab={formatMessage({
-                  id: `menu.tab.${item.tab}`,
-                })}
+                tab={item.tabName}
                 key={item.key}
                 closable={true}
               >
