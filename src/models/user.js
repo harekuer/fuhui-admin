@@ -19,6 +19,7 @@ const getTreeList = (nodeList) => {
       obj.name= item.name_zh
       obj.tabName= item.name_en
       obj.autoConfig = item.route_backend
+      obj.url = item.url
       if (item.children) {
         // 递归处理树状结构
         obj.children = getTreeList(item.children)
@@ -42,6 +43,7 @@ const updateTreeList = data => {
         closable: true,
         autoConfig: node.autoConfig,
         content: node.component,
+        url: node.url,
       });
       if (node.children && node.children.length > 0) {
         //!node.hideChildrenInMenu &&
@@ -53,6 +55,19 @@ const updateTreeList = data => {
   return treeList;
 };
 
+const getActiveTab = (list,path) => {
+  let obj = {}
+  list.forEach(item => {
+    if(item.key === path){
+      obj = item
+    } 
+    if (item.children && item.children.length > 0) {
+      getTreeList(item.children,path);
+    }
+  })
+  return obj
+}
+
 const UserModel = {
   namespace: 'user',
   state: {
@@ -60,6 +75,7 @@ const UserModel = {
       name:'',
       menuList: [],
       tabMenuList: [],
+      activeTab: {},
     },
   },
   effects: {
@@ -78,12 +94,13 @@ const UserModel = {
         let list = []
         list = getTreeList(data)
         const tabMenuList = updateTreeList(list)
-
+        const activeTab = getActiveTab(tabMenuList, location.pathname)
         yield put({
           type: 'saveCurrentUser',
           payload: {
             menuList: list,
             tabMenuList,
+            activeTab,
           },
         });
       } else if(code === 401){
