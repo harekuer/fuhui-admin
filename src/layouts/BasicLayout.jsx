@@ -37,7 +37,10 @@ const noMatch = (
 
 const menuDataRender = menuList =>
   menuList.map(item => {
-    const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
+    const localItem = { 
+      ...item,
+      children: item.children ? menuDataRender(item.children) : [] 
+    };
     return Authorized.check(item.authority, localItem, null);
   });
 
@@ -137,70 +140,92 @@ const getTabList = (routeList, menuList) => {
   return menuList
 }
 
-
-const BasicLayout = props => {
-  const {
-    dispatch,
-    children,
-    settings,
-    user,
-    route, 
-    menuData,
-    hidenAntTabs,
-    location = {
-      pathname: '/',
-    },
-  } = props;
-  const initTab = location.pathname.split('/')
-  const {routes} = route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
-  const {menuList, tabMenuList} = user.currentUser
-  let routeLists = updateTree(routes);
-  let tabLists = getTabList(routeLists,tabMenuList)
-  //console.log(tabLists)
-  
-
-  let aList = [],
-    aListArr = [];
-    tabLists.map(v => {
-    if (v.key === key) {
-      if (aList.length === 0) {
-        v.closable = false;
-        //v.tab = tabName;
-        aList.push(v);
+const initTabList = (tabLists) => {
+  let tabList=[],tabListArr=[];
+  tabLists.map((v) => {
+    if(v.key === routeKey){
+      if(tabList.length === 0){
+        v.closable = false
+        v.tab = tabName
+        tabList.push(v);
       }
     }
-    if (v.key) {
-      aListArr.push(v.key);
+    if(v.key){
+      tabListArr.push(v.key)
     }
   });
- console.log(aList)
-  /**
-   * constructor
-   */
-  const [tabListKey, setTabListKey] = useState([key]);
-  const [tabList, setTabList] = useState(aList);
-  const [tabListArr, setTabListArr] = useState(aListArr);
-  const [routeKey, setRouteKey] = useState(key);
-  const [activeKey, setActiveKey] = useState(key);
-  console.log(tabList, tabListArr)
+  this.setState({
+    tabList,
+    tabListArr
+  })
+}
 
 
+class BasicLayout extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    const initTab = location.pathname.split('/')
+    const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
+    
+    let tabList=[],tabListArr=[];
+    //获取所有已存在key值
+    this.state = ({
+        tabList:tabList,
+        tabListKey:[key],
+        activeKey:key,
+        tabListArr,
+        tabLists: [],
+        routeKey: key,
+    })
+  }
 
-  useEffect(() => {
-    if (dispatch) {
-      dispatch({
-        type: 'user/fetchCurrent',
+  static getDerivedStateFromProps(nextProps, prevState) {
+    let times = prevState.tabList.length;
+    if(times === 0) {
+      const initTab = location.pathname.split('/')
+      const {routes} = nextProps.route,key = location.pathname; // routeKey 为设置首页设置
+      const {tabMenuList} = nextProps.user.currentUser
+      let routeLists = updateTree(routes);
+      let tabLists = getTabList(routeLists,tabMenuList)
+      let tabList=[],tabListArr=[];
+      tabLists.map((v) => {
+        if(v.key === key){
+          if(tabList.length === 0){
+            v.closable = false
+            tabList.push(v);
+          }
+        }
+        if(v.key){
+          tabListArr.push(v.key)
+        }
       });
-      dispatch({
-        type: 'user/fetchMenu',
-      });
+      return {
+        tabList,
+        tabLists,
+        tabListArr,
+      }
+    } else {
+      return null
     }
-  }, []);
+    
+  }
+
+  componentDidMount() {
+    const {
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'user/fetchCurrent',
+    });
+    dispatch({
+      type: 'user/fetchMenu',
+    });
+  }
   /**
    * init variables
    */
 
-  const handleMenuCollapse = payload => {
+  handleMenuCollapse = payload => {
     if (dispatch) {
       dispatch({
         type: 'global/changeLayoutCollapsed',
@@ -209,7 +234,7 @@ const BasicLayout = props => {
     }
   }; // get children authority
 
-  const onHandlePage = (props) => {
+  onHandlePage = (props) => {
     
     //点击左侧菜单
     let key = '';
@@ -218,203 +243,235 @@ const BasicLayout = props => {
     } else {
       key = props.path
     }
-    console.log(tabListArr,key)
+    const {tabLists,tabListKey,tabList,tabListArr} =  this.state;
+    const { dispatch } = this.props
+    dispatch({
+      type: 'user/saveCurrentUser',
+      payload: {
+        activeTab: props
+      }
+    });
     if (tabListArr.includes(key)) {
       router.push({ pathname: key });
     } else {
       key = '/exception/404';
       router.push('/exception/404');
     }
-    setActiveKey(key);
-
+    this.setState({
+      activeKey:key
+    })
     tabLists.map(v => {
       if (v.key === key) {
         if (tabList.length === 0) {
           v.closable = false;
-          setTabList([...tabList, v]);
-          setTabListKey([...tabListKey, v.key]);
+          this.setState({
+            tabList:[...tabList,v],
+            tabListKey:[...tabListKey,v.key]
+          })
         } else {
           if (!tabListKey.includes(v.key)) {
-            setTabList([...tabList, v]);
-            setTabListKey([...tabListKey, v.key]);
+            console.log('list',[...tabList,v])
+            this.setState({
+              tabList:[...tabList,v],
+              tabListKey:[...tabListKey,v.key]
+            })
           }
         }
       }
     });
   };
 
-  const onClickHover = e => {
-    let { key } = e;
-    let aList = tabList;
-    let aListKey = tabListKey;
-    let aKey = activeKey;
-    let oKey = routeKey;
+  onClickHover = e => {
+    let { key } = e,{activeKey,tabList,tabListKey,routeKey} = this.state;
 
     if (key === '1') {
-      aList = aList.filter(v => v.key !== aKey || v.key === oKey);
-      aListKey = aListKey.filter(v => v !== aKey || v === oKey);
-      setActiveKey(oKey);
-      setTabList(aList);
-      setTabListKey(aListKey);
+      tabList= tabList.filter((v)=>v.key !== activeKey || v.key === routeKey)
+      tabListKey = tabListKey.filter((v)=>v !== activeKey || v === routeKey)
+      this.setState({
+        activeKey:routeKey,
+        tabList,
+        tabListKey
+      })
     } else if (key === '2') {
-      aList = aList.filter(v => v.key === aKey || v.key === oKey);
-      aListKey = aListKey.filter(v => v === aKey || v === oKey);
-      setActiveKey(aKey);
-      setTabList(aList);
-      setTabListKey(aListKey);
+      tabList= tabList.filter((v)=>v.key === activeKey || v.key === routeKey)
+      tabListKey = tabListKey.filter((v)=>v === activeKey || v === routeKey)
+      this.setState({
+        activeKey,
+        tabList,
+        tabListKey
+      })
     } else if (key === '3') {
-      aList = aList.filter(v => v.key === oKey);
-      aListKey = aListKey.filter(v => v === oKey);
-      setActiveKey(oKey);
-      setTabList(aList);
-      setTabListKey(aListKey);
+      tabList= tabList.filter((v)=>v.key === routeKey)
+      tabListKey = tabListKey.filter((v)=>v === routeKey)
+      this.setState({
+        activeKey:routeKey,
+        tabList,
+        tabListKey
+      })
     }
   };
 
-  const onEdit = (targetKey, action) => {
-    let aKey = activeKey;
+  onEdit = (targetKey, action) => {
+    let {activeKey} = this.state;
     if (action === 'remove') {
       let lastIndex;
-      tabList.forEach((pane, i) => {
-        if (pane.key === targetKey) {
-          lastIndex = i - 1;
+      this.state.tabList.forEach((pane, i) => {
+          if (pane.key === targetKey) {
+              lastIndex = i - 1;
+          }
+      });
+      const tabList = [],tabListKey=[]
+      this.state.tabList.map(pane => {
+        if(pane.key !== targetKey){
+            tabList.push(pane)
+            tabListKey.push(pane.key)
         }
       });
-      const aList = [],
-        aListKey = [];
-      tabList.map(pane => {
-        if (pane.key !== targetKey) {
-          aList.push(pane);
-          aListKey.push(pane.key);
-        }
-      });
-      if (lastIndex >= 0 && aKey === targetKey) {
-        aKey = aList[lastIndex].key;
+      if (lastIndex >= 0 && activeKey === targetKey) {
+          activeKey = tabList[lastIndex].key;
       }
-      router.push(aKey);
-      setActiveKey(aKey);
-      setTabList(aList);
-      setTabListKey(aListKey);
+      router.push(activeKey)
+      this.setState({ tabList, activeKey,tabListKey });
     }
   };
 
   // 切换 tab页 router.push(key);
-  const onChange = key => {
-    setActiveKey(key);
+  onChange = key => {
+    this.setState({
+      activeKey: key,
+    })
     router.push(key);
   };
 
-  const authorized = getAuthorityFromRouter(props.route.routes, location.pathname || '/') || {
-    authority: undefined,
-  };
-  const menu = (
-    <Menu onClick={onClickHover}>
-      <Menu.Item key="1">关闭当前菜单</Menu.Item>
-      <Menu.Item key="2">关闭其他菜单</Menu.Item>
-      <Menu.Item key="3">关闭全部菜单</Menu.Item>
-    </Menu>
-  );
-  const operations = (
-    <Dropdown overlay={menu}>
-      <a className="ant-dropdown-link" href="#">
-        菜单操作
-        <Icon type="down" />
-      </a>
-    </Dropdown>
-  );
+  render() {
+    const {
+      dispatch,
+      children,
+      settings,
+      user,
+      route, 
+      menuData,
+      hidenAntTabs,
+      location = {
+        pathname: '/',
+      },
+    } = this.props;
 
-//console.log(tabList)
-  return (
-    <>
-      <ProLayout
-        logo={logo}
-        menuHeaderRender={(logoDom, titleDom) => (
-          <Link to="/">
-            {titleDom}
-          </Link>
-        )}
-        route={{
-          routes: user.currentUser.menuList,
-        }}
-        openKeys={false}
-        onCollapse={handleMenuCollapse}
-        menuItemRender={(menuItemProps, defaultDom) => {
-          if (menuItemProps.isUrl || menuItemProps.children) {
-            return defaultDom;
-          }
-
-          return (
-            <Link to={menuItemProps.path} onClick={() => onHandlePage(menuItemProps)}>
-              {defaultDom}
+    const { tabList,activeKey } = this.state
+    
+    const authorized = getAuthorityFromRouter(this.props.route.routes, location.pathname || '/') || {
+      authority: undefined,
+    };
+    const menu = (
+      <Menu onClick={this.onClickHover}>
+        <Menu.Item key="1">关闭当前菜单</Menu.Item>
+        <Menu.Item key="2">关闭其他菜单</Menu.Item>
+        {/* <Menu.Item key="3">关闭全部菜单</Menu.Item> */}
+      </Menu>
+    );
+    const operations = (
+      <Dropdown overlay={menu}>
+        <a className="ant-dropdown-link" href="#">
+          菜单操作
+          <Icon type="down" />
+        </a>
+      </Dropdown>
+    );
+  
+  //console.log(tabList)
+    return (
+      <>
+        <ProLayout
+          logo={logo}
+          menuHeaderRender={(logoDom, titleDom) => (
+            <Link to="/">
+              {titleDom}
             </Link>
-          );
-        }}
-        breadcrumbRender={(routers = []) => []}
-        itemRender={(route, params, routes, paths) => {
-          const first = routes.indexOf(route) === 0;
-          return first ? (
-            <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
-          ) : (
-            <span>{route.breadcrumbName}</span>
-          );
-        }}
-        //menuDataRender={menuDataRender}
-        menuDataRender={() => user.currentUser.menuList}
-        formatMessage={formatMessage}
-        rightContentRender={rightProps => <RightContent {...rightProps} />}
-        {...props}
-        {...settings}
-      >
-        {/* <Authorized authority={authorized.authority} noMatch={noMatch}>
-          {children}
-        </Authorized> */}
-        {hidenAntTabs ? (
-          <Authorized authority={authorized.authority} noMatch={noMatch}>
+          )}
+          route={{
+            routes: user.currentUser.menuList,
+          }}
+          openKeys={false}
+          onCollapse={this.handleMenuCollapse}
+          menuItemRender={(menuItemProps, defaultDom) => {
+            if (menuItemProps.isUrl || menuItemProps.children) {
+              return defaultDom;
+            }
+  
+            return (
+              <Link to={menuItemProps.path} onClick={() => this.onHandlePage(menuItemProps)}>
+                {defaultDom}
+              </Link>
+            );
+          }}
+          breadcrumbRender={(routers = []) => []}
+          itemRender={(route, params, routes, paths) => {
+            const first = routes.indexOf(route) === 0;
+            return first ? (
+              <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
+            ) : (
+              <span>{route.breadcrumbName}</span>
+            );
+          }}
+          //menuDataRender={menuDataRender}
+          menuDataRender={() => menuDataRender(user.currentUser.menuList)}
+          //formatMessage={formatMessage}
+          rightContentRender={rightProps => <RightContent {...rightProps} />}
+          {...this.props}
+          {...settings}
+        >
+          {/* <Authorized authority={authorized.authority} noMatch={noMatch}>
             {children}
-          </Authorized>
-        ) : tabList && tabList.length ? (
-          <Tabs
-            lassName={styles.multitabs}
-            activeKey={activeKey}
-            onChange={onChange}
-            tabBarExtraContent={operations}
-            tabBarStyle={{ background: '#fff' }}
-            tabPosition="top"
-            tabBarGutter={-1}
-            hideAdd
-            type="editable-card"
-            onEdit={onEdit}
-          >
-            {tabList.map(item => (
-              <TabPane
-                tab={item.tab}
-                key={item.key}
-                closable={true}
-              >
-                <Authorized authority={authorized.authority} noMatch={noMatch}>
-                  <Route
-                    key={item.key}
-                    path={item.key}
-                    component={item.content}
-                    exact={item.exact}
-                  />
-                </Authorized>
-              </TabPane>
-            ))}
-          </Tabs>
-        ) : null}
-      </ProLayout>
-      <SettingDrawer
-        settings={settings}
-        onSettingChange={config =>
-          dispatch({
-            type: 'settings/changeSetting',
-            payload: config,
-          })
-        }
-      />
-    </>
-  );
+          </Authorized> */}
+          {hidenAntTabs ? (
+            <Authorized authority={authorized.authority} noMatch={this.noMatch}>
+              {children}
+            </Authorized>
+          ) : tabList && tabList.length ? (
+            <Tabs
+              lassName={styles.multitabs}
+              activeKey={activeKey}
+              onChange={this.onChange}
+              tabBarExtraContent={operations}
+              tabBarStyle={{ background: '#fff' }}
+              tabPosition="top"
+              tabBarGutter={-1}
+              hideAdd
+              type="editable-card"
+              onEdit={this.onEdit}
+            >
+              {tabList.map(item => (
+                <TabPane
+                  tab={item.tab}
+                  key={item.key}
+                  closable={true}
+                >
+                  <Authorized authority={authorized.authority} noMatch={noMatch}>
+                    <Route
+                      key={item.key}
+                      path={item.key}
+                      component={item.content}
+                      exact={item.exact}
+                    />
+                  </Authorized>
+                </TabPane>
+              ))}
+            </Tabs>
+          ) : null}
+        </ProLayout>
+        <SettingDrawer
+          settings={settings}
+          onSettingChange={config =>
+            dispatch({
+              type: 'settings/changeSetting',
+              payload: config,
+            })
+          }
+        />
+      </>
+    );
+  }
+  
 };
 
 export default connect(({ global, settings, user }) => ({

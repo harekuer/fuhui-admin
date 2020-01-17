@@ -16,12 +16,17 @@ class Tool extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, user } = this.props;
+    let url = '/_os/index.php?com=index&t=tableConfig'
+    if(user.currentUser.activeTab.url != ''){
+      url = user.currentUser.activeTab.url
+    }
+    console.log(user.currentUser.activeTab)
     dispatch({
       type: 'tool/query',
       payload: {
         data: {},
-        url: '/_os/index.php?com=index&t=tableConfig'
+        url: url,
       }
     });
   }
@@ -176,4 +181,4 @@ Tool.propTypes = {
   loading: PropTypes.object,
 }
 
-export default connect(({ tool, loading }) => ({ tool, loading }))(Tool)
+export default connect(({ tool,user, loading }) => ({ tool, user, loading }))(Tool)
