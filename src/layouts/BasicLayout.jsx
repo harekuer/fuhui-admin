@@ -226,6 +226,7 @@ class BasicLayout extends React.PureComponent {
    */
 
   handleMenuCollapse = payload => {
+    const { dispatch } = this.props
     if (dispatch) {
       dispatch({
         type: 'global/changeLayoutCollapsed',
