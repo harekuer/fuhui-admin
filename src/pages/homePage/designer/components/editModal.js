@@ -30,7 +30,7 @@ class editModal extends Component {
   render() {
     const {
       editModalVisible,
-      menuInfo,
+      extraData,
       infoLoading,
       handleCancel,
       handleSaveMenu,
@@ -60,96 +60,18 @@ class editModal extends Component {
 
     // 编辑表单
     const editForm = [
-      {
-        label: '菜单名称',
-        name: 'menu_name',
-        value: menuInfo && menuInfo.name_zh || null,
-        rules: [
-          { required: true, message: "菜单名称不能为空" },
-        ],
-        node: (
-          <Input placeholder="" />
-        )
-      },
-      {
-        label: '英文名称',
-        name: 'menu_name_en',
-        value: menuInfo && menuInfo.name_en || null,
-        rules: [
-          { required: true, message: "英文名称不能为空" },
-        ],
-        node: (
-          <Input placeholder="" />
-        )
-      },
-      {
-        label: 'ID',
-        name: 'menu_id',
-        value: menuInfo && menuInfo.menu_id || null,
-        node: (
-          <Input placeholder="" disabled />
-        )
-      },
-      {
-        label: '父级ID',
-        name: 'parent_id',
-        value: menuInfo && menuInfo.parent_id || null,
-        rules: [
-          { required: true, message: "父级ID不能为空" },
-        ],
-        node: (
-          <Input placeholder="" />
-        )
-      },
-      {
-        label: '前端路由',
-        name: 'route',
-        value: menuInfo && menuInfo.route,
-        rules: [
-          { required: true, message: "路由不能为空" },
-        ],
-        node: (
-          <Input placeholder='父级菜单无需跳转则输入"null"' />
-        )
-      },
-      {
-        label: '后端路由',
-        name: 'route_backend',
-        value: menuInfo && menuInfo.route_backend,
-        node: (
-          <Input placeholder="" />
-        )
-      },
-      {
-        label: '请求接口',
-        name: 'url',
-        value: menuInfo&& menuInfo.url,
-        node: (
-          <Input placeholder="" />
-        )
-      },
-      {
-        label: '排序',
-        name: 'sort',
-        value: menuInfo && menuInfo.sort || 0,
-        rules: [
-          { required: true, message: "排序不能为空" },
-        ],
-        node: (
-          <InputNumber />
-        )
-      },
-      {
-        label: '图标',
-        name: 'icon',
-        value: menuInfo && menuInfo.icon,
-        rules: [
-          { required: false },
-        ],
-        node: (
-          <Input placeholder="图标建议由前端填入"  />
-        )
-      },
+      // {
+      //   label: '菜单名称',
+      //   name: 'menu_name',
+      //   value: menuInfo && menuInfo.name_zh || null,
+      //   rules: [
+      //     { required: true, message: "菜单名称不能为空" },
+      //   ],
+      //   node: (
+      //     <Input placeholder="" />
+      //   )
+      // },
+      
     ];
 
     return (

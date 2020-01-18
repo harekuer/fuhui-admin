@@ -1,4 +1,4 @@
-import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button } from 'antd';
+import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button, Tabs } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -8,7 +8,9 @@ import SinglePicture from '@/components/SinglePicture/SinglePicture.js';
 import update from 'immutability-helper';
 import EditModal from './components/editModal'
 import styles from './index.less';
+
 let dragingIndex = -1;
+const { TabPane } = Tabs;
 
 class BodyRow extends React.Component {
   render() {
@@ -35,46 +37,11 @@ class BodyRow extends React.Component {
 const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
-  getInput = (record, setFieldsValue) => {
-    if (this.props.inputType === 'upload') {
-      return (
-        <SingleUpload
-          limit={1}
-          file={record.value}
-          isEdit={true}
-          changeImage={fileList => {
-            const { dispatch } = this.props;
-            let newData = this.props.record;
-            let newList = this.props.list;
-            let images = [];
-
-            if (fileList.length) {
-              images = fileList.map(item => {
-                return item.path;
-              });
-            }
-
-            newList.map(item => {
-              if (item.id === newData.id) {
-                item.image = `//:${fileList[0].url}`;
-              }
-
-              return item;
-            });
-            dispatch({
-              type: 'designer/updateState',
-              payload: {
-                list: newList,
-              },
-            });
-            setFieldsValue({
-              image: images[0],
-            });
-          }}
-        />
-      );
+  getInput = () => {
+    console.log(this.props.inputType)
+    if (this.props.inputType === 'number') {
+      return <InputNumber />;
     }
-
     return <Input />;
   };
   renderCell = ({ getFieldDecorator, setFieldsValue }) => {
@@ -92,7 +59,7 @@ class EditableCell extends React.Component {
     return (
       <td {...restProps}>
         {editing ? (
-          <Form.Item style={{ margin: 0}}>
+          <Form.Item style={{ margin: 0 }}>
             {getFieldDecorator(dataIndex, {
               rules: [
                 {
@@ -101,7 +68,7 @@ class EditableCell extends React.Component {
                 },
               ],
               initialValue: record[dataIndex],
-            })(this.getInput(record, setFieldsValue))}
+            })(<Input />)}
           </Form.Item>
         ) : (
           children
@@ -172,17 +139,15 @@ class TableList extends React.Component {
         dataIndex: 'title',
         key: 'title',
         editable: true,
-        // render: (text, record) => {
-        //   return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
-        // },
       },
       {
         title: '推荐内容',
         dataIndex: 'content',
         key: 'content',
         render: (text, record) => {
+          const { editingKey } = this.state;
           return (
-            <a  onClick={() =>this.handleChangeEditVisible(record.id, true)}>编辑</a>
+            <a disabled={editingKey !== ''} onClick={() =>this.handleChangeEditVisible(record.sort, true)}>编辑</a>
           )
         }
       },
@@ -191,41 +156,35 @@ class TableList extends React.Component {
         dataIndex: 'operate',
         key: 'operate',
         render: (text, record) => {
-          const { editingKey } = this.state;
-          const editable = this.isEditing(record);
-          return editable ? (
-            <span>
-              <EditableContext.Consumer>
-                {form => (
-                  <a
-                    onClick={() => this.save(form, record.id)}
-                    style={{
-                      marginRight: 8,
-                    }}
-                  >
-                    保存
-                  </a>
-                )}
-              </EditableContext.Consumer>
-              <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(record.id)}>
-                <a>取消</a>
-              </Popconfirm>
-            </span>
-          ) : (
+            const { editingKey } = this.state;
+            const editable = this.isEditing(record);
+            return editable ? (
               <span>
-                <a
-                  disabled={editingKey !== ''}
-                  onClick={() => this.edit(record.id)}
-                  style={{
-                    marginRight: 8,
-                  }}
-                >
+                <EditableContext.Consumer>
+                  {form => (
+                    <a
+                      onClick={() => this.save(form, record.id)}
+                      style={{ marginRight: 8 }}
+                    >
+                      保存
+                    </a>
+                  )}
+                </EditableContext.Consumer>
+                <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(record.id)}>
+                  <a>取消</a>
+                </Popconfirm>
+              </span>
+            ) : (
+              <span>
+                  <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)} style={{ marginRight: 8 }}>
                   编辑
-              </a>
-                <a onClick={() => this.onDelete(record.id)}>删除</a>
+                  </a>
+                  <a onClick={() => this.onDelete(record.id)}>
+                  删除
+                  </a>
               </span>
             );
-        },
+          },
       },
     ];
   }
@@ -234,6 +193,9 @@ class TableList extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'designer/fetch',
+      payload: {
+        module: 'index-designer',
+      }
     });
   }
 
@@ -281,9 +243,10 @@ class TableList extends React.Component {
         dispatch({
           type: 'designer/update',
           payload: {
-            module: key,
+            module: 'index-designer',
             id: key !== '0' ? key : undefined,
-            extra: row.extra,
+            title: row.title,
+            //extra: row.extra,
           },
         });
         this.setState({
@@ -308,6 +271,7 @@ class TableList extends React.Component {
     dispatch({
       type: 'designer/remove',
       payload: {
+        module: 'index-designer',
         id: key,
       },
     });
@@ -317,9 +281,9 @@ class TableList extends React.Component {
     const { dispatch, designer } = this.props;
     let { list } = designer;
     let obj = {
-      sort: '0',
+      id: '0',
+      sort: '',
       title: '',
-      content: '',
     };
     list.push(obj);
     dispatch({
@@ -332,7 +296,7 @@ class TableList extends React.Component {
   };
   onSaveSort = () => {
     const { dispatch, designer } = this.props;
-    let { list } = designer;
+    let { list, key  } = designer;
     let sort = [];
     let id = [];
     list.forEach((item, index) => {
@@ -344,23 +308,45 @@ class TableList extends React.Component {
     dispatch({
       type: 'designer/updateSort',
       payload: {
+        module: key,
         sort_array: sort,
-      },
+      }
     });
   };
 
+  onChangeTab = (key) => {
+    const { dispatch } = this.props;
+    this.setState({ editingKey: ''});
+    dispatch({
+      type: 'designer/fetch',
+      payload: {
+        module: key,
+      }
+    })
+    dispatch({
+      type: 'designer/updateState',
+      payload: {
+        key,
+      }
+    })
+  }
+
   handleChangeEditVisible = (id, state) => {
     const { dispatch, designer } = this.props;
-    
+    let { key } = designer;
     dispatch({
       type: 'designer/updateState',
       payload: {
         editModalVisible: state
       }
     })
+    // 获取详情
     dispatch({
       type: 'designer/fetch',
-      payload: { }
+      payload: {
+        module: key,
+        id
+      }
     })
    }
 
@@ -373,7 +359,7 @@ class TableList extends React.Component {
       loading,
       dispatch,
     } = this.props;
-    const { editModalVisible } = designer
+    const { editModalVisible,extraData } = designer
     const components = {
       body: {
         cell: EditableCell,
@@ -384,17 +370,14 @@ class TableList extends React.Component {
       if (!col.editable) {
         return col;
       }
-
       return {
         ...col,
         onCell: record => ({
           record,
-          inputType: col.dataIndex === 'image' ? 'upload' : 'text',
+          inputType: 'text',
           dataIndex: col.dataIndex,
           title: col.title,
           editing: this.isEditing(record),
-          list,
-          dispatch,
         }),
       };
     });
@@ -402,7 +385,7 @@ class TableList extends React.Component {
     // 编辑菜单props
     const editProps = {
       editModalVisible,
-      // menuInfo
+      extraData,
       infoLoading: loading.effects['designer/fetch'],
       handleCancel: function (params) {
         onChangeVisible({ editModalVisible: params })
@@ -418,9 +401,7 @@ class TableList extends React.Component {
     const onChangeVisible = (params) => {
       dispatch({
         type: 'designer/updateState',
-        payload: {
-          
-        }
+        payload: {}
       })
 
       dispatch({
@@ -433,42 +414,47 @@ class TableList extends React.Component {
 
     return (
       <Card bordered={false}>
-        <Alert message="*备注：最多可添加5个分类" type="error" style={{marginBottom: '15px'}}/>
+        <Tabs onChange={this.onChangeTab} type="card">
+          <TabPane tab="设计师推荐" key="index-designer">
+            <Alert message="*备注：最多可添加5个分类" type="error" style={{ marginBottom: '15px' }} />
 
-        <EditableContext.Provider value={this.props.form}>
-          <DndProvider backend={HTML5Backend} context={window}>
-            <Table
-              columns={columns}
-              bordered
-              dataSource={list}
-              components={components}
-              pagination={false}
-              loading={loading.effects['designer/fetch']}
-              rowKey={(record, index) => index}
-              rowClassName="editable-row"
-              onRow={(record, index) => ({
-                index,
-                moveRow: this.moveRow,
-              })}
-            />
-            
-          </DndProvider>
-        </EditableContext.Provider>
+            <EditableContext.Provider value={this.props.form}>
+              <DndProvider backend={HTML5Backend} context={window}>
+                <Table
+                  columns={columns}
+                  bordered
+                  dataSource={list}
+                  components={components}
+                  pagination={false}
+                  loading={loading.effects['designer/fetch']}
+                  rowKey={(record, index) => index}
+                  rowClassName="editable-row"
+                  onRow={(record, index) => ({
+                    index,
+                    moveRow: this.moveRow,
+                  })}
+                />
 
-        <EditModal {...editProps} />
+              </DndProvider>
+            </EditableContext.Provider>
 
-        {list.length < 5 ? (
-          <div
-            style={{
-              width: '100%',
-              marginTop: '10px',
-            }}
-          >
-            <Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>
-              +新增
+            <EditModal {...editProps} />
+
+            {list.length < 5 ? (
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '10px',
+                }}
+              >
+                <Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>
+                  +新增
             </Button>
-          </div>
-        ) : null}
+              </div>
+            ) : null}
+          </TabPane>
+         
+        </Tabs>
         <div className={styles.btnWrap}>
           <Button onClick={this.onSaveSort}>保存排序</Button>
         </div>
