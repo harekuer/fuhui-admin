@@ -6,7 +6,7 @@ const Model = {
   namespace: 'designer',
   state: {
     list: [],
-    key:'index-designer',
+    key:'index-designser',
     editModalVisible: false,   // 编辑弹窗
     extraData:{},//弹窗详情
   },
@@ -19,13 +19,6 @@ const Model = {
             type: 'queryList',
             payload:Array.isArray(data) ? data : []
             
-        });
-        yield put({
-          type: 'updateState',
-          payload: {
-            extraData:data[payload.id]
-          }
-
         });
         } else if(code === 401){
             yield put(

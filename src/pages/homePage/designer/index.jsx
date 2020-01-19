@@ -333,21 +333,15 @@ class TableList extends React.Component {
 
   handleChangeEditVisible = (id, state) => {
     const { dispatch, designer } = this.props;
-    let { key } = designer;
+    let { key,list } = designer;
     dispatch({
       type: 'designer/updateState',
       payload: {
-        editModalVisible: state
+        editModalVisible: state,
+        extraData:list[id]
       }
     })
-    // 获取详情
-    dispatch({
-      type: 'designer/fetch',
-      payload: {
-        module: key,
-        id
-      }
-    })
+
    }
 
 
