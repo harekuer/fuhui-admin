@@ -1,4 +1,4 @@
-import { query,update, remove, updateSort } from './service';
+import { query,update, remove, updateSort,extraInfo } from './service';
 import { routerRedux } from 'dva/router';
 import { message} from 'antd';
 
@@ -81,6 +81,31 @@ const Model = {
       const { data, code } = response
       if (code === 200) {
         message.success(response.message)
+      } else if (code === 401) {
+        yield put(
+          routerRedux.replace({
+            pathname: '/user/login',
+          }),
+        );
+      } else {
+        message.error(response.message)
+      }
+    },
+
+    *extraInfo({ payload }, { call, put }) {
+      const response = yield call(extraInfo, payload);
+      const { data, code } = response
+      if (code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            editModalVisible: false,
+            extraData:{}
+          }
+        })
+        message.success(response.message)
+        
+
       } else if (code === 401) {
         yield put(
           routerRedux.replace({

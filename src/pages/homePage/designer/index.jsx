@@ -38,7 +38,6 @@ const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
   getInput = () => {
-    console.log(this.props.inputType)
     if (this.props.inputType === 'number') {
       return <InputNumber />;
     }
@@ -381,15 +380,21 @@ class TableList extends React.Component {
       editModalVisible,
       extraData,
       infoLoading: loading.effects['designer/fetch'],
+      saveLoading:loading.effects['designer/extraInfo'],
       handleCancel: function (params) {
         onChangeVisible({ editModalVisible: params })
       },
-      handleSaveMenu: function (params) {
-        // 保存菜单
-        // dispatch({
-        //   type: 'siteMenu/editMenu',
-        //   payload: { ...params }
-        // })
+      handleSaveExtra: function (key,extra) {
+        console.log(extra)
+        // 保存编辑弹窗
+        dispatch({
+          type: 'designer/extraInfo',
+          payload: { 
+            id:key,
+            module:'index-designer',
+            extra:JSON.stringify(extra)
+           }
+        })
       }
     }
     const onChangeVisible = (params) => {
@@ -410,6 +415,45 @@ class TableList extends React.Component {
       <Card bordered={false}>
         <Tabs onChange={this.onChangeTab} type="card">
           <TabPane tab="设计师推荐" key="index-designer">
+            <Alert message="*备注：最多可添加5个分类" type="error" style={{ marginBottom: '15px' }} />
+
+            <EditableContext.Provider value={this.props.form}>
+              <DndProvider backend={HTML5Backend} context={window}>
+                <Table
+                  columns={columns}
+                  bordered
+                  dataSource={list}
+                  components={components}
+                  pagination={false}
+                  loading={loading.effects['designer/fetch']}
+                  rowKey={(record, index) => index}
+                  rowClassName="editable-row"
+                  onRow={(record, index) => ({
+                    index,
+                    moveRow: this.moveRow,
+                  })}
+                />
+
+              </DndProvider>
+            </EditableContext.Provider>
+
+            <EditModal {...editProps} />
+
+            {list.length < 5 ? (
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '10px',
+                }}
+              >
+                <Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>
+                  +新增
+            </Button>
+              </div>
+            ) : null}
+          </TabPane>
+
+          <TabPane tab="工厂推荐" key="index-factory">
             <Alert message="*备注：最多可添加5个分类" type="error" style={{ marginBottom: '15px' }} />
 
             <EditableContext.Provider value={this.props.form}>

@@ -31,7 +31,7 @@ export async function updateSort(params) {
 
 export async function extraInfo (params) {
   return request('/_os/index.php?com=common&t=saveExtra', {
-    method: 'get',
+    method: 'post',
     data: qs.stringify(params),
   });
 }

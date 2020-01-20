@@ -1,34 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Button, Modal, Spin, Form, Input, InputNumber, Checkbox, Radio } from 'antd'
+import { Table, Button, Modal, Spin, Form, Input, InputNumber, Checkbox, Radio,Popconfirm } from 'antd'
 import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 
 let dragingIndex = -1;
-
-const FormItem = Form.Item;
-const formItemLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: {
-    xl: { span: 14 },
-    lg: { span: 14 },
-    md: { span: 14 }
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 14,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 6,
-    },
-  },
-};
-
 class BodyRow extends React.Component {
   render() {
     const { isOver, connectDragSource, connectDropTarget, moveRow, ...restProps } = this.props;
@@ -55,7 +32,6 @@ const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
   getInput = () => {
-    console.log(this.props.inputType)
     if (this.props.inputType === 'number') {
       return <InputNumber />;
     }
@@ -159,16 +135,16 @@ class editModal extends Component {
       {
         title: '设计师ID',
         dataIndex: 'designer_id',
-        key: 'designer_ids',
+        key: 'designer_id',
         editable: true,
       },
       {
         title: '操作',
         dataIndex: 'operate',
         key: 'operate',
-        render: (text, record) => {
+        render: (text, record,index) => {
           const { editingKey } = this.state;
-          const editable = this.isEditing(record);
+          const editable = this.isEditing(index);
           return editable ? (
             <span>
               <EditableContext.Consumer>
@@ -187,10 +163,10 @@ class editModal extends Component {
             </span>
           ) : (
               <span>
-                <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)} style={{ marginRight: 8 }}>
+                <a disabled={editingKey !== ''} onClick={() => this.edit(index)} style={{ marginRight: 8 }}>
                   编辑
                   </a>
-                <a onClick={() => this.onDelete(record.id)}>
+                <a onClick={() => this.onDelete(index)}>
                   删除
                   </a>
               </span>
@@ -208,19 +184,21 @@ class editModal extends Component {
 
   moveRow = (dragIndex, hoverIndex) => {
     const { dispatch, designer } = this.props;
-    let { list } = designer;
-    const dragRow = list[dragIndex];
-    list = update(list, {
+    let { list,extraData } = designer;
+
+    const dragRow = extraData.extra["rows"][dragIndex];
+    extraData.extra["rows"] = update(extraData.extra["rows"], {
       $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
     });
+    
     dispatch({
       type: 'designer/updateState',
       payload: {
-        list,
+        extraData
       },
     });
   };
-  isEditing = record => record.id === this.state.editingKey;
+  isEditing = index => index === this.state.editingKey;
   cancel = () => {
     this.setState({
       editingKey: '',
@@ -318,10 +296,11 @@ class editModal extends Component {
   render() {
     const {
       editModalVisible,
-      extraData,
+      extraData, 
       infoLoading,
+      saveLoading,
       handleCancel,
-      handleSaveMenu,
+      handleSaveExtra,
       form: {
         getFieldDecorator,
         validateFields,
@@ -353,9 +332,9 @@ class editModal extends Component {
     });
 
     const handleOk = () => {
-      console.log("submit")
+      const { extra } = extraData
+      handleSaveExtra(extraData.id, extra)
     }
-
 
     return (
 
@@ -365,7 +344,7 @@ class editModal extends Component {
         visible={editModalVisible}
         footer={[
             <Button key="cancel" size="large" onClick={() => handleCancel(false)}>取消</Button>,
-            <Button type="primary" key="ok" size="large" onClick={handleOk}>保存 </Button>,
+            <Button type="primary" key="ok" size="large" onClick={handleOk} loading={saveLoading}>保存 </Button>,
           ]
         }
         width={520}
