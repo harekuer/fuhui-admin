@@ -21,7 +21,7 @@ class Tool extends Component {
     if(user.currentUser.activeTab.url != ''){
       url = user.currentUser.activeTab.url
     }
-    console.log(user.currentUser.activeTab)
+
     dispatch({
       type: 'tool/query',
       payload: {
