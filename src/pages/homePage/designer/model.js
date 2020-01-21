@@ -1,4 +1,4 @@
-import { query,update, remove, updateSort,extraInfo } from './service';
+import { query,update, remove, updateSort,extraInfo, saveDesigner, delDesigner } from './service';
 import { routerRedux } from 'dva/router';
 import { message} from 'antd';
 
@@ -6,7 +6,7 @@ const Model = {
   namespace: 'designer',
   state: {
     list: [],
-    key:'index-designser',
+    key:'index-designer',
     editModalVisible: false,   // 编辑弹窗
     extraData:{},//弹窗详情
   },
@@ -106,6 +106,44 @@ const Model = {
         message.success(response.message)
         
 
+      } else if (code === 401) {
+        yield put(
+          routerRedux.replace({
+            pathname: '/user/login',
+          }),
+        );
+      } else {
+        message.error(response.message)
+      }
+    },
+
+    *saveDesigner({ payload }, { call, put }) {
+      const response = yield call(saveDesigner, payload); 
+      const { data, code } =response
+      if(code === 200){
+        yield put({
+          type: 'updateState',
+          payload: {}
+        })
+      } else if(code === 401){
+        yield put(
+            routerRedux.replace({
+              pathname: '/user/login',
+            }),
+        );
+      } else {
+        message.error(response.message)
+      }
+    },
+    
+    *delDesigner({ payload }, { call, put }) {
+      const response = yield call(delDesigner, payload); 
+      const { data, code } = response
+      if (code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {}
+        })
       } else if (code === 401) {
         yield put(
           routerRedux.replace({
