@@ -86,6 +86,7 @@ const updateTree = data => {
           locale: node.locale,
           closable: true,
           content: node.component,
+          url: node.url,
         });
       }
       if (node.routes && node.routes.length > 0) {
@@ -140,25 +141,6 @@ const getTabList = (routeList, menuList) => {
   return menuList
 }
 
-const initTabList = (tabLists) => {
-  let tabList=[],tabListArr=[];
-  tabLists.map((v) => {
-    if(v.key === routeKey){
-      if(tabList.length === 0){
-        v.closable = false
-        v.tab = tabName
-        tabList.push(v);
-      }
-    }
-    if(v.key){
-      tabListArr.push(v.key)
-    }
-  });
-  this.setState({
-    tabList,
-    tabListArr
-  })
-}
 
 
 class BasicLayout extends React.PureComponent {
@@ -238,14 +220,8 @@ class BasicLayout extends React.PureComponent {
   }; // get children authority
 
   onHandlePage = (props) => {
-    
     //点击左侧菜单
-    let key = '';
-    if(props.autoConfig !== ''){
-      key = props.autoConfig 
-    } else {
-      key = props.path
-    }
+    let key = props.path
     const {tabLists,tabListKey,tabList,tabListArr} =  this.state;
     const { dispatch } = this.props
     dispatch({
@@ -273,7 +249,6 @@ class BasicLayout extends React.PureComponent {
           })
         } else {
           if (!tabListKey.includes(v.key)) {
-            console.log('list',[...tabList,v])
             this.setState({
               tabList:[...tabList,v],
               tabListKey:[...tabListKey,v.key]
@@ -316,6 +291,8 @@ class BasicLayout extends React.PureComponent {
 
   onEdit = (targetKey, action) => {
     let {activeKey} = this.state;
+    const { dispatch } = this.props
+    let activeTab = {}
     if (action === 'remove') {
       let lastIndex;
       this.state.tabList.forEach((pane, i) => {
@@ -332,7 +309,14 @@ class BasicLayout extends React.PureComponent {
       });
       if (lastIndex >= 0 && activeKey === targetKey) {
           activeKey = tabList[lastIndex].key;
+          activeTab = tabList[lastIndex]
       }
+      dispatch({
+        type: 'user/saveCurrentUser',
+        payload: {
+          activeTab,
+        }
+      });
       router.push(activeKey)
       this.setState({ tabList, activeKey,tabListKey });
     }
@@ -340,9 +324,23 @@ class BasicLayout extends React.PureComponent {
 
   // 切换 tab页 router.push(key);
   onChange = key => {
+    const {tabList} = this.state;
+    const { dispatch } = this.props
+    let activeTab = {}
     this.setState({
       activeKey: key,
     })
+    tabList.forEach(item =>{
+      if(item.key === key) {
+        activeTab = item
+      }
+    })
+    dispatch({
+      type: 'user/saveCurrentUser',
+      payload: {
+        activeTab,
+      }
+    });
     router.push(key);
   };
 
@@ -435,7 +433,7 @@ class BasicLayout extends React.PureComponent {
               lassName={styles.multitabs}
               activeKey={activeKey}
               onChange={this.onChange}
-              tabBarExtraContent={operations}
+              //tabBarExtraContent={operations}
               tabBarStyle={{ background: '#fff' }}
               tabPosition="top"
               tabBarGutter={-1}
