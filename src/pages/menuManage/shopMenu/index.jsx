@@ -5,10 +5,10 @@ import { connect } from 'dva'
 import EditModal from '../components/editModal'
 import AddModal from '../components/addModal'
 import SortableTreeList from '../components/SortableTreeList'
-import { Button, Spin, Alert } from 'antd'
+import { Button,Spin, Alert } from 'antd'
 
 
-class SiteMenu extends Component {
+class ShopMenu extends Component {
 
   constructor() {
     super()
@@ -18,13 +18,19 @@ class SiteMenu extends Component {
     }
   }
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'shopMenu/query',
+    });
+  }
+
   render() {
     const _this = this
 
-    const { loading, dispatch, siteMenu } = this.props,
-      queryLoading = loading.effects['siteMenu/query']
-
-
+    const { loading, dispatch, shopMenu } = this.props,
+    queryLoading = loading.effects['shopMenu/query']      // 加载状态
+    const { app_id } = shopMenu
     const {
       menuList,
       menuInfo,
@@ -32,27 +38,29 @@ class SiteMenu extends Component {
       editModalVisible,
       addModalVisible,
       expendIds
-    } = siteMenu
+    } = shopMenu
 
     // 菜单列表props
     const sortableTreeListProps = {
       dispatch,
       menuList,
-      loading: loading.effects['siteMenu/query'],// || loading.effects['siteMenu/deleteMenu'],
+      //loading: loading.effects['shopMenu/query'],// || loading.effects['shopMenu/deleteMenu'],
       handleChangeEditVisible: function (id, state) {
         // 打开弹窗
         onChangeVisible({ editModalVisible: state })
-
+        console.log(id)
         // 获取菜单详情
         dispatch({
-          type: 'siteMenu/getMenuInfo',
+          type: 'shopMenu/getMenuInfo',
           payload: {
-            menu_id: id
+            menu_id: id,
+            type: 1,
           }
         })
 
       },
       handleChangeAddVisible: function (id, state) {
+        // 新增菜单
         onChangeVisible({ addModalVisible: state })
 
         _this.setState({
@@ -62,7 +70,7 @@ class SiteMenu extends Component {
       handleDel: function (id) {
         // 删除
         dispatch({
-          type: 'siteMenu/deleteMenu',
+          type: 'shopMenu/deleteMenu',
           payload: {
             menu_id: id
           }
@@ -83,15 +91,16 @@ class SiteMenu extends Component {
 
         // 更新到modal
         dispatch({
-          type: 'siteMenu/updateState',
+          type: 'shopMenu/updateState',
           payload: {
             expendIds: expendIds
           }
         })
       },
-      handleChangeValues: function (treeData) {
+      handleChangeValues:function(treeData){
+        // 树节点值的变动
         dispatch({
-          type: 'siteMenu/updateState',
+          type: 'shopMenu/updateState',
           payload: {
             menuList: treeData
           }
@@ -103,17 +112,20 @@ class SiteMenu extends Component {
     const editProps = {
       editModalVisible,
       menuInfo,
-      isCenter: false, //是否中心后台菜单
-      infoLoading: loading.effects['siteMenu/getMenuInfo'],
-      saveLoading: loading.effects['siteMenu/editMenu'],
+      isCenter: true, //是否中心后台菜单
+      infoLoading: loading.effects['shopMenu/getMenuInfo'],
+      saveLoading: loading.effects['shopMenu/editMenu'],
       handleCancel: function (params) {
         onChangeVisible({ editModalVisible: params })
       },
       handleSaveMenu: function (params) {
         // 保存菜单
         dispatch({
-          type: 'siteMenu/editMenu',
-          payload: { ...params }
+          type: 'shopMenu/editMenu',
+          payload: { 
+            ...params,
+            app_id,
+           }
         })
       }
     }
@@ -122,18 +134,19 @@ class SiteMenu extends Component {
     const addProps = {
       addModalVisible,
       addInfo,
-      isCenter: false, //是否中心后台菜单
+      isCenter: true, //是否中心后台菜单
       parentId: _this.state.parentId,
-      saveLoading: loading.effects['siteMenu/addMenu'],
+      saveLoading: loading.effects['shopMenu/addMenu'],
       handleCancel: function (params) {
         onChangeVisible({ addModalVisible: params })
       },
       handleAddMenu: function (params) {
 
         dispatch({
-          type: 'siteMenu/addMenu',
+          type: 'shopMenu/addMenu',
           payload: {
-            ...params
+            ...params,
+            app_id,
           }
         })
       }
@@ -145,8 +158,9 @@ class SiteMenu extends Component {
      * @param {object} params
      */
     const onChangeVisible = (params) => {
+      // 清空新增modal
       dispatch({
-        type: 'siteMenu/updateState',
+        type: 'shopMenu/updateState',
         payload: {
           addInfo: {
             parent_id: 0,
@@ -158,8 +172,9 @@ class SiteMenu extends Component {
         }
       })
 
+      // 重新赋值
       dispatch({
-        type: 'siteMenu/updateState',
+        type: 'shopMenu/updateState',
         payload: {
           ...params
         }
@@ -169,27 +184,19 @@ class SiteMenu extends Component {
 
     return (
       <div className="content-inner" >
-        <Alert
-          message="Warning"
-          description="该菜单仅限开发人员进行操作，请谨慎操作删除功能."
-          type="warning"
-          style={{marginBottom: '15px'}}
-          showIcon
-        />
         <Spin tip="Loading..." spinning={queryLoading} style={{marginTop:50,width:'100%'}}>
           {
-            menuList.length > 0 ?
-              <div>
-                <Button type="primary" onClick={() => {
-                  this.setState({ parentId: 0 })
-                  onChangeVisible({ addModalVisible: true })
-                }}>添加一级菜单</Button>
+            menuList.length > 0?
+            <div>
+              <Button type="primary" onClick={() => {
+                this.setState({ parentId: 0 })
+                onChangeVisible({ addModalVisible: true })
+              }}>添加一级菜单</Button>
 
-                <SortableTreeList {...sortableTreeListProps} />
-              </div>
-              : null
+              <SortableTreeList {...sortableTreeListProps} />
+            </div>
+            :null
           }
-
         </Spin>
 
         <EditModal {...editProps} />
@@ -201,10 +208,10 @@ class SiteMenu extends Component {
 
 
 
-SiteMenu.propTypes = {
+ShopMenu.propTypes = {
   menuList: PropTypes.object,
   dispatch: PropTypes.func,
   loading: PropTypes.object,
 }
 
-export default connect(({ siteMenu, loading, app }) => ({ siteMenu, loading, app }))(SiteMenu)
+export default connect(({ shopMenu, loading, app }) => ({ shopMenu, loading, app }))(ShopMenu)

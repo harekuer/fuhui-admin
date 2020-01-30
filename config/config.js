@@ -231,11 +231,11 @@ export default {
                   path: '/osAdmin/menu/centerMenu',
                   component: './menuManage/centerMenu',
                 },
-                // {
-                //   name: 'shopMenu',
-                //   path: '/osAdmin/menu/shopMenu',
-                //   component: './menuManage/shopMenu',
-                // },
+                {
+                  name: 'shopMenu',
+                  path: '/osAdmin/menu/shopMenu',
+                  component: './menuManage/shopMenu',
+                },
               ],
             },
             {

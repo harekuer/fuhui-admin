@@ -14,7 +14,7 @@ class CenterMenu extends Component {
     super()
 
     this.state = {
-      parentId: 0
+      parentId: 0,
     }
   }
 
@@ -28,8 +28,9 @@ class CenterMenu extends Component {
   render() {
     const _this = this
 
-    const { loading, dispatch, centerMenu } = this.props,
+    const { loading, dispatch, centerMenu, } = this.props,
     queryLoading = loading.effects['centerMenu/query']      // 加载状态
+    const { app_id } = shopMenu
 
     const {
       menuList,
@@ -44,7 +45,6 @@ class CenterMenu extends Component {
     const sortableTreeListProps = {
       dispatch,
       menuList,
-      //loading: loading.effects['centerMenu/query'],// || loading.effects['centerMenu/deleteMenu'],
       handleChangeEditVisible: function (id, state) {
         // 打开弹窗
         onChangeVisible({ editModalVisible: state })
@@ -122,7 +122,7 @@ class CenterMenu extends Component {
         // 保存菜单
         dispatch({
           type: 'centerMenu/editMenu',
-          payload: { ...params }
+          payload: { ...params,app_id, }
         })
       }
     }
@@ -142,7 +142,8 @@ class CenterMenu extends Component {
         dispatch({
           type: 'centerMenu/addMenu',
           payload: {
-            ...params
+            ...params,
+            app_id,
           }
         })
       }

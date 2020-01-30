@@ -12,20 +12,10 @@ export default {
     addInfo: null,              // 菜单详情
     editModalVisible: false,    // 编辑弹窗
     addModalVisible: false,     // 新增弹窗
-    expendIds: []               // 展开的节点id集合
+    expendIds: [],              // 展开的节点id集合
+    app_id: 10001,
   },
 
-  // subscriptions: {
-  //   setup({ dispatch, history }) {
-  //     history.listen((location) => {
-  //       if (location.pathname === '/osAdmin/menu/centerMenu') {
-  //         dispatch({
-  //           type: 'query'
-  //         })
-  //       }
-  //     })
-  //   },
-  // },
 
   effects: {
 

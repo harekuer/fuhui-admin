@@ -1,39 +1,38 @@
+import request from '@/utils/request';
+import qs from 'qs'
 
-const siteMenu = '_os/index.php?com=menu&t=display&type=1'    // 店铺后台菜单，type=1
 
 
 // 菜单列表
 export async function query (params) {
-  return request({
-    url: siteMenu,
+  return request('/_os/index.php?com=menu&t=display&app_id=10002', {
     method: 'get',
-    data: params,
-  })
+    data: qs.stringify(params),
+  });
 }
 
-// 菜单详情
+// 菜单列表
 export async function menuInfo (params) {
-  return request({
-    url: siteMenu + '&t=info',
-    method: 'get',
-    data: params,
-  })
+  return request('/_os/index.php?com=menu&t=info', {
+    method: 'post',
+    data: qs.stringify(params),
+  });
 }
 
 // 新增/编辑
 export async function addOrEditMenu (params) {
-  return request({
-    url: siteMenu + '&t=edit',
-    method: 'get',
-    data: params,
-  })
+  return request('/_os/index.php?com=menu&t=edit', {
+    method: 'post',
+    data: qs.stringify(params),
+  });
 }
+
+
 
 // 删除
 export async function deleteMenu (params) {
-  return request({
-    url: siteMenu + '&t=del',
-    method: 'get',
-    data: params,
-  })
+  return request('/_os/index.php?com=menu&t=del', {
+    method: 'post',
+    data: qs.stringify(params),
+  });
 }

@@ -253,7 +253,7 @@ const FormConfig = (item, currentItem,langIndex) => {
     </RadioGroup>
     )
   }
-  if(item.type === 'TextArea'){
+  if(item.type === 'Checkbox'){
     return <CheckboxGroup options={item.options} />
   }
   if(!item.type || item.type === ''){

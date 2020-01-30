@@ -1,41 +1,31 @@
 
 import { query, menuInfo, addOrEditMenu, deleteMenu } from './service'
+import { message} from 'antd';
 
-import { Error } from 'utils/warn'
 
-
-export default  {
-  namespace: 'siteMenu',
+export default {
+  namespace: 'shopMenu',
 
   state: {
     menuList: [],               // 菜单集合
     menuInfo: null,             // 菜单详情
     addInfo: null,              // 菜单详情
-    editModalVisible: false,   // 编辑弹窗
-    addModalVisible: false,    // 新增弹窗
-    expendIds: []               // 展开的节点id集合
+    editModalVisible: false,    // 编辑弹窗
+    addModalVisible: false,     // 新增弹窗
+    expendIds: [],              // 展开的节点id集合
+    app_id: 10002,
   },
 
-  subscriptions: {
-    setup({ dispatch, history }) {
-      history.listen((location) => {
-        if (location.pathname === '/_os/menu/siteMenu') {
-          dispatch({
-            type: 'query'
-          })
-        }
-      })
-    },
-  },
+
 
   effects: {
 
     // 请求获取菜单列表
-    * query({ payload = {} }, { call, put, select }) {
+    * query({ payload = { } }, { call, put, select }) {
 
-      const { expendIds } = yield select(state => state.siteMenu)
-      const { code, data, message } = yield call(query, payload);
-
+      const { expendIds } = yield select(state => state.shopMenu)
+      const response  = yield call(query, payload);
+      const { code, data} = response
       if (code === 200) {
 
         // 过滤一遍，添加展开参数
@@ -48,14 +38,14 @@ export default  {
           },
         })
       } else {
-        Error(message);
+        message.error(response.message);
       }
     },
 
     // 请求获取菜单列表
     * getMenuInfo({ payload = {} }, { call, put }) {
-
-      const { code, data, message } = yield call(menuInfo, payload);
+      const response = yield call(menuInfo, payload);
+      const { code, data} = response
 
       if (code === 200) {
         yield put({
@@ -65,13 +55,14 @@ export default  {
           },
         })
       } else {
-        Error(message);
+        message.error(message);
       }
     },
 
     // 新增菜单
     * addMenu({ payload }, { select, call, put }) {
-      const { code, data, message } = yield call(addOrEditMenu, payload);
+      const response = yield call(addOrEditMenu, payload);
+      const { code, data} = response
 
       if (code === 200) {
         yield put({
@@ -85,7 +76,7 @@ export default  {
         yield put({ type: 'query' })
 
       } else {
-        Error(message);
+        message.error(response.message);
       }
 
 
@@ -93,7 +84,8 @@ export default  {
 
     // 编辑菜单
     * editMenu({ payload }, { select, call, put }) {
-      const { code, data, message } = yield call(addOrEditMenu, payload);
+      const response = yield call(addOrEditMenu, payload);
+      const { code, data} = response
 
       if (code === 200) {
 
@@ -108,32 +100,33 @@ export default  {
         yield put({ type: 'query' })
 
       } else {
-        Error(message);
+        message.error(response.message);
       }
     },
 
     // 删除菜单
     * deleteMenu({ payload }, { select, call, put }) {
-      const { code, data, message } = yield call(deleteMenu, payload);
+      const response = yield call(deleteMenu, payload);
+      const { code, data} = response
 
       if (code === 200) {
 
         yield put({ type: 'query' })
 
       } else {
-        Error(message);
+        message.error(response.message);
       }
     },
   },
 
 
   reducers: {
-    updateState(state, { payload }) {
+    updateState (state, { payload }) {
       return {
         ...state,
         ...payload,
       }
-    },
+  },
   },
 
 }
@@ -146,7 +139,7 @@ export default  {
  * @param {*} ids
  */
 const addExpendId = (data, ids) => {
-  data.map((i,index) => {
+  data.map(i => {
     // 如果节点在展开数组上，则添加展开参数
     if (ids.indexOf(i.menu_id) >= 0) {
       i.expanded = true

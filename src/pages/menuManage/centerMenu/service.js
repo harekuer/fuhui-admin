@@ -5,7 +5,7 @@ import qs from 'qs'
 
 // 菜单列表
 export async function query (params) {
-  return request('/_os/index.php?com=menu&t=display', {
+  return request('/_os/index.php?com=menu&t=display&app_id=10001', {
     method: 'get',
     data: qs.stringify(params),
   });
