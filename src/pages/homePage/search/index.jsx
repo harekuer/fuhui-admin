@@ -171,9 +171,9 @@ class TableList extends React.Component {
                         <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)} style={{ marginRight: 8 }}>
                         编辑
                         </a>
-                        <a onClick={() => this.onDelete(record.id)}>
-                        删除
-                        </a>
+                        {
+                          record.id == '0'? null : <a onClick={() => this.onDelete(record.id)}>删除</a>
+                        }
                     </span>
                   );
                 },

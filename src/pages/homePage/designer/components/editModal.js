@@ -166,9 +166,9 @@ class editModal extends Component {
                 <a disabled={editingKey !== ''} onClick={() => this.edit(index)} style={{ marginRight: 8 }}>
                   编辑
                   </a>
-                <a onClick={() => this.onDelete(index)}>
-                  删除
-                  </a>
+                  {
+                    record.id == '0'? null : <a onClick={() => this.onDelete(index)}>删除</a>
+                  }
               </span>
             );
         },

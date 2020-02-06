@@ -1,4 +1,4 @@
-import { query, update,updateSort } from './service';
+import { query, update,updateSort,remove } from './service';
 import { routerRedux } from 'dva/router';
 import { message} from 'antd';
 

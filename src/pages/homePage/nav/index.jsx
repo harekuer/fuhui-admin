@@ -382,7 +382,7 @@ class TableList extends React.Component {
                   </DndProvider>
               </EditableContext.Provider>
               {
-                  list.length < 8? 
+                  list.length < 7? 
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }

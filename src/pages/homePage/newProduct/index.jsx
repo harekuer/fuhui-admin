@@ -47,19 +47,19 @@ class EditableCell extends React.Component {
             let newData = this.props.record;
             let newList = this.props.list;
             let images = [];
-
             if (fileList.length) {
               images = fileList.map(item => {
                 return item.path;
               });
+              newList.map(item => {
+                if (item.id === newData.id) {
+                  item.image = fileList[0].url;
+                }
+                return item;
+              });
+            } else {
+              newList = []
             }
-
-            newList.map(item => {
-              if (item.id === newData.id) {
-                item.image = fileList[0].url;
-              }
-              return item;
-            });
             dispatch({
               type: 'banner/updateState',
               payload: {
@@ -186,6 +186,12 @@ class TableList extends React.Component {
         editable: true,
       },
       {
+        title: '标题',
+        dataIndex: 'title',
+        key: 'title',
+        editable: true,
+      },
+      {
         title: '操作',
         dataIndex: 'operate',
         key: 'operate',
@@ -221,7 +227,9 @@ class TableList extends React.Component {
               >
                 编辑
               </a>
-              <a onClick={() => this.onDelete(record.id)}>删除</a>
+              {
+                record.id == '0'? null : <a onClick={() => this.onDelete(record.id)}>删除</a>
+              }
             </span>
           );
         },
@@ -282,6 +290,7 @@ class TableList extends React.Component {
             id: key !== '0' ? key : undefined,
             url: row.url,
             image: row.image,
+            title: row.title,
           },
         });
         this.setState({
@@ -318,6 +327,7 @@ class TableList extends React.Component {
       id: '0',
       image: '',
       url: '',
+      title: '',
       module: 'index-new-arrival',
     };
     list.push(obj);

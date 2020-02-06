@@ -32,12 +32,10 @@ const Model = {
       const response = yield call(update, payload); // post
       const { data, code } =response
       if(code === 200){
-        if(!payload.id){
-            yield put({
-                type: 'fetch',
-                payload: {},
-            });
-        } 
+        yield put({
+          type: 'fetch',
+          payload: {},
+      });
       } else if(code === 401){
         yield put(
             routerRedux.replace({

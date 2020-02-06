@@ -41,7 +41,7 @@ class EditableCell extends React.Component {
   getInput = (record, setFieldsValue) => {
     if (this.props.inputType === 'upload') {
       return <SingleUpload
-        limit={1}
+        limit={2}
         file={record.image}
         isEdit={true}
         action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
@@ -54,6 +54,14 @@ class EditableCell extends React.Component {
             images = fileList.map((item) => {
               return item.path
             })
+            newList.map(item => {
+              if(item.id === newData.id){
+                item.image = `//:${fileList[0].url}`
+              }
+              return item
+            })
+          } else {
+            newList = []
           }
           newList.map(item => {
             if(item.id === newData.id){
@@ -216,6 +224,12 @@ class TableList extends React.Component {
           editable: true,
         },
         {
+          title: key === 'index-customized-cate'? '分类': '标题',
+          dataIndex: 'title',
+          key: 'title',
+          editable: true,
+        },
+        {
           title: '操作',
           dataIndex: 'operate',
           key: 'operate',
@@ -230,30 +244,41 @@ class TableList extends React.Component {
                         onClick={() => this.save(form, record.id)}
                         style={{ marginRight: 8 }}
                       >
-                        Save
+                        保存
                       </a>
                     )}
                   </EditableContext.Consumer>
-                  <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.id)}>
-                    <a>Cancel</a>
+                  <Popconfirm title="确定撤销编辑?" onConfirm={() => this.cancel(record.id)}>
+                    <a>取消</a>
                   </Popconfirm>
                 </span>
               ) : (
-                <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)}>
-                  Edit
-                </a>
+                <span>
+                  <a
+                    disabled={editingKey !== ''}
+                    onClick={() => this.edit(record.id)}
+                    style={{
+                      marginRight: 8,
+                    }}
+                  >
+                    编辑
+                  </a>
+                  {
+                    record.id == '0'? null : <a onClick={() => this.onDelete(record.id)}>删除</a>
+                  }
+                </span>
               );
             },
         },
       ];
-      if(key === 'index-spot-cate'){
+      if(key === 'index-spot-image'){
         let obj = {
-          title: '分类',
-          dataIndex: 'title',
-          key: 'title',
+          title: '副标题',
+          dataIndex: 'content',
+          key: 'content',
           editable: true,
         }
-        column.splice(2, 0, obj);
+        column.splice(4, 0, obj);
       }
       return column
     }
@@ -263,6 +288,18 @@ class TableList extends React.Component {
     cancel = () => {
         this.setState({ editingKey: '' });
     };
+
+    onDelete(key) {
+      const { dispatch, cashsale } = this.props;
+      const module = cashsale.key
+      dispatch({
+        type: 'cashsale/remove',
+        payload: {
+          id: key,
+          module,
+        },
+      });
+    }
 
     save(form, currentKey) {
         form.validateFields((error, row) => {
@@ -284,7 +321,8 @@ class TableList extends React.Component {
                         id: currentKey !== '0'? currentKey : undefined,
                         image: row.image,
                         url: row.url,
-                        title: key === 'index-spot-cate'? row.title : undefined,
+                        title: row.title,
+                        content: key === 'index-spot-image'? row.content : undefined,
                     },
                 })
                 this.setState({
@@ -312,6 +350,7 @@ class TableList extends React.Component {
             id: '0',
             title: '',
             module: key,
+            content: '',
         }
         list.push(obj)
         dispatch({
@@ -434,7 +473,7 @@ class TableList extends React.Component {
                   </DndProvider>
               </EditableContext.Provider>
               {
-                  list.length < 16? 
+                  list.length < 8? 
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }

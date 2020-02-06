@@ -55,13 +55,15 @@ class EditableCell extends React.Component {
             images = fileList.map((item) => {
               return item.path
             })
+            newList.map(item => {
+              if(item.id === newData.id){
+                item.image = `//:${fileList[0].url}`
+              }
+              return item
+            })
+          } else {
+            newList = []
           }
-          newList.map(item => {
-            if(item.id === newData.id){
-              item.image = `//:${fileList[0].url}`
-            }
-            return item
-          })
           dispatch({
             type: 'banner/updateState',
             payload: {
@@ -196,18 +198,29 @@ class TableList extends React.Component {
                             onClick={() => this.save(form, record.id)}
                             style={{ marginRight: 8 }}
                           >
-                            Save
+                            保存
                           </a>
                         )}
                       </EditableContext.Consumer>
-                      <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.id)}>
-                        <a>Cancel</a>
+                      <Popconfirm title="确定撤销编辑?" onConfirm={() => this.cancel(record.id)}>
+                        <a>取消</a>
                       </Popconfirm>
                     </span>
                   ) : (
-                    <a disabled={editingKey !== ''} onClick={() => this.edit(record.id)}>
-                      Edit
-                    </a>
+                    <span>
+                      <a
+                        disabled={editingKey !== ''}
+                        onClick={() => this.edit(record.id)}
+                        style={{
+                          marginRight: 8,
+                        }}
+                      >
+                        编辑
+                      </a>
+                      {
+                        record.id == '0'? null : <a onClick={() => this.onDelete(record.id)}>删除</a>
+                      }
+                    </span>
                   );
                 },
             },
@@ -248,6 +261,18 @@ class TableList extends React.Component {
     cancel = () => {
         this.setState({ editingKey: '' });
     };
+
+    onDelete(key) {
+      const { dispatch, logistics } = this.props;
+      const module = logistics.key
+      dispatch({
+        type: 'logistics/remove',
+        payload: {
+          id: key,
+          module,
+        },
+      });
+    }
 
     save(form, currentKey) {
         form.validateFields((error, row) => {
