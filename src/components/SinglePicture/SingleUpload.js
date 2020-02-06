@@ -81,7 +81,7 @@ export default class SingleUpload extends React.Component {
       newFile = newFile.map((file) => {
         if (file.response) {
           // Component will show file.url as link
-          file.url = `//:${file.response.data.file_url}`
+          file.url = `//${file.response.data.file_url}`
           file.path = file.response.data.file_key
         }
         return file
@@ -110,13 +110,13 @@ export default class SingleUpload extends React.Component {
             beforeUpload={this.beforeUpload}
             onPreview={this.handlePreview}
             onChange={isEdit? this.handleChange : null}
-            showUploadList={{ showRemoveIcon: isEdit, showPreviewIcon: true }}
+            showUploadList={{ showRemoveIcon: isEdit, showPreviewIcon: true,showDownloadIcon: false }}
             className={className || 'defaultPic'}
           >
             {fileList.length >= this.props.limit ? null : uploadButton}
           </Upload>
-          <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} width={width}>
-            <img alt="example" style={{ width: '100%' }} src={previewImage} />
+          <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel} width={width} style={{ textAlign: 'center' }}>
+            <img alt="example" style={{ maxWidth: '100%' }} src={previewImage} />
           </Modal>
         </div>
       )

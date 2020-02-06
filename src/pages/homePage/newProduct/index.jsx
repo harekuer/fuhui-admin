@@ -39,8 +39,9 @@ class EditableCell extends React.Component {
       return (
         <SingleUpload
           limit={1}
-          file={record.value}
+          file={record.image}
           isEdit={true}
+          action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
           changeImage={fileList => {
             const { dispatch } = this.props;
             let newData = this.props.record;
@@ -317,6 +318,7 @@ class TableList extends React.Component {
       id: '0',
       image: '',
       url: '',
+      module: 'index-new-arrival',
     };
     list.push(obj);
     dispatch({

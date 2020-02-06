@@ -42,8 +42,9 @@ class EditableCell extends React.Component {
     if (this.props.inputType === 'upload') {
       return <SingleUpload
         limit={1}
-        file={record.value}
+        file={record.image}
         isEdit={true}
+        action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
         changeImage={(fileList) => {
           const { dispatch } = this.props
           let newData = this.props.record
@@ -309,7 +310,8 @@ class TableList extends React.Component {
         let {list, key } = customized;
         let obj ={
             id: '0',
-            title: ''
+            title: '',
+            module: key,
         }
         list.push(obj)
         dispatch({
@@ -386,7 +388,7 @@ class TableList extends React.Component {
       return (
         <Card bordered={false}>
           <Tabs  onChange={this.onChangeTab} type="card">
-            <TabPane tab="侧边大图" key="index-spot-image">
+            <TabPane tab="侧边大图" key="index-customized-image">
 
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
@@ -412,7 +414,7 @@ class TableList extends React.Component {
                   : null
               }
             </TabPane>
-            <TabPane tab="右侧分类" key="index-spot-cate">
+            <TabPane tab="右侧分类" key="index-customized-cate">
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
                   <Table
@@ -440,7 +442,7 @@ class TableList extends React.Component {
           </Tabs>
           
           {
-            key === 'index-spot-cate'? 
+            key === 'index-customized-cate'? 
             <div className={styles.btnWrap}>
               <Button onClick={this.onSaveSort}>保存排序</Button>
           </div> : null

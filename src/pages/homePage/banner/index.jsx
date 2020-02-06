@@ -39,8 +39,9 @@ class EditableCell extends React.Component {
       return (
         <SingleUpload
           limit={1}
-          file={record.value}
+          file={record.image}
           isEdit={true}
+          action={`/_os/index.php?com=common&t=imageUpload&module=index-banner-top`}
           changeImage={fileList => {
             const { dispatch } = this.props;
             let newData = this.props.record;

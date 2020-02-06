@@ -6,7 +6,7 @@ const Model = {
   namespace: 'cashsale',
   state: {
     list: [],
-    key: 'index-customized-image',
+    key: 'index-spot-image',
   },
   effects: {
     *fetch({ payload }, { call, put }) {

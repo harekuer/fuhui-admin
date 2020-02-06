@@ -42,8 +42,9 @@ class EditableCell extends React.Component {
     if (this.props.inputType === 'upload') {
       return <SingleUpload
         limit={1}
-        file={record.value}
+        file={record.image}
         isEdit={true}
+        action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
         changeImage={(fileList) => {
           const { dispatch } = this.props
           let newData = this.props.record
@@ -292,7 +293,8 @@ class TableList extends React.Component {
         let {list, key } = entrance;
         let obj ={
             id: '0',
-            title: ''
+            title: '',
+            module: key,
         }
         list.push(obj)
         dispatch({

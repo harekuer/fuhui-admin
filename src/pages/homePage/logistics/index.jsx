@@ -39,11 +39,13 @@ const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
   getInput = (record, setFieldsValue) => {
+    console.log(record)
     if (this.props.inputType === 'upload') {
       return <SingleUpload
         limit={1}
-        file={record.value}
+        file={record.image}
         isEdit={true}
+        action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
         changeImage={(fileList) => {
           const { dispatch } = this.props
           let newData = this.props.record
@@ -174,6 +176,12 @@ class TableList extends React.Component {
               },
             },
             {
+              title: '链接',
+              dataIndex: 'url',
+              key: 'url',
+              editable: true,
+            },
+            {
               title: '操作',
               dataIndex: 'operate',
               key: 'operate',
@@ -260,6 +268,7 @@ class TableList extends React.Component {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: row.image,
+                        url: row.url
                     },
                 })
                 this.setState({
@@ -285,7 +294,9 @@ class TableList extends React.Component {
         let {list, key } = logistics;
         let obj ={
             id: '0',
-            title: ''
+            title: '',
+            url: '',
+            module: key,
         }
         list.push(obj)
         dispatch({
