@@ -150,14 +150,14 @@ class editModal extends Component {
               <EditableContext.Consumer>
                 {form => (
                   <a
-                    onClick={() => this.save(form, record.id)}
+                    onClick={() => this.save(form, index)}
                     style={{ marginRight: 8 }}
                   >
                     保存
                     </a>
                 )}
               </EditableContext.Consumer>
-              <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(record.id)}>
+              <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(index)}>
                 <a>取消</a>
               </Popconfirm>
             </span>
@@ -210,22 +210,17 @@ class editModal extends Component {
       if (error) {
         return;
       }
-
       const { dispatch, designer } = this.props;
-      let { list } = designer;
-      const newData = list;
-      const index = newData.findIndex(item => key === item.id);
-
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
+      let { extraData } = designer;
+      const { extra } = extraData
+      const newData = extra.rows;
+      if (key > -1) {
+        const item = newData[key];
+        newData.splice(key, 1, { ...item, ...row });
         dispatch({
-          type: 'designer/update',
+          type: 'designer/saveDesigner',
           payload: {
-            module: 'index-designer',
-            id: key !== '0' ? key : undefined,
-            title: row.title,
-            //extra: row.extra,
+            designer_id: row.designer_id,
           },
         });
         this.setState({
@@ -248,10 +243,9 @@ class editModal extends Component {
   onDelete(key) {
     const { dispatch } = this.props;
     dispatch({
-      type: 'designer/remove',
+      type: 'designer/delDesigner',
       payload: {
-        module: 'index-designer',
-        id: key,
+        designer_id: key,
       },
     });
   }
@@ -315,25 +309,25 @@ class editModal extends Component {
       },
     };
 
-    const columns = this.columns.map(col => {
+    const columns = this.columns.map((col,index) => {
       if (!col.editable) {
         return col;
       }
       return {
         ...col,
-        onCell: record => ({
+        onCell: (record,index) => ({
           record,
           inputType: 'text',
           dataIndex: col.dataIndex,
           title: col.title,
-          editing: this.isEditing(record),
+          editing: this.isEditing(index),
         }),
       };
     });
 
     const handleOk = () => {
       const { extra } = extraData
-      handleSaveExtra(extraData.id, extra)
+      handleSaveExtra(extraData.id, extra ? extra : {})
     }
 
     return (
@@ -344,7 +338,7 @@ class editModal extends Component {
         visible={editModalVisible}
         footer={[
             <Button key="cancel" size="large" onClick={() => handleCancel(false)}>取消</Button>,
-            <Button type="primary" key="ok" size="large" onClick={handleOk} loading={saveLoading}>保存 </Button>,
+            <Button type="primary" key="ok" size="large" disabled={!extra} onClick={handleOk} loading={saveLoading}>保存 </Button>,
           ]
         }
         width={520}

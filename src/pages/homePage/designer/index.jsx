@@ -225,16 +225,16 @@ class TableList extends React.Component {
     });
   };
 
-  save(form, key) {
+  save(form, currentKey) {
     form.validateFields((error, row) => {
       if (error) {
         return;
       }
 
       const { dispatch, designer } = this.props;
-      let { list } = designer;
+      let { list, key } = designer;
       const newData = list;
-      const index = newData.findIndex(item => key === item.id);
+      const index = newData.findIndex(item => currentKey === item.id);
 
       if (index > -1) {
         const item = newData[index];
@@ -242,8 +242,8 @@ class TableList extends React.Component {
         dispatch({
           type: 'designer/update',
           payload: {
-            module: 'index-designer',
-            id: key !== '0' ? key : undefined,
+            module: key,
+            id: currentKey !== '0' ? currentKey : undefined,
             title: row.title,
             //extra: row.extra,
           },
@@ -265,13 +265,14 @@ class TableList extends React.Component {
     });
   }
 
-  onDelete(key) {
-    const { dispatch } = this.props;
+  onDelete(currentKey) {
+    const { dispatch, designer } = this.props;
+    let { key } = designer;
     dispatch({
       type: 'designer/remove',
       payload: {
-        module: 'index-designer',
-        id: key,
+        module: key,
+        id:currentKey,
       },
     });
   }
@@ -352,7 +353,7 @@ class TableList extends React.Component {
       loading,
       dispatch,
     } = this.props;
-    const { editModalVisible,extraData } = designer
+    const { editModalVisible,extraData, key } = designer
     const components = {
       body: {
         cell: EditableCell,
@@ -384,14 +385,13 @@ class TableList extends React.Component {
       handleCancel: function (params) {
         onChangeVisible({ editModalVisible: params })
       },
-      handleSaveExtra: function (key,extra) {
-        console.log(extra)
+      handleSaveExtra: function (currentKey,extra) {
         // 保存编辑弹窗
         dispatch({
           type: 'designer/extraInfo',
           payload: { 
-            id:key,
-            module:'index-designer',
+            id:currentKey,
+            module:key,
             extra:JSON.stringify(extra)
            }
         })

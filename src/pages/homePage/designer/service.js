@@ -35,3 +35,17 @@ export async function extraInfo (params) {
     data: qs.stringify(params),
   });
 }
+
+export async function saveDesigner (params) {
+  return request('/_os/index.php?com=common&t=saveDesigner', {
+    method: 'post',
+    data: qs.stringify(params),
+  });
+}
+
+export async function delDesigner (params) {
+  return request('/_os/index.php?com=common&t=delDesigner', {
+    method: 'post',
+    data: qs.stringify(params),
+  });
+}
