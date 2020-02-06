@@ -180,7 +180,7 @@ const searchConfig = (item, langIndex) => { // 目前类型为input及select
     return (
       <Select placeholder={Array.isArray(item.placeholder) ? item.placeholder[langIndex] : item.placeholder} mode={selectType.length > 1 ? 'multiple' : ''} size="large" style={{ width: '100%' }} allowClear>
         {
-          item.options.map((option, index) => {
+          item.options && item.options.map((option, index) => {
             return (
               <Option value={String(option.value)} key={index}>{option.label}</Option>
             )

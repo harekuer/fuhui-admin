@@ -40,7 +40,7 @@ const Model = {
 
         yield put(
           routerRedux.replace({
-            pathname: '/osAdmin/home/search',
+            pathname: '/osAdmin/homePage/search',
           }),
         );
       }

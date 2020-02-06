@@ -1,5 +1,6 @@
 
 import { query, getList,getConfig  } from './service'
+import { routerRedux } from 'dva/router';
 
 const langIndex = 0 
 
@@ -68,8 +69,14 @@ export default {
               url: data.search.url,
             },
           })
+      } else if(code === 401){
+        yield put(
+            routerRedux.replace({
+              pathname: '/user/login',
+            }),
+        );
       } else {
-        throw message
+          throw message
       }
     },
 
@@ -91,9 +98,16 @@ export default {
                     },
                 },
             })
-        } else {
-            Error(message)
-        }
+          } 
+          // else if(code === 401){
+          //   yield put(
+          //       routerRedux.replace({
+          //         pathname: '/user/login',
+          //       }),
+          //   );
+          // } else {
+          //     throw message
+          // }
     },
 
     * searchList({ payload = {} }, { select, call, put }) {
@@ -132,9 +146,15 @@ export default {
               }
             },
           })
-      } else {
-          Error(message)
-      }
+        } else if(code === 401){
+          yield put(
+              routerRedux.replace({
+                pathname: '/user/login',
+              }),
+          );
+        } else {
+            throw message
+        }
     },
 
     * getDetail({ payload = {} }, { select, call, put }) {
@@ -164,9 +184,15 @@ export default {
               modalVisible: false,
             },
           })
-      } else {
-          Error(message)
-      }
+        } else if(code === 401){
+          yield put(
+              routerRedux.replace({
+                pathname: '/user/login',
+              }),
+          );
+        } else {
+            throw message
+        }
     },
 
 

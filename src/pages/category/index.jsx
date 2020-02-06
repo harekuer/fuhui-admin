@@ -9,8 +9,9 @@ import { connect } from 'dva'
 import SortList from './component/SortList'
 import styles from './List.less'
 
-@connect(({ category, loading }) => ({
+@connect(({ category, user,loading }) => ({
   category,
+  user,
   loading: loading.models.category,
 }))
 
@@ -34,15 +35,29 @@ class Category extends React.Component {
 
 
   render(){
-    const { location, dispatch, category, loading } = this.props
+    const { location, dispatch, category, user, loading } = this.props
     const { data, expandedRowKeys, status } = category
     const listLoading = loading
-
+    console.log(user.tabMenuList)
   const sortProps = {
     data: data,
     ids: expandedRowKeys,
     defaultStatus: status,
     addItem() {
+      const { tabMenuList } = user
+      const path = location.pathname
+      let obj ={}
+      tabMenuList.forEach(item => {
+        if(item.key === path){
+          obj.key 
+        }
+      })
+      dispatch({
+        type: 'category/singleRemove',
+        payload: {
+          categories_id: id,
+        },
+      })
       dispatch(routerRedux.replace({
         pathname: '/osAdmin/category/detail',
         state: {

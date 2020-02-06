@@ -20,6 +20,7 @@ const getTreeList = (nodeList) => {
       obj.tabName= item.name_en
       obj.autoConfig = item.route_backend
       obj.url = item.url
+      obj.isShow = item.is_show
       if (item.children) {
         // 递归处理树状结构
         obj.children = getTreeList(item.children)
@@ -73,10 +74,11 @@ const UserModel = {
   state: {
     currentUser: {
       name:'',
-      menuList: [],
-      tabMenuList: [],
-      activeTab: {},
     },
+    menuList: [],
+    tabMenuList: [],
+    activeTab: {},
+    changeActiveTab: false,
   },
   effects: {
     *fetch(_, { call, put }) {
@@ -96,7 +98,7 @@ const UserModel = {
         const tabMenuList = updateTreeList(list)
         const activeTab = getActiveTab(tabMenuList, location.pathname)
         yield put({
-          type: 'saveCurrentUser',
+          type: 'updateState',
           payload: {
             menuList: list,
             tabMenuList,
@@ -127,6 +129,13 @@ const UserModel = {
   reducers: {
     saveCurrentUser(state, action) {
       return { ...state, currentUser: { ...state.currentUser, ...action.payload } || {} };
+    },
+
+    updateState (state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+      }
     },
 
     changeNotifyCount(

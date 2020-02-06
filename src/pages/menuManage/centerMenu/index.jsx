@@ -30,7 +30,7 @@ class CenterMenu extends Component {
 
     const { loading, dispatch, centerMenu, } = this.props,
     queryLoading = loading.effects['centerMenu/query']      // 加载状态
-    const { app_id } = shopMenu
+    const { app_id } = centerMenu
 
     const {
       menuList,

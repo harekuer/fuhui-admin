@@ -558,5 +558,11 @@ export default {
       secure: false,
       pathRewrite: { '/_os/': '/_os/' },
     },
+    '/_shop/': {
+      target: 'https://beta.365fashion.com:8888/',
+      changeOrigin: true,
+      secure: false,
+      pathRewrite: { '/_shop/': '/_shop/' },
+    },
   },
 };

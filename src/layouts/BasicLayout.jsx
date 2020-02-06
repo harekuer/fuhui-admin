@@ -41,7 +41,9 @@ const menuDataRender = menuList =>
       ...item,
       children: item.children ? menuDataRender(item.children) : [] 
     };
-    return Authorized.check(item.authority, localItem, null);
+    if(item.isShow == '1'){
+      return Authorized.check(item.authority, localItem, null);
+    }
   });
 
 const defaultFooterDom = <DefaultFooter copyright="2019 Fu Hui Admin" links={[]} />;
@@ -166,7 +168,7 @@ class BasicLayout extends React.PureComponent {
     if(times === 0) {
       const initTab = location.pathname.split('/')
       const {routes} = nextProps.route,key = location.pathname; // routeKey 为设置首页设置
-      const {tabMenuList} = nextProps.user.currentUser
+      const {tabMenuList} = nextProps.user
       let routeLists = updateTree(routes);
       let tabLists = getTabList(routeLists,tabMenuList)
       let tabList=[],tabListArr=[];
@@ -388,7 +390,7 @@ class BasicLayout extends React.PureComponent {
             </Link>
           )}
           route={{
-            routes: user.currentUser.menuList,
+            routes: user.menuList,
           }}
           openKeys={false}
           onCollapse={this.handleMenuCollapse}
@@ -413,7 +415,7 @@ class BasicLayout extends React.PureComponent {
             );
           }}
           //menuDataRender={menuDataRender}
-          menuDataRender={() => menuDataRender(user.currentUser.menuList)}
+          menuDataRender={() => menuDataRender(user.menuList)}
           //formatMessage={formatMessage}
           rightContentRender={rightProps => <RightContent {...rightProps} />}
           {...this.props}
