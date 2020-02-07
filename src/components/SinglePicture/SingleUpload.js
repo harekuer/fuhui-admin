@@ -13,7 +13,14 @@ export default class SingleUpload extends React.Component {
     constructor (props) {
       super(props)
       const fileList = []
-      if (props.file) {
+      if (Array.isArray(props.file)) {
+        props.file.forEach((item,index) => {
+          fileList.push({
+            uid: index,
+            url: item,
+          })
+        })
+      } else {
         fileList.push({
           uid: 0,
           url: props.file,
@@ -81,7 +88,7 @@ export default class SingleUpload extends React.Component {
       newFile = newFile.map((file) => {
         if (file.response) {
           // Component will show file.url as link
-          file.url = `//${file.response.data.file_url}`
+          file.url = file.response.data.file_url
           file.path = file.response.data.file_key
         }
         return file
@@ -101,7 +108,7 @@ export default class SingleUpload extends React.Component {
         </div>
       )
       return (
-        <div className="clearfix">
+        <div className="clearfix inline">
           <Upload
             action={action || '/_os/index.php?com=common&t=imageUpload&module=index-spot-image'}
             name={name || 'upload_file'}

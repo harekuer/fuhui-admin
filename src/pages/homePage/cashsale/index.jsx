@@ -40,8 +40,44 @@ const EditableContext = React.createContext();
 class EditableCell extends React.Component {
   getInput = (record, setFieldsValue) => {
     if (this.props.inputType === 'upload') {
-      return <SingleUpload
+      if(record.module === 'index-spot-cate'){
+        return <SingleUpload
         limit={2}
+        file={record.image.split(',')}
+        isEdit={true}
+        action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
+        changeImage={(fileList) => {
+          const { dispatch } = this.props
+          let newData = this.props.record
+          let newList = this.props.list
+          let images = []
+          let allPath = []
+          if (fileList.length) {
+            images = fileList.map((item) => {
+              return item.path
+            })
+            allPath = fileList.map((item) => {
+              return item.url
+            })
+          }
+          newList.map(item => {
+            if(item.id === newData.id){
+              item.image = allPath.join(',')
+            }
+            return item
+          })
+          dispatch({
+            type: 'banner/updateState',
+            payload: {
+                list:newList,
+            },
+          })
+          setFieldsValue({image:images.join(',')})
+        }}
+      />;
+      }else {
+        return <SingleUpload
+        limit={1}
         file={record.image}
         isEdit={true}
         action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
@@ -54,18 +90,10 @@ class EditableCell extends React.Component {
             images = fileList.map((item) => {
               return item.path
             })
-            newList.map(item => {
-              if(item.id === newData.id){
-                item.image = `//:${fileList[0].url}`
-              }
-              return item
-            })
-          } else {
-            newList = []
           }
           newList.map(item => {
             if(item.id === newData.id){
-              item.image = `//:${fileList[0].url}`
+              item.image = fileList[0].url
             }
             return item
           })
@@ -78,6 +106,8 @@ class EditableCell extends React.Component {
           setFieldsValue({image:images[0]})
         }}
       />;
+      }
+      
     }
     return <Input />;
   };
@@ -214,7 +244,20 @@ class TableList extends React.Component {
           key: 'image',
           editable: true,
           render: (text, record) => {
-            return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
+            if(record.module === 'index-spot-cate') {
+              var images = text.split(',')
+              return (
+                <div>
+                  {
+                    images.map((item,index) => {
+                      return <SinglePicture limit={1} fileList={[item]} showRemove={false} />
+                    })
+                  }
+                </div>
+              )
+            } else {
+              return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
+            }
           },
         },
         {
@@ -351,6 +394,7 @@ class TableList extends React.Component {
             title: '',
             module: key,
             content: '',
+            image: '',
         }
         list.push(obj)
         dispatch({

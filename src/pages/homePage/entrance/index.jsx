@@ -56,7 +56,7 @@ class EditableCell extends React.Component {
             })
             newList.map(item => {
               if(item.id === newData.id){
-                item.image = `//:${fileList[0].url}`
+                item.image = `//${fileList[0].url}`
               }
               return item
             })

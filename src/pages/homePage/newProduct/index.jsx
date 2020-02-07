@@ -53,7 +53,7 @@ class EditableCell extends React.Component {
               });
               newList.map(item => {
                 if (item.id === newData.id) {
-                  item.image = fileList[0].url;
+                  item.image = `//${fileList[0].url}`;
                 }
                 return item;
               });
@@ -410,7 +410,7 @@ class TableList extends React.Component {
             />
           </DndProvider>
         </EditableContext.Provider>
-        {list.length < 5 ? (
+        {list.length < 3? (
           <div
             style={{
               width: '100%',
