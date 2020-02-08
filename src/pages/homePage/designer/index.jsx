@@ -1,10 +1,9 @@
 import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button, Tabs } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import lodash from 'lodash'
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
-import SinglePicture from '@/components/SinglePicture/SinglePicture.js';
 import update from 'immutability-helper';
 import EditModal from './components/editModal'
 import styles from './index.less';
@@ -129,9 +128,9 @@ class TableList extends React.Component {
     };
     this.columns = [
       {
-        title: '排序',
-        dataIndex: 'sort',
-        key: 'sort',
+        title: 'ID',
+        dataIndex: 'id',
+        key: 'id',
       },
       {
         title: '分类名称',
@@ -294,6 +293,7 @@ class TableList extends React.Component {
       editingKey: '0',
     });
   };
+
   onSaveSort = () => {
     const { dispatch, designer } = this.props;
     let { list, key  } = designer;
@@ -333,12 +333,20 @@ class TableList extends React.Component {
 
   handleChangeEditVisible = (id, state) => {
     const { dispatch, designer } = this.props;
-    let { key,list } = designer;
+    let { list } = designer;
+    let newExtra = lodash.cloneDeep(list[id])
+    if(newExtra.extra === null){
+      newExtra.extra = {
+        level: 'A',
+        group: 2,
+        rows:[]
+      }
+    }
     dispatch({
       type: 'designer/updateState',
       payload: {
         editModalVisible: state,
-        extraData:list[id]
+        extraData: newExtra
       }
     })
 
@@ -437,7 +445,7 @@ class TableList extends React.Component {
               </DndProvider>
             </EditableContext.Provider>
 
-            <EditModal {...editProps} />
+            {editModalVisible && <EditModal {...editProps} />}
 
             {list.length < 5 ? (
               <div
@@ -476,7 +484,7 @@ class TableList extends React.Component {
               </DndProvider>
             </EditableContext.Provider>
 
-            <EditModal {...editProps} />
+            {editModalVisible && <EditModal {...editProps} />}
 
             {list.length < 5 ? (
               <div

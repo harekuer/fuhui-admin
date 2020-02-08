@@ -244,7 +244,6 @@ class TableList extends React.Component {
           editable: true,
           render: (text, record) => {
             if(record.module === 'index-customized-cate') {
-              console.log(record)
               var images = text.split(',')
               return (
                 <div>

@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Button, Modal, Spin, Form, Input, InputNumber, Checkbox, Radio,Popconfirm } from 'antd'
+import { Table, Button, Modal, Spin, Form, Input, InputNumber, Select,Popconfirm } from 'antd'
 import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 
 let dragingIndex = -1;
+const { Option } = Select;
+
 class BodyRow extends React.Component {
   render() {
     const { isOver, connectDragSource, connectDropTarget, moveRow, ...restProps } = this.props;
@@ -121,7 +123,7 @@ class editModal extends Component {
     super(props);
     this.state = {
       data: props.list,
-      editingKey: '',
+      editingKey: -1,
     };
     this.columns = [
       {
@@ -157,18 +159,15 @@ class editModal extends Component {
                     </a>
                 )}
               </EditableContext.Consumer>
-              <Popconfirm title="取消编辑?" onConfirm={() => this.cancel(index)}>
+              <Popconfirm title="确定撤销编辑?" onConfirm={() => this.cancel(index)}>
                 <a>取消</a>
               </Popconfirm>
             </span>
           ) : (
               <span>
-                <a disabled={editingKey !== ''} onClick={() => this.edit(index)} style={{ marginRight: 8 }}>
+                <a disabled={editingKey !== -1} onClick={() => this.edit(index)}>
                   编辑
                   </a>
-                  {
-                    record.id == '0'? null : <a onClick={() => this.onDelete(index)}>删除</a>
-                  }
               </span>
             );
         },
@@ -201,7 +200,7 @@ class editModal extends Component {
   isEditing = index => index === this.state.editingKey;
   cancel = () => {
     this.setState({
-      editingKey: '',
+      editingKey: -1,
     });
   };
 
@@ -252,21 +251,25 @@ class editModal extends Component {
 
   onAdd = () => {
     const { dispatch, designer } = this.props;
-    let { list } = designer;
-    let obj = {
-      id: '0',
-      sort: '',
-      title: '',
-    };
-    list.push(obj);
+    let { extraData, key } = designer;
+    let extraObj = {}
+    if(key === 'index-designer'){
+      extraObj.designer_id= ''
+    } else {
+      extraObj.factory_id = ''
+    }
+    extraData.extra.rows.push(extraObj);
     dispatch({
-      type: 'designer/queryList',
-      payload: list,
+      type: 'designer/updateState',
+      payload: {
+        extraData,
+      }
     });
     this.setState({
-      editingKey: '0',
+      editingKey: 0,
     });
   };
+
   onSaveSort = () => {
     const { dispatch, designer } = this.props;
     let { list, key } = designer;
@@ -302,6 +305,7 @@ class editModal extends Component {
       },
     } = this.props
     const { extra } = extraData
+
     const components = {
       body: {
         cell: EditableCell,
@@ -330,6 +334,21 @@ class editModal extends Component {
       handleSaveExtra(extraData.id, extra ? extra : {})
     }
 
+    const handleChange = (value) => {
+      const { dispatch } = this.props;
+      let { extra } = extraData
+      extra.level = value
+      dispatch({
+        type: 'designer/updateState',
+        payload: {
+          extraData: {
+            ...extraData,
+            extra,
+          }
+        },
+      });
+    }
+
     return (
 
       <Modal
@@ -346,6 +365,15 @@ class editModal extends Component {
         maskClosable={false}
       >
         <Spin tip="Loading..." spinning={infoLoading}>
+          <div style={{marginBottom: '15px'}}>
+            <label>等级：</label>
+            <Select defaultValue="A" style={{ width: 150 }} onChange={handleChange}>
+              <Option value="A">A</Option>
+              <Option value="B">B</Option>
+              <Option value="C" >C</Option>
+              <Option value="D">D</Option>
+            </Select>
+          </div>
           <EditableContext.Provider value={this.props.form}>
             <DndProvider backend={HTML5Backend} context={window}>
               <Table
@@ -364,6 +392,18 @@ class editModal extends Component {
 
             </DndProvider>
           </EditableContext.Provider>
+          {extra.rows.length < 2 ? (
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '10px',
+                }}
+              >
+                <Button onClick={this.onAdd} disabled={this.state.editingKey !== -1} block>
+                  +新增
+            </Button>
+              </div>
+            ) : null}
         </Spin>
       </Modal>
     );
