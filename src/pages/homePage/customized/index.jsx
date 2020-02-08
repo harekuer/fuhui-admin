@@ -40,7 +40,43 @@ const EditableContext = React.createContext();
 class EditableCell extends React.Component {
   getInput = (record, setFieldsValue) => {
     if (this.props.inputType === 'upload') {
-      return <SingleUpload
+      if(record.module === 'index-customized-cate'){
+        return <SingleUpload
+        limit={2}
+        file={record.image.split(',')}
+        isEdit={true}
+        action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
+        changeImage={(fileList) => {
+          const { dispatch } = this.props
+          let newData = this.props.record
+          let newList = this.props.list
+          let images = []
+          let allPath = []
+          if (fileList.length) {
+            images = fileList.map((item) => {
+              return item.path? item.path : item.url
+            })
+            allPath = fileList.map((item) => {
+              return item.url
+            })
+          }
+          newList.map(item => {
+            if(item.id === newData.id){
+              item.image = allPath.join(',')
+            }
+            return item
+          })
+          dispatch({
+            type: 'banner/updateState',
+            payload: {
+                list:newList,
+            },
+          })
+          setFieldsValue({image: allPath.join(',')})
+        }}
+      />;
+      }else {
+        return <SingleUpload
         limit={1}
         file={record.image}
         isEdit={true}
@@ -54,15 +90,13 @@ class EditableCell extends React.Component {
             images = fileList.map((item) => {
               return item.path
             })
-            newList.map(item => {
-              if(item.id === newData.id){
-                item.image = `//${fileList[0].url}`
-              }
-              return item
-            })
-          } else {
-            newList = []
           }
+          newList.map(item => {
+            if(item.id === newData.id){
+              item.image = fileList.length ?fileList[0].url : ''
+            }
+            return item
+          })
           dispatch({
             type: 'banner/updateState',
             payload: {
@@ -72,6 +106,7 @@ class EditableCell extends React.Component {
           setFieldsValue({image:images[0]})
         }}
       />;
+      }
     }
     return <Input />;
   };
@@ -208,7 +243,21 @@ class TableList extends React.Component {
           key: 'image',
           editable: true,
           render: (text, record) => {
-            return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
+            if(record.module === 'index-customized-cate') {
+              console.log(record)
+              var images = text.split(',')
+              return (
+                <div>
+                  {
+                    images.map((item,index) => {
+                      return <SinglePicture key={index} limit={1} fileList={[item]} showRemove={false} />
+                    })
+                  }
+                </div>
+              )
+            } else {
+              return <SinglePicture limit={1} fileList={[text]} showRemove={false} />
+            }
           },
         },
         {
@@ -306,6 +355,14 @@ class TableList extends React.Component {
             const index = newData.findIndex(item => currentKey === item.id);
             
             if (index > -1) {
+              let images = row.image
+              let imgArr = images.split(',')
+              let relPath = []
+              relPath = imgArr.map(item=>{
+                const path = item.split('upload')
+                const imgPath = path[path.length -1]
+                return `upload${imgPath}`
+              })
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
@@ -313,7 +370,7 @@ class TableList extends React.Component {
                     payload: {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
-                        image: row.image,
+                        image: relPath.join(','),
                         url: row.url,
                         title: row.title,
                         content: key === 'index-customized-image' ? row.content : undefined
@@ -345,6 +402,7 @@ class TableList extends React.Component {
             title: '',
             content: '',
             module: key,
+            image: '',
         }
         list.push(obj)
         dispatch({

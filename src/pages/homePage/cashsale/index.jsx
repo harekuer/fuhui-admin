@@ -54,7 +54,7 @@ class EditableCell extends React.Component {
           let allPath = []
           if (fileList.length) {
             images = fileList.map((item) => {
-              return item.path
+              return item.path? item.path : item.url
             })
             allPath = fileList.map((item) => {
               return item.url
@@ -72,7 +72,7 @@ class EditableCell extends React.Component {
                 list:newList,
             },
           })
-          setFieldsValue({image:images.join(',')})
+          setFieldsValue({image: allPath.join(',')})
         }}
       />;
       }else {
@@ -250,7 +250,7 @@ class TableList extends React.Component {
                 <div>
                   {
                     images.map((item,index) => {
-                      return <SinglePicture limit={1} fileList={[item]} showRemove={false} />
+                      return <SinglePicture key={index} limit={1} fileList={[item]} showRemove={false} />
                     })
                   }
                 </div>
@@ -353,8 +353,15 @@ class TableList extends React.Component {
             let { list,key } = cashsale;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
-            
             if (index > -1) {
+              let images = row.image
+              let imgArr = images.split(',')
+              let relPath = []
+              relPath = imgArr.map(item=>{
+                const path = item.split('upload')
+                const imgPath = path[path.length -1]
+                return `upload${imgPath}`
+              })
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
@@ -362,7 +369,7 @@ class TableList extends React.Component {
                     payload: {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
-                        image: row.image,
+                        image: relPath.join(','),
                         url: row.url,
                         title: row.title,
                         content: key === 'index-spot-image'? row.content : undefined,
