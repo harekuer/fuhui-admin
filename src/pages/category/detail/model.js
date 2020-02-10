@@ -27,7 +27,7 @@ export default {
     setup ({ dispatch, history }) {
       history.listen((location) => {
         const match = pathToRegexp('/osAdmin/category/detail').exec(location.pathname);
-        const { query } = location;
+        const { state } = location;
         if (match) {
           dispatch({
             type: 'querySuccess',
@@ -46,7 +46,7 @@ export default {
               },
             },
           })
-          if(query.type === 'update') {
+          if(state.type === 'update') {
             dispatch({
               type: 'query',
               payload: {
@@ -91,11 +91,9 @@ export default {
     },
 
     * add ({ payload }, { call, put }) {
-      const result = yield call(create, payload)
+      const result = yield call(update, payload)
       if (result.code === 200) {
-        yield put(routerRedux.push({
-          pathname: '/admin/category',
-        }))
+        message.success(result.message)
       } else {
         throw result.message
       }

@@ -338,7 +338,7 @@ class TableList extends React.Component {
     if(newExtra.extra === null){
       newExtra.extra = {
         level: 'A',
-        group: 2,
+        groups: 2,
         rows:[]
       }
     }
@@ -362,6 +362,7 @@ class TableList extends React.Component {
       dispatch,
     } = this.props;
     const { editModalVisible,extraData, key } = designer
+    console.log(key)
     const components = {
       body: {
         cell: EditableCell,
@@ -388,6 +389,7 @@ class TableList extends React.Component {
     const editProps = {
       editModalVisible,
       extraData,
+      tabkey:key,
       infoLoading: loading.effects['designer/fetch'],
       saveLoading:loading.effects['designer/extraInfo'],
       handleCancel: function (params) {

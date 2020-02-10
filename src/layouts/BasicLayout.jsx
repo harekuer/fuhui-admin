@@ -167,7 +167,7 @@ class BasicLayout extends React.PureComponent {
     let times = prevState.tabList.length;
     if(times === 0) {
       const initTab = location.pathname.split('/')
-      const {routes} = nextProps.route,key = location.pathname; // routeKey 为设置首页设置
+      const {routes} = nextProps.route,key = location.pathname.replace('/detail',''); // routeKey 为设置首页设置
       const {tabMenuList} = nextProps.user
       let routeLists = updateTree(routes);
       let tabLists = getTabList(routeLists,tabMenuList)
@@ -188,10 +188,34 @@ class BasicLayout extends React.PureComponent {
         tabLists,
         tabListArr,
       }
+    } else if(!!nextProps.user.changeActiveTab){
+      let { tabList,tabListArr, activeKey } = prevState
+      const {routes} = nextProps.route
+      let { activeTab } = nextProps.user
+      let routeLists = updateTree(routes);
+      routeLists.forEach((v) => {
+        if(v.key === activeTab.key){
+          activeTab.content = v.content
+        }
+      });
+      tabList.push(activeTab)
+      tabListArr.push(activeTab.key)
+      activeKey = activeTab.key
+      const { dispatch } = nextProps
+      dispatch({
+        type: 'user/updateState',
+        payload: {
+          changeActiveTab: false
+        }
+      });
+      return {
+        tabList,
+        tabListArr,
+        activeKey,
+      }
     } else {
       return null
     }
-    
   }
 
   componentDidMount() {
@@ -398,7 +422,6 @@ class BasicLayout extends React.PureComponent {
             if (menuItemProps.isUrl || menuItemProps.children) {
               return defaultDom;
             }
-  
             return (
               <Link to={menuItemProps.path} onClick={() => this.onHandlePage(menuItemProps)}>
                 {defaultDom}

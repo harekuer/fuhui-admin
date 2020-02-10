@@ -18,8 +18,8 @@ class Tool extends Component {
   componentDidMount() {
     const { dispatch, user } = this.props;
     let url = '/_os/index.php?com=index&t=tableConfig'
-    if(user.currentUser.activeTab.url != ''){
-      url = user.currentUser.activeTab.url
+    if(user.activeTab.url != ''){
+      url = user.activeTab.url
     }
 
     dispatch({

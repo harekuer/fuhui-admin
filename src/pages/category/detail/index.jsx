@@ -46,9 +46,8 @@ const Detail = ({
       }
       const data = {
         ...getFieldsValue(),
-        categories_description: UE.getEditor('description').getContent(),
       }
-      if(query.type === UPDATE) {
+      if(state.type === UPDATE) {
         dispatch({
           type: 'categoryDetail/change',
           payload: {
@@ -80,8 +79,8 @@ const Detail = ({
       let obj = {};
       obj.key = item.categories_id;
       obj.value = item.categories_id;
-      obj.label = item.categories_name;
-      if(Number(item.child_num) > 0) {
+      obj.title = item.categories_name;
+      if(item.children) {
         obj.children = categoryTreeList(item.children)
       }
       list.push(obj)
@@ -89,7 +88,7 @@ const Detail = ({
     return list
   }
 
-  const treeData = query.type === UPDATE? categoryTreeList(data.categoriesArr) : categoryTreeList(categoryList);
+  const treeData = state.type === UPDATE? categoryTreeList(data.categoriesArr) : categoryTreeList(categoryList);
 
   const categoryForm = [
     {
@@ -116,7 +115,7 @@ const Detail = ({
       rules: [{ required: true, message: '请输入分类名称', max: 255,}],
       hasFeedback: true,
       node: (
-        <Input maxLength="255"/>
+        <Input maxLength={255}/>
       )
     },
     {
@@ -173,15 +172,15 @@ const Detail = ({
                 )
               })
             }
-            <FormItem label='Date' {...formItemLayout}>
+            {/* <FormItem label='Date' {...formItemLayout}>
               {
                 state.type === 'create' ?
                 <span>{nowTime}</span> : <span>{moment(data.add_time).format('YYYY-MM-DD')}</span>
               }
-            </FormItem>
+            </FormItem> */}
             <FormItem {...buttonItemLayout}>
-              <Button type="primary" onClick={() => saveEdit()}>Save</Button>
-              <Button style={{ marginLeft: '15px' }} onClick={() => goBack()}>Back</Button>
+              <Button type="primary" onClick={() => saveEdit()}>保存</Button>
+              <Button style={{ marginLeft: '15px' }} onClick={() => goBack()}>返回</Button>
             </FormItem>
           </Form>
         </div>

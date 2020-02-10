@@ -103,9 +103,13 @@ const Model = {
             extraData:{}
           }
         })
+        yield put({
+          type: 'fetch',
+          payload: {
+            module: payload.module,
+          },
+        });
         message.success(response.message)
-        
-
       } else if (code === 401) {
         yield put(
           routerRedux.replace({

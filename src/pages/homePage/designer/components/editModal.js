@@ -135,9 +135,9 @@ class editModal extends Component {
         }
       },
       {
-        title: '设计师ID',
-        dataIndex: 'designer_id',
-        key: 'designer_id',
+        title: props.tabkey === 'index-designer' ? '设计师ID' : '工厂ID',
+        dataIndex: props.tabkey === 'index-designer' ? 'designer_id' : 'factory_id',
+        key: props.tabkey === 'index-designer' ? 'designer_id' : 'factory_id',
         editable: true,
       },
       {
@@ -217,17 +217,23 @@ class editModal extends Component {
         const item = newData[key];
         newData.splice(key, 1, { ...item, ...row });
         dispatch({
-          type: 'designer/saveDesigner',
+          type: 'designer/updateState',
           payload: {
-            designer_id: row.designer_id,
+            extraData: {
+              ...extraData,
+              extra: {
+                ...extra,
+                rows: newData,
+              }
+            }
           },
         });
         this.setState({
-          editingKey: '',
+          editingKey: -1,
         });
       } else {
         this.setState({
-          editingKey: '',
+          editingKey: -1,
         });
       }
     });
@@ -266,7 +272,7 @@ class editModal extends Component {
       }
     });
     this.setState({
-      editingKey: 0,
+      editingKey: extraData.extra.rows.length - 1,
     });
   };
 
@@ -294,6 +300,7 @@ class editModal extends Component {
     const {
       editModalVisible,
       extraData, 
+      tabkey,
       infoLoading,
       saveLoading,
       handleCancel,

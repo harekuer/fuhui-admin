@@ -38,7 +38,6 @@ class Category extends React.Component {
     const { location, dispatch, category, user, loading } = this.props
     const { data, expandedRowKeys, status } = category
     const listLoading = loading
-    console.log(user.tabMenuList)
   const sortProps = {
     data: data,
     ids: expandedRowKeys,
@@ -48,14 +47,20 @@ class Category extends React.Component {
       const path = location.pathname
       let obj ={}
       tabMenuList.forEach(item => {
-        if(item.key === path){
-          obj.key 
+        if(item.key === '/osAdmin/category/detail'){
+          obj.activeTab = {
+            ...item,
+            state: {
+              type: 'create'
+            }
+          }
+          obj.changeActiveTab = true
         }
       })
       dispatch({
-        type: 'category/singleRemove',
+        type: 'user/updateState',
         payload: {
-          categories_id: id,
+          ...obj,
         },
       })
       dispatch(routerRedux.replace({
