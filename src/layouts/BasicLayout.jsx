@@ -149,7 +149,8 @@ class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
     const initTab = location.pathname.split('/')
-    const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; // routeKey 为设置首页设置
+    const {routes} = props.route,key = location.pathname,tabName = initTab[initTab.length - 1]; 
+    const routeKey = '/osAdmin/dashboard' // routeKey 为设置首页设置
     
     let tabList=[],tabListArr=[];
     //获取所有已存在key值
@@ -159,7 +160,7 @@ class BasicLayout extends React.PureComponent {
         activeKey:key,
         tabListArr,
         tabLists: [],
-        routeKey: key,
+        routeKey: routeKey,
     })
   }
 
@@ -167,17 +168,19 @@ class BasicLayout extends React.PureComponent {
     let times = prevState.tabList.length;
     if(times === 0) {
       const initTab = location.pathname.split('/')
-      const {routes} = nextProps.route,key = location.pathname.replace('/detail',''); // routeKey 为设置首页设置
+      const {routes} = nextProps.route,key = location.pathname.replace('/detail',''); 
+      const routeKey = '/osAdmin/dashboard' // routeKey 为设置首页设置
       const {tabMenuList} = nextProps.user
       let routeLists = updateTree(routes);
       let tabLists = getTabList(routeLists,tabMenuList)
       let tabList=[],tabListArr=[];
       tabLists.map((v) => {
-        if(v.key === key){
-          if(tabList.length === 0){
-            v.closable = false
+        if(v.key === routeKey) {
+          v.closable = false
+          tabList.splice(0, 0, v);
+        } else if(v.key !== routeKey && v.key === key){
+            v.closable = true
             tabList.push(v);
-          }
         }
         if(v.key){
           tabListArr.push(v.key)
@@ -189,17 +192,28 @@ class BasicLayout extends React.PureComponent {
         tabListArr,
       }
     } else if(!!nextProps.user.changeActiveTab){
-      let { tabList,tabListArr, activeKey } = prevState
+      let { tabList,tabListArr, activeKey,tabListKey } = prevState
       const {routes} = nextProps.route
       let { activeTab } = nextProps.user
-      let routeLists = updateTree(routes);
-      routeLists.forEach((v) => {
-        if(v.key === activeTab.key){
-          activeTab.content = v.content
-        }
-      });
-      tabList.push(activeTab)
-      tabListArr.push(activeTab.key)
+      
+      if(!tabListKey.includes(activeTab.key)){
+        let routeLists = updateTree(routes);
+        routeLists.forEach((v) => {
+          if(v.key === activeTab.key){
+            activeTab.content = v.content
+          }
+        });
+        tabListArr.push(activeTab.key)
+        tabListKey.push(activeTab.key)
+        tabList.push(activeTab)
+      } else {
+        tabList.map(item => {
+          if(item.key === activeTab.key){
+            item.state = activeTab.state
+          }
+          return item
+        })
+      }
       activeKey = activeTab.key
       const { dispatch } = nextProps
       dispatch({
@@ -211,6 +225,7 @@ class BasicLayout extends React.PureComponent {
       return {
         tabList,
         tabListArr,
+        tabListKey,
         activeKey,
       }
     } else {
@@ -249,7 +264,7 @@ class BasicLayout extends React.PureComponent {
     const {tabLists,tabListKey,tabList,tabListArr} =  this.state;
     const { dispatch } = this.props
     dispatch({
-      type: 'user/saveCurrentUser',
+      type: 'user/updateState',
       payload: {
         activeTab: props
       }
@@ -284,9 +299,9 @@ class BasicLayout extends React.PureComponent {
   };
 
   onClickHover = e => {
-    let { key } = e,{activeKey,tabList,tabListKey,routeKey} = this.state;
-
-    if (key === '1') {
+    let { key } = e,{activeKey,tabList,tabListKey,routeKey,tabLists} = this.state;
+    const { dispatch } = this.props
+    if (key === '1') {//关闭当前tab
       tabList= tabList.filter((v)=>v.key !== activeKey || v.key === routeKey)
       tabListKey = tabListKey.filter((v)=>v !== activeKey || v === routeKey)
       this.setState({
@@ -294,7 +309,7 @@ class BasicLayout extends React.PureComponent {
         tabList,
         tabListKey
       })
-    } else if (key === '2') {
+    } else if (key === '2') {//关闭其他
       tabList= tabList.filter((v)=>v.key === activeKey || v.key === routeKey)
       tabListKey = tabListKey.filter((v)=>v === activeKey || v === routeKey)
       this.setState({
@@ -302,13 +317,20 @@ class BasicLayout extends React.PureComponent {
         tabList,
         tabListKey
       })
-    } else if (key === '3') {
+    } else if (key === '3') { //关闭全部
       tabList= tabList.filter((v)=>v.key === routeKey)
       tabListKey = tabListKey.filter((v)=>v === routeKey)
+      dispatch({
+        type: 'user/updateState',
+        payload: {
+          activeTab:tabList[0],
+        }
+      });
+      router.push(routeKey)
       this.setState({
         activeKey:routeKey,
         tabList,
-        tabListKey
+        tabListKey,
       })
     }
   };
@@ -336,12 +358,21 @@ class BasicLayout extends React.PureComponent {
           activeTab = tabList[lastIndex]
       }
       dispatch({
-        type: 'user/saveCurrentUser',
+        type: 'user/updateState',
         payload: {
           activeTab,
         }
       });
-      router.push(activeKey)
+      if(activeTab.state){
+        router.push({
+          pathname: activeKey,
+          state: {
+            ...activeTab.state
+          }
+        });
+      } else {
+        router.push(activeKey);
+      }
       this.setState({ tabList, activeKey,tabListKey });
     }
   };
@@ -360,12 +391,21 @@ class BasicLayout extends React.PureComponent {
       }
     })
     dispatch({
-      type: 'user/saveCurrentUser',
+      type: 'user/updateState',
       payload: {
         activeTab,
       }
     });
-    router.push(key);
+    if(activeTab.state){
+      router.push({
+        pathname: key,
+        state: {
+          ...activeTab.state
+        }
+      });
+    } else {
+      router.push(key);
+    }
   };
 
   render() {
@@ -389,9 +429,9 @@ class BasicLayout extends React.PureComponent {
     };
     const menu = (
       <Menu onClick={this.onClickHover}>
-        <Menu.Item key="1">关闭当前菜单</Menu.Item>
+        {/* <Menu.Item key="1">关闭当前菜单</Menu.Item> */}
         <Menu.Item key="2">关闭其他菜单</Menu.Item>
-        {/* <Menu.Item key="3">关闭全部菜单</Menu.Item> */}
+        <Menu.Item key="3">关闭全部菜单</Menu.Item>
       </Menu>
     );
     const operations = (
@@ -456,7 +496,7 @@ class BasicLayout extends React.PureComponent {
               lassName={styles.multitabs}
               activeKey={activeKey}
               onChange={this.onChange}
-              //tabBarExtraContent={operations}
+              tabBarExtraContent={operations}
               tabBarStyle={{ background: '#fff' }}
               tabPosition="top"
               tabBarGutter={-1}
@@ -468,7 +508,7 @@ class BasicLayout extends React.PureComponent {
                 <TabPane
                   tab={item.tab}
                   key={item.key}
-                  closable={true}
+                  closable={item.closable}
                 >
                   <Authorized authority={authorized.authority} noMatch={noMatch}>
                     <Route

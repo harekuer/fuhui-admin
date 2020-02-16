@@ -36,4 +36,12 @@ export async function categoryTree (params) {
   });
 }
 
+export async function detail (params) {
+  return request('/_os/index.php?com=category&t=getCategoryInfo', {
+    method: 'post',
+    data: qs.stringify(params),
+  });
+}
+
+
 

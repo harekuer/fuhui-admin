@@ -71,9 +71,29 @@ class Category extends React.Component {
       }))
     },
     toEditPage(id) {
+      const { tabMenuList } = user
+      let obj ={}
+      tabMenuList.forEach(item => {
+        if(item.key === '/osAdmin/category/detail'){
+          obj.activeTab = {
+            ...item,
+            state: {
+              category: id,
+              type: 'update',
+            }
+          }
+          obj.changeActiveTab = true
+        }
+      })
+      dispatch({
+        type: 'user/updateState',
+        payload: {
+          ...obj,
+        },
+      })
       dispatch(routerRedux.replace({
-        pathname: '/admin/category/detail',
-        query: {
+        pathname: '/osAdmin/category/detail',
+        state: {
           category: id,
           type: 'update',
         },

@@ -115,7 +115,7 @@ export default class SortList extends Component {
           <div className={styles.list_tree}>
             <SortableTree
               treeData={this.state.treeData}
-              canDrag={false}   // 禁止拖动
+              //canDrag={false}   // 禁止拖动
               onChange={treeData => {
                 const ids = this.treeExpandedKeys(treeData, [])
                 this.setState({

@@ -43,7 +43,6 @@ export default {
   subscriptions: {
     setup ({ dispatch, history }) {
       history.listen((location) => {
-          
         if (location.pathname === '/osAdmin/category') {
           dispatch({
             type: 'updateState',

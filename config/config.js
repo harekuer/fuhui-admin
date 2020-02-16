@@ -128,6 +128,12 @@ export default {
               icon: 'dashboard',
               routes: [
                 {
+                  name: 'analysis',
+                  icon: 'smile',
+                  path: '/osAdmin/dashboard',
+                  component: './dashboard/analysis',
+                },
+                {
                   name: 'search',
                   icon: 'search',
                   path: '/osAdmin/homePage/search',
@@ -203,6 +209,12 @@ export default {
               component: './form/basic-form',
             },
             {
+              name: '商品编辑',
+              icon: 'menu',
+              path: '/osAdmin/product/detail',
+              component: './product',
+            },
+            {
               path: '/osAdmin/client',
               icon: 'form',
               name: 'client',
@@ -238,6 +250,7 @@ export default {
                 },
               ],
             },
+
             {
               path: '/',
               redirect: '/osAdmin/dashboard/analysis',

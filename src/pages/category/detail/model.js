@@ -46,18 +46,19 @@ export default {
               },
             },
           })
+          dispatch({
+            type: 'getCategoryTree',
+          })
           if(state.type === 'update') {
+            
             dispatch({
               type: 'query',
               payload: {
-                categories_id: query.category,
+                categories_id: state.category,
               }
             })
-          } else {
-            dispatch({
-              type: 'getCategoryTree',
-            })
           }
+
         }
       })
     },
@@ -82,9 +83,7 @@ export default {
     * change ({ payload }, { call, put }) {
       const result = yield call(update, payload)
       if (result.code === 200) {
-        yield put(routerRedux.push({
-          pathname: '/admin/category',
-        }))
+        message(result.message)
       } else {
         throw result.message
       }

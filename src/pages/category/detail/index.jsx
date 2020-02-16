@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Form, Input, Button, TreeSelect, Card } from 'antd'
-import { GridContent } from '@ant-design/pro-layout';
 import moment from 'moment'
 
 import styles from './index.less'
@@ -44,22 +43,22 @@ const Detail = ({
       if (errors) {
         return
       }
-      const data = {
+      const formData = {
         ...getFieldsValue(),
       }
       if(state.type === UPDATE) {
         dispatch({
           type: 'categoryDetail/change',
           payload: {
-            ...data,
-            categories_id: query.category,
+            ...formData,
+            categories_id: data.categories_id,
           },
         })
       } else {
         dispatch({
           type: 'categoryDetail/add',
           payload: {
-            ...data,
+            ...formData,
           },
         })
       }
@@ -88,7 +87,7 @@ const Detail = ({
     return list
   }
 
-  const treeData = state.type === UPDATE? categoryTreeList(data.categoriesArr) : categoryTreeList(categoryList);
+  const treeData = categoryTreeList(categoryList);
 
   const categoryForm = [
     {
