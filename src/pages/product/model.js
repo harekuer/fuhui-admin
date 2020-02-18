@@ -5,7 +5,9 @@ import { message} from 'antd';
 const Model = {
   namespace: 'productDetail',
   state: {
-    data: {},
+    data: {
+      productKeywords: ['']
+    },
     config: {},
   },
   effects: {

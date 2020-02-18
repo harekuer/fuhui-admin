@@ -49,7 +49,7 @@ export default {
           dispatch({
             type: 'getCategoryTree',
           })
-          if(state.type === 'update') {
+          if(state.type && state.type === 'update') {
             
             dispatch({
               type: 'query',

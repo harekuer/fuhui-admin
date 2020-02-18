@@ -15,6 +15,7 @@ import {
   import { PageHeaderWrapper } from '@ant-design/pro-layout';
   import { connect } from 'dva';
   import styles from './style.less';
+import { array } from 'prop-types';
   
   const FormItem = Form.Item;
   const { Option } = Select;
@@ -50,7 +51,7 @@ import {
     }
   
     render() {
-      const { submitting,productDetail } = this.props;
+      const { submitting,productDetail, dispatch } = this.props;
       const { data, config } = productDetail
       const { 
         form: { getFieldDecorator, getFieldValue },
@@ -61,7 +62,7 @@ import {
             span: 24,
           },
           sm: {
-            span: 5,
+            span: 4,
           },
         },
         wrapperCol: {
@@ -88,9 +89,20 @@ import {
           },
         },
       };
+
+      const addKeywords = () => {
+        let newData = data
+        newData.productKeywords.push('')
+        dispatch({
+          type: 'productDetail/updateState',
+          payload: {
+            data: newData,
+          }
+        });
+      }
+
       return (
-        <PageHeaderWrapper content=''>
-          <Card bordered={false}>
+        <Card bordered={false}>
             <Form
               onSubmit={this.handleSubmit}
               hideRequiredMark
@@ -117,6 +129,7 @@ import {
                   }
               >
                 {getFieldDecorator('productTitle', {
+                  initialValue: data.productTitle,
                   rules: [
                     {
                       required: true,
@@ -149,29 +162,36 @@ import {
                   }
               >
                 {getFieldDecorator('productKeywords', {
+                  initialValue: data.productKeywords,
                   rules: [
                     {
                       required: true,
-                      message: formatMessage({
-                        id: 'formandbasic-form.date.required',
-                      }),
+                      type: array,
+                      message: '请至少填写一个关键词',
                     },
                   ],
                 })(
-                  <RangePicker
-                    style={{
-                      width: '100%',
-                    }}
-                    placeholder={[
-                      formatMessage({
-                        id: 'formandbasic-form.placeholder.start',
-                      }),
-                      formatMessage({
-                        id: 'formandbasic-form.placeholder.end',
-                      }),
-                    ]}
-                  />,
+                  <ul style={{paddingLeft: '0'}}>
+                    {
+                      data.productKeywords && data.productKeywords.map((item,index) => {
+                        return (
+                          <li>
+                            <Input
+                              value={item}
+                              style={{width: '95%'}}
+                              placeholder={config.productKeywords && index === 0 ? config.productKeywords.props.placeholder : ''}
+                              maxLength={config.productKeywords ? config.productKeywords.props.maxLength : 255}
+                            />
+                            {data.productKeywords && data.productKeywords.length < 2 ? null : <Icon type="delete" />}
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
+                  
                 )}
+                <div> {config.productKeywords ? config.productKeywords.props.info.bottom : ''} </div>
+                {data.productKeywords && data.productKeywords.length < 3 ? <Button onClick={addKeywords}>  + 添加更多关键词 </Button> : null}
               </FormItem>
               <FormItem
                 {...formItemLayout}
@@ -361,7 +381,6 @@ import {
               </FormItem>
             </Form>
           </Card>
-        </PageHeaderWrapper>
       );
     }
   }

@@ -168,7 +168,7 @@ class BasicLayout extends React.PureComponent {
     let times = prevState.tabList.length;
     if(times === 0) {
       const initTab = location.pathname.split('/')
-      const {routes} = nextProps.route,key = location.pathname.replace('/detail',''); 
+      const {routes} = nextProps.route,key = location.pathname; 
       const routeKey = '/osAdmin/dashboard' // routeKey 为设置首页设置
       const {tabMenuList} = nextProps.user
       let routeLists = updateTree(routes);

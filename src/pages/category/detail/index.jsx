@@ -25,7 +25,7 @@ const Detail = ({
 }) => {
   const { data, categoryList } = categoryDetail;
   const { state } = location;
-  const dataLoading = state.type === 'update'? loading.effects['categoryDetail/query'] : loading.effects['categoryDetail/getCategoryTree'];
+  const dataLoading = state.type && state.type === 'update'? loading.effects['categoryDetail/query'] : loading.effects['categoryDetail/getCategoryTree'];
   const formItemLayout =  {
     labelCol: { span: 3 },
     wrapperCol: {
@@ -46,7 +46,7 @@ const Detail = ({
       const formData = {
         ...getFieldsValue(),
       }
-      if(state.type === UPDATE) {
+      if(state.type && state.type === UPDATE) {
         dispatch({
           type: 'categoryDetail/change',
           payload: {
