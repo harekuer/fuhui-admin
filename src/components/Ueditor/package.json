@@ -1,0 +1,6 @@
+{
+  "name": "UEditor",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Ueditor.js"
+}

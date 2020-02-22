@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FormConfig } from './autoConfig'
-import { Form, Input,  Modal,Button,Radio} from 'antd'
+import { Form, Input,  Modal,Button } from 'antd'
+import List from './List'
 
 const FormItem = Form.Item
 
@@ -14,15 +15,14 @@ const formItemLayout = {
   },
 }
 
-
-
-
 const modal = ({
   currentItem,
   editConfig,
   onOk,
   onCancel,
   loading,
+  dispatch,
+  location,
   form: {
     getFieldDecorator,
     getFieldsValue,
@@ -30,7 +30,6 @@ const modal = ({
   },
   ...modalProps
 }) => {
-console.log(currentItem)
   const handleOk = (url) => {
     validateFields((errors) => {
       if (errors) {
@@ -61,13 +60,47 @@ console.log(currentItem)
     </div>
   )
 
+  const listProps = {
+    dataSource: currentItem,
+    listData: currentItem,
+    column: editConfig.table,
+    pagination: false,
+    scroll: { x: 580 },
+    dispatch,
+    location,
+    onOperateItem(record, item, key) {
+      let url = ''
+      if (item.query) { // 将返回的query数组拼接成字符串
+        item.query.forEach((option,index) => {
+          url += `&${option}=${record[option]}`
+        })
+      }
+      reqwest({
+        url: `${item.url}${url}`,
+        method: 'post',
+      })
+        .then(function (resp) {
+          if (resp.code === 200) {
+            Success('刷新成功')
+          } else {
+            Error(resp.message)
+          }
+        })
+        .fail(function (resp) {
+          Error(resp.message)
+        })
+    }
+  }
+
   return (
     <Modal 
     {...modalProps}
     onCancel={onCancel}
     footer={btns}
     >
-      <Form layout="horizontal">
+      {
+        editConfig.data ? 
+        <Form layout="horizontal">
         {
           editConfig.data.map((item) => {
             return (
@@ -85,8 +118,9 @@ console.log(currentItem)
             )
           })
         }
-
-      </Form>
+      </Form> : <List {...listProps} />
+      }
+      
     </Modal>
   )
 }

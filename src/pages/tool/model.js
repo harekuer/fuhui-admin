@@ -142,6 +142,7 @@ export default {
             payload: {
               editConfig: {
                 data: data.data,
+                table: data.table,
                 operate: data.operate,
               }
             },

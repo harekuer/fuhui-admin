@@ -95,9 +95,9 @@ const List = ({ listData, column, onOperateItem, location, dispatch,langIndex, s
   return (
     <div>
       <Table
-        {...tableProps}
         bordered
         scroll={{ x: 1450 }}
+        {...tableProps}
         columns={columnList()}
         rowKey={(record, index) => index}
       />

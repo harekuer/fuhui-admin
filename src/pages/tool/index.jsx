@@ -5,6 +5,7 @@ import List from './List'
 import Filter from './Filter'
 import Modal from './Modal'
 import reqwest from 'reqwest'
+import { routerRedux } from 'dva/router'
 import { Error, Success } from '@/utils/warn'
 
 class Tool extends Component {
@@ -31,7 +32,7 @@ class Tool extends Component {
     });
   }
   render(){
-    const { location, dispatch, tool, loading } = this.props;
+    const { location, dispatch, tool,user, loading } = this.props;
     const { list, column, pagination, search, dateRange, filterForm, langIndex, isPaging,modalVisible,currentItem, editConfig } = tool
 
   const listProps = {
@@ -117,20 +118,74 @@ class Tool extends Component {
       })
     },
     onEdit(item) {
-      reqwest({
-        url: item.url,
-        method: 'post',
-      })
-        .then(function (resp) {
-          if (resp.code === 200) {
-            Success('刷新成功')
-          } else {
-            Error(resp.message)
+      const { tabMenuList } = user
+      const path = location.pathname
+      const newKey = `${path}/detail`
+      let obj ={}
+      if(item.type === 'add'){ //新增按钮处理
+        tabMenuList.forEach(item => {
+          if(item.key === newKey){
+            obj.activeTab = {
+              ...item,
+              state: {
+                type: 'create'
+              }
+            }
+            obj.changeActiveTab = true
           }
         })
-        .fail(function (resp) {
-          Error(resp.message)
+        dispatch({
+          type: 'user/updateState',
+          payload: {
+            ...obj,
+          },
         })
+        dispatch(routerRedux.replace({
+          pathname: newKey,
+          state: {
+            type: 'create',
+          },
+        }))
+      } else if(item.type === 'edit'){ //新增按钮处理
+        tabMenuList.forEach(item => {
+          if(item.key === newKey){
+            obj.activeTab = {
+              ...item,
+              state: {
+                type: 'create'
+              }
+            }
+            obj.changeActiveTab = true
+          }
+        })
+        dispatch({
+          type: 'user/updateState',
+          payload: {
+            ...obj,
+          },
+        })
+        dispatch(routerRedux.replace({
+          pathname: newKey,
+          state: {
+            type: 'create',
+          },
+        }))
+      } else {
+        reqwest({
+          url: item.url,
+          method: 'post',
+        })
+          .then(function (resp) {
+            if (resp.code === 200) {
+              Success('刷新成功')
+            } else {
+              Error(resp.message)
+            }
+          })
+          .fail(function (resp) {
+            Error(resp.message)
+          })
+      }
     }
   }
 
@@ -140,6 +195,8 @@ class Tool extends Component {
     visible: modalVisible,
     maskClosable: false,
     loading,
+    dispatch,
+    location,
     width: 620,
     title: '编辑/查看',
     wrapClassName: 'vertical-center-modal',

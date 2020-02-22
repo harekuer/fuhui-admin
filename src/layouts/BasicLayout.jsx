@@ -168,6 +168,7 @@ class BasicLayout extends React.PureComponent {
     let times = prevState.tabList.length;
     if(times === 0) {
       const initTab = location.pathname.split('/')
+      let { tabListKey } = prevState
       const {routes} = nextProps.route,key = location.pathname; 
       const routeKey = '/osAdmin/dashboard' // routeKey 为设置首页设置
       const {tabMenuList} = nextProps.user
@@ -181,6 +182,7 @@ class BasicLayout extends React.PureComponent {
         } else if(v.key !== routeKey && v.key === key){
             v.closable = true
             tabList.push(v);
+            tabListKey.push(v.key)
         }
         if(v.key){
           tabListArr.push(v.key)
@@ -190,6 +192,7 @@ class BasicLayout extends React.PureComponent {
         tabList,
         tabLists,
         tabListArr,
+        tabListKey
       }
     } else if(!!nextProps.user.changeActiveTab){
       let { tabList,tabListArr, activeKey,tabListKey } = prevState
@@ -523,7 +526,7 @@ class BasicLayout extends React.PureComponent {
             </Tabs>
           ) : null}
         </ProLayout>
-        <SettingDrawer
+        {/* <SettingDrawer
           settings={settings}
           onSettingChange={config =>
             dispatch({
@@ -531,7 +534,7 @@ class BasicLayout extends React.PureComponent {
               payload: config,
             })
           }
-        />
+        /> */}
       </>
     );
   }

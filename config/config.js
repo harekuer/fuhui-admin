@@ -211,7 +211,7 @@ export default {
             {
               name: '商品编辑',
               icon: 'menu',
-              path: '/osAdmin/product/detail',
+              path: '/osAdmin/productManage/detail',
               component: './product',
             },
             {

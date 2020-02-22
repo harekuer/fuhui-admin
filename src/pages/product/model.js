@@ -6,7 +6,13 @@ const Model = {
   namespace: 'productDetail',
   state: {
     data: {
-      productKeywords: ['']
+      productKeywords: [''],
+      customMoreProperty: [
+        {
+          text: '',
+          value: '',
+        }
+      ]
     },
     config: {},
   },

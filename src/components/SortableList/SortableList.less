@@ -1,0 +1,117 @@
+.grid_item{
+  display: inline-block;
+  position: relative;
+  width: 210px;
+  border:1px solid #ddd;
+  border-radius: 3px;
+  padding:10px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  .topImg{
+    width: 100%;
+    height: 188px;
+    border: 1px solid #eee;
+    position: relative;
+    overflow: hidden;
+    & img {
+      width: 100%;
+    }
+    &:hover {
+      .operIcon {
+        display: block !important;
+        -webkit-transition:all .4s ease-in-out;
+        -moz-transition:all .4s ease-in-out;
+        -o-transition:all .4s ease-in-out;
+        -ms-transition:all .4s ease-in-out;
+        transition:all .4s ease-in-out;
+      }
+    }
+    .operIcon {
+      position: absolute;
+      right:0;
+      left:0;
+      top:0;
+      bottom: 0;
+      background: rgba(0,0,0,.4);
+      text-align: center;
+      display: none;
+      & i {
+        color: #fff;
+        font-size: 20px;
+        padding: 0 5px;
+        margin-top: 45%;
+        cursor: pointer;
+      }
+    }
+  }
+  .operate {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    border-radius: 3px;
+    & .right {
+      border: 1px solid #ff6600;
+      border-radius: 3px;
+      & >label{
+        padding: 3px 8px;
+      }
+    }
+  }
+
+}
+
+.thumbnail {
+  box-sizing: border-box;
+  display: block;
+  float: left;
+  line-height: 0;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  overflow: hidden;
+}
+
+.landscape {
+  width: 30%;
+}
+
+.square {
+  padding-bottom: 0;
+  width: 40%
+}
+
+.source {
+  border: 0;
+  display: block;
+  height: auto;
+  max-width: 100%;
+  width: auto;
+}
+
+.grid_item:nth-child(1) .topImg > .flag_icon{
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 70px;
+  height: 70px;
+  z-index: 98;
+  border-bottom: 70px solid rgba(255,0,0,.5);
+  border-left: 70px solid transparent;
+}
+.grid_item:nth-child(1) .topImg > .flag_icon:after{
+  position: absolute;
+  right: 5px;
+  height: 20px;
+  bottom: -60px;
+  font-size: 14px;
+  color: #fff;
+  content: 'Cover';
+}
+:global {
+  .ant-checkbox-wrapper + span, .ant-checkbox + span {
+    padding-right: 0px;
+  }
+  .ant-checkbox-inner {
+    border: 1px solid #d9d9d9;
+  }
+}
