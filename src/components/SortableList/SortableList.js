@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { Icon, Button, Radio } from 'antd'
+import { Icon } from 'antd'
 import SortableGridItem from './SortableGridItem'
 import Gallery from './LightBox'
 import styles from './SortableList.less'
@@ -10,10 +10,9 @@ export default class SortableList extends React.Component {
    * @type {{onCopyLink: (复制图片链接),onSaveState: (保存修改后的数据), data: (原始图片列表)}}
    */
 
-  static propTypes = {
-    onCopyLink: PropTypes.func.isRequired,
-    onSaveState: PropTypes.func.isRequired,
-  };
+  // static propTypes = {
+  //   onSaveState: PropTypes.func.isRequired,
+  // };
 
   constructor (props) {
     super(props)
@@ -32,24 +31,6 @@ export default class SortableList extends React.Component {
       this.props.onSaveState(obj.items)
     }
   };
-
-  // back单选
-  onCheckChange = (index, e) => {
-    const checked = e.target.checked
-    let newData = this.state.data
-    // 限制当前选中值为1，其余值君为0，模拟单选组效果
-    newData = newData.map((item, i) => {
-      if (index === i) {
-        item.is_back = '1'
-      } else {
-        item.is_back = '0'
-      }
-      return item
-    })
-    this.setState({
-      data: newData,
-    })
-  }
 
   // 图片删除
   onDeleteItem = (index) => {
@@ -80,15 +61,14 @@ export default class SortableList extends React.Component {
 
   render () {
     const { draggingIndex, data, lightboxIsOpen, currentImage } = this.state
-    const { onCopyLink } = this.props
     let childProps = { className: 'myClass1' }
     let images = []
     // 判断是否包含大图路径，如大图路径缺失则显示缩略图
     data.forEach((item) => {
-      if (item.img_original && item.img_original.indexOf('http') > -1) {
-        images.push({ src: item.img_original })
+      if (item.image_url) {
+        images.push({ src: item.image_url })
       } else {
-        images.push({ src: item.img_thumb })
+        images.push({ src: item.image_url })
       }
     })
     let listItems = data.map(function (item, i) {
@@ -103,19 +83,11 @@ export default class SortableList extends React.Component {
           childProps={childProps}
         >
           <div className={styles.topImg}>
-            <img src={item.img_thumb} />
+            <img src={item.image_url} />
             <span className={styles.flag_icon} />
             <div className={styles.operIcon}>
               <Icon type="eye-o" onClick={() => this.onLightboxShow(i)} />
               <Icon type="delete" onClick={() => this.onDeleteItem(i)} />
-            </div>
-          </div>
-          <div className={styles.operate}>
-            <div >
-              <Button type="primary" ghost onClick={() => onCopyLink(item.img_original)}>Copy Link</Button>
-            </div>
-            <div className={styles.right}>
-              <Radio checked={item.is_back === '1'} onChange={e => this.onCheckChange(i, e)}>Back</Radio>
             </div>
           </div>
         </SortableGridItem>

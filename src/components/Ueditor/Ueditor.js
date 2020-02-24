@@ -1,9 +1,9 @@
 import React from 'react'
 import { Spin } from 'antd'
-import { config } from 'utils'
+import defaultSettings from '../../../config/defaultSettings';
 import createScript from './createScript'
 
-const { allUrl, configUrl, langUrl } = config
+const { allUrl, configUrl, langUrl } = defaultSettings 
 
 class UEditor extends React.Component {
   /**

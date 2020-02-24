@@ -360,7 +360,7 @@
                 })(),
             // WebUploader实例
                 uploader,
-                actionUrl = '/bg_os/index.php?com=product&t=bulkUploadsImages', //多图上传组件接口
+                actionUrl = '/_shop/index.php?com=product&t=bulkUploadsImages', //多图上传组件接口
                 acceptExtensions = (editor.getOpt('imageAllowFiles') || []).join('').replace(/\./g, ',').replace(/^[,]/, ''),
                 imageMaxSize = editor.getOpt('imageMaxSize'),
                 imageCompressBorder = editor.getOpt('imageCompressBorder');
@@ -387,7 +387,7 @@
                 },
                 swf: '../../third-party/webuploader/Uploader.swf',
                 server: actionUrl,//多图上传组件接口
-                fileVal: 'images',//多图上传组件参数特殊处理
+                fileVal: 'upload_file',//多图上传组件参数特殊处理
                 duplicate: true,
                 fileSingleSizeLimit: imageMaxSize,    // 默认 2 M
                 fileNumLimit:'30',
@@ -1040,7 +1040,7 @@
                 this.isLoadingData = true;
                 // var url = editor.getActionUrl(editor.getOpt('imageManagerActionName')),
                 //     isJsonp = utils.isCrossDomainUrl(url);
-                var url = '/bg_os/index.php?com=product&t=getProductImageLists',
+                var url = '/_shop/index.php?com=product&t=getProductImageLists',
                     isJsonp = utils.isCrossDomainUrl(url);
                 ajax.request(url, {
                     'timeout': 100000,
@@ -1085,7 +1085,7 @@
                 _this.isLoadingData = true;
                 // var url = editor.getActionUrl(editor.getOpt('imageManagerActionName')),
                 //     isJsonp = utils.isCrossDomainUrl(url);
-                var url = ' /bg_os/index.php?com=product&t=bulkRemoveImages',
+                var url = '/_shop/index.php?com=product&t=bulkRemoveImages',
                     isJsonp = utils.isCrossDomainUrl(url);
                  var list = this.getInsertList();
                  var img_ids = [];

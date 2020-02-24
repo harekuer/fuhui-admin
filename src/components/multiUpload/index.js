@@ -1,9 +1,10 @@
 import React from 'react'
 import { Spin, Button } from 'antd'
-import { config } from 'utils'
+import defaultSettings from '../../../config/defaultSettings';
 import createScript from '../Ueditor/createScript'
 
-const { allUrl, configUrl, langUrl } = config
+
+const { allUrl, configUrl, langUrl } = defaultSettings 
 
 class MultiUpload extends React.Component {
   /**

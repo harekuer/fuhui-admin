@@ -13,10 +13,12 @@ import {
   } from 'antd';
   import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
   import React, { Component } from 'react';
-  import { PageHeaderWrapper } from '@ant-design/pro-layout';
+  import UEditor from '@/components/Ueditor'
+  import SortableList from '@/components/SortableList'
+  import MultiUpload from '@/components/MultiUpload'
   import { connect } from 'dva';
   import styles from './style.less';
-import { array } from 'prop-types';
+  import { array } from 'prop-types';
   
   const FormItem = Form.Item;
   const { Option } = Select;
@@ -90,6 +92,21 @@ import { array } from 'prop-types';
           },
         },
       };
+
+      const sortProps = {
+        data: data.productImage,
+        onSaveState (obj) {
+          console.log(obj)
+        },
+      }
+    
+      const multiProps = {
+        id: 'flashContainer',
+        products_id: '',
+        onUploadItem: (addItem) => {
+          onAddItem(addItem)
+        },
+      }
 
 
       const changeProperty = (key,index,value) => {
@@ -330,6 +347,9 @@ import { array } from 'prop-types';
                   </ul>
                 )}
               </FormItem>
+              </Card>
+
+              <Card size="small" title="SKU属性编辑" >
               <FormItem
                 {...formItemLayout}
                 label={config.productSize? config.productSize.props.label : ''}
@@ -363,7 +383,35 @@ import { array } from 'prop-types';
               </Card>
 
               <Card size="small" title="商品描述" >
-                    
+              <FormItem
+                {...formItemLayout}
+                label={config.productImage? config.productImage.props.label : ''}
+              >
+                {getFieldDecorator('productImage', {
+                  initialValue: data.productImage,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择产品图片',
+                    },
+                  ],
+                })(
+                  <div>
+                    <div className={styles.imgBtn}>
+                      <MultiUpload {...multiProps} text="上传图片" />
+                    </div>
+                    {
+                      config.productImage  && config.productImage.length ?
+                        <SortableList {...sortProps} /> : ''
+                    }
+                  </div>
+                )}
+              </FormItem>
+              <UEditor
+                  name="content"
+                  height="350"
+                  content={data.productPropText == null ? '' : data.productPropText}
+                />
               </Card>
               
               <FormItem

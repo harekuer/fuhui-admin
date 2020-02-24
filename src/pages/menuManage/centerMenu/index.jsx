@@ -48,7 +48,6 @@ class CenterMenu extends Component {
       handleChangeEditVisible: function (id, state) {
         // 打开弹窗
         onChangeVisible({ editModalVisible: state })
-        console.log(id)
         // 获取菜单详情
         dispatch({
           type: 'centerMenu/getMenuInfo',
@@ -138,7 +137,6 @@ class CenterMenu extends Component {
         onChangeVisible({ addModalVisible: params })
       },
       handleAddMenu: function (params) {
-
         dispatch({
           type: 'centerMenu/addMenu',
           payload: {
