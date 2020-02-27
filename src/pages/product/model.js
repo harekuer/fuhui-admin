@@ -12,9 +12,11 @@ const Model = {
           text: '',
           value: '',
         }
-      ]
+      ],
+      productImage: []
     },
     config: {},
+    initColor: '#F10',
   },
   effects: {
     *fetch({ payload }, { call, put }) {

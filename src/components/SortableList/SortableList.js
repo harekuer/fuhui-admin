@@ -24,12 +24,20 @@ export default class SortableList extends React.Component {
     }
   }
 
-  // 拖拽后即时更新图片列表
-  updateState = (obj) => {
-    this.setState(obj)
-    if (obj.items) {
-      this.props.onSaveState(obj.items)
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if(nextProps.data.length > prevState.data.length){
+      return {
+        data: nextProps.data
+      }
+    } else {
+      return null
     }
+  }
+
+  // 拖拽后即时更新图片列表
+  updateState = (items) => {
+    this.setState(items)
+    this.props.onSaveState(items)
   };
 
   // 图片删除
@@ -60,27 +68,21 @@ export default class SortableList extends React.Component {
   }
 
   render () {
-    const { draggingIndex, data, lightboxIsOpen, currentImage } = this.state
-    let childProps = { className: 'myClass1' }
+    const { data, lightboxIsOpen, currentImage } = this.state
     let images = []
     // 判断是否包含大图路径，如大图路径缺失则显示缩略图
     data.forEach((item) => {
-      if (item.image_url) {
-        images.push({ src: item.image_url })
-      } else {
-        images.push({ src: item.image_url })
-      }
+      images.push({ src: item.image_url })
     })
+    console.log(images)
     let listItems = data.map(function (item, i) {
       return (
         <SortableGridItem
           key={i}
-          updateState={this.updateState}
+          onSortItems={this.updateState}
           items={data}
-          draggingIndex={draggingIndex}
           sortId={i}
           outline="list"
-          childProps={childProps}
         >
           <div className={styles.topImg}>
             <img src={item.image_url} />

@@ -68,6 +68,7 @@
     "path-to-regexp": "2.4.0",
     "prop-types": "^15.5.10",
     "qs": "^6.9.0",
+    "rc-color-picker": "^1.2.6",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dnd": "^9.4.0",

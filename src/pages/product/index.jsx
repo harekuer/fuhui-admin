@@ -5,17 +5,19 @@ import {
     Form,
     Icon,
     Input,
-    InputNumber,
-    Radio,
+    Switch,
     Select,
     Checkbox,
     Tooltip,
+    Table,
   } from 'antd';
   import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
   import React, { Component } from 'react';
   import UEditor from '@/components/Ueditor'
   import SortableList from '@/components/SortableList'
+  import 'rc-color-picker/assets/index.css'
   import MultiUpload from '@/components/MultiUpload'
+  import ColorPicker from 'rc-color-picker';
   import { connect } from 'dva';
   import styles from './style.less';
   import { array } from 'prop-types';
@@ -23,7 +25,7 @@ import {
   const FormItem = Form.Item;
   const { Option } = Select;
   const { RangePicker } = DatePicker;
-  const { TextArea } = Input;
+  const { Search } = Input;
   
   class BasicForm extends Component {
     constructor(props) {
@@ -55,7 +57,7 @@ import {
   
     render() {
       const { submitting,productDetail, dispatch } = this.props;
-      const { data, config } = productDetail
+      const { data, config,initColor } = productDetail
       const { 
         form: { getFieldDecorator, getFieldValue },
       } = this.props;
@@ -95,8 +97,15 @@ import {
 
       const sortProps = {
         data: data.productImage,
-        onSaveState (obj) {
-          console.log(obj)
+        onSaveState (items) {
+          let newData = data
+          newData.productImage = items
+          dispatch({
+            type: 'productDetail/updateState',
+            payload: {
+              data: newData,
+            }
+          });
         },
       }
     
@@ -104,7 +113,22 @@ import {
         id: 'flashContainer',
         products_id: '',
         onUploadItem: (addItem) => {
-          onAddItem(addItem)
+          let newData = data
+          let newItem = addItem.map(item => {
+            const path = item.img_original.split('upload')
+            const imgPath = path[path.length -1]
+            item.image_path = `upload${imgPath}`
+            item.image_sort = 100
+            item.image_url = item.img_original
+            return item
+          })
+          newData.productImage = newData.productImage.concat(newItem)
+          dispatch({
+            type: 'productDetail/updateState',
+            payload: {
+              data: newData,
+            }
+          });
         },
       }
 
@@ -150,6 +174,140 @@ import {
           }
         });
       }
+
+      //新增自定义尺码
+      const onAddSize = (value) => {
+        let newData = config
+        let arr = []
+        newData.productSize.props.dataSource.forEach(item => {
+          arr.push(item.text)
+        })
+        if(!arr.includes(value)){
+          const len = newData.productSize.props.dataSource.length
+          newData.productSize.props.dataSource.push({value: Number(~len),text: value})
+          dispatch({
+            type: 'productDetail/updateState',
+            payload: {
+              config: newData,
+            }
+          });
+        }
+      }
+
+      //新增自定义颜色
+      const onAddColor = (value) => {
+        let newData = config
+        let arr = []
+        newData.productColor.props.dataSource.forEach(item => {
+          arr.push(item.text)
+        })
+        if(!arr.includes(value)){
+          const len = newData.productColor.props.dataSource.length
+          newData.productColor.props.dataSource.push({value: Number(~len),text: value,rgb: initColor})
+          dispatch({
+            type: 'productDetail/updateState',
+            payload: {
+              config: newData,
+              initColor: '#F10',
+            }
+          });
+        }
+      }
+
+      //新增自定义颜色，选择色值
+      const changeColorHandler = (colors) => {
+        dispatch({
+          type: 'productDetail/updateState',
+          payload: {
+            initColor: colors.color,
+          }
+        });
+      }
+
+      //更改颜色和属性时更新sku表格
+      const onChangeSku = (values,key) => {
+        var colorArr = key === 'productSize' ?getFieldValue('productColor') : values
+        var sizeArr = key === 'productSize' ? values : getFieldValue('productSize')
+        let newData = data
+        let sku = []
+        if(sizeArr.length && colorArr.length ){
+          sizeArr.forEach(item => {
+            colorArr.forEach(option => {
+              let obj = {
+                colorName: option,
+                sizeName: item,
+                skuCode:'',
+                status: '0'
+              }
+              sku.push(obj)
+            })
+          })
+        }
+        newData.sku = sku
+        dispatch({
+          type: 'productDetail/updateState',
+          payload: {
+            data: newData,
+          }
+        });
+
+      }
+
+      //sku列信息配置
+      const columns = [
+        {
+          title: '尺码',
+          dataIndex: 'sizeName',
+          key: 'sizeName',
+          render: (text, record,index) => {
+            const obj = {
+              children: text,
+              props: {},
+            };
+            let sameRowCount = 1 // 默认rowSpan值为1，则无合并
+            const listData = data.sku
+            let totalIndex = data.sku.length // 得出总条数
+            const fullIndex = index // 当前条数的之后的所有行index起始值
+            const key = 'sizeName'
+        
+            if (index !== 0 && listData[fullIndex - 1][key] === listData[fullIndex][key]) {
+              sameRowCount = 0
+            } else {
+              for (let i = fullIndex + 1; i < totalIndex; i++) { // 查询该行之后的行是否有合并行，合并条件为主产品id值相同
+                if (listData[i][key] === listData[fullIndex][key]) {
+                  sameRowCount++
+                } else { // 无相同值则终止
+                  break
+                }
+              }
+            }
+            obj.props.rowSpan = sameRowCount
+            return obj
+          }
+        },
+        {
+          title: '颜色',
+          dataIndex: 'colorName',
+          key: 'colorName',
+        },
+        {
+          title: '商品编码',
+          dataIndex: 'skuCode',
+          key: 'skuCode',
+          render: (text,record) => {
+            return <Input value={text} maxLength={20} style={{width: '200px'}}/>
+          }
+        },
+        {
+          title: '操作',
+          dataIndex: 'status',
+          key: 'status',
+          render: (text,record) => {
+            return <Switch size="small" checked={text == '1'} />
+          }
+        },
+      ];
+
 
       return (
         <Card bordered={false}>
@@ -360,8 +518,16 @@ import {
                 })(
                   <Checkbox.Group
                     options={formatLabel(config.productSize? config.productSize.props.dataSource : [])}
+                    onChange={values =>onChangeSku(values,'productSize')}
                   />
                 )}
+                <Search
+                  placeholder="新增尺码"
+                  enterButton="添加"
+                  maxLength={50}
+                  style={{width:'200px'}}
+                  onSearch={value => onAddSize(value)}
+                />
               </FormItem>
               <FormItem
                 {...formItemLayout}
@@ -371,46 +537,59 @@ import {
                   initialValue: data.productColor? data.productColor : [],
                   rules: [],
                 })(
-                  <Select showArrow allowClear style={{width: '50%'}}>
+                  <Checkbox.Group onChange={values =>onChangeSku(values,'productColor')}>
                     {
-                      config.productColor && config.productColor.props.dataSource.map((option,_index) => {
-                      return <Option key={option.value}><div className={styles.outline}><div className={styles.inline} style={{background: option.rgb}}></div></div>{option.text}</Option>
+                      config.productColor && config.productColor.props.dataSource.map(option => {
+                        return <Checkbox key={option.value} value={option.value} style={{marginBottom: '15px'}}> {option.text}
+                        (色值：<div className={styles.outline}><div className={styles.inline} style={{background: option.rgb}}></div></div>）
+                        </Checkbox>
                       })
                     }
-                  </Select>
+                  </ Checkbox.Group>
                 )}
+                <div className={styles.colorPicker}>
+                  <ColorPicker color={initColor} onChange={changeColorHandler} placement="topRight" />
+                </div>
+                <Search
+                  placeholder="新增颜色名称"
+                  enterButton="添加"
+                  maxLength={50}
+                  style={{width:'200px'}}
+                  onSearch={value => onAddColor(value)}
+                />
               </FormItem>
+              <Table dataSource={data.sku} columns={columns} bordered/>
               </Card>
 
               <Card size="small" title="商品描述" >
-              <FormItem
-                {...formItemLayout}
-                label={config.productImage? config.productImage.props.label : ''}
-              >
-                {getFieldDecorator('productImage', {
-                  initialValue: data.productImage,
-                  rules: [
-                    {
-                      required: true,
-                      message: '请选择产品图片',
-                    },
-                  ],
-                })(
-                  <div>
-                    <div className={styles.imgBtn}>
-                      <MultiUpload {...multiProps} text="上传图片" />
+                <FormItem
+                  {...formItemLayout}
+                  label={config.productImage? config.productImage.props.label : ''}
+                >
+                  {getFieldDecorator('productImage', {
+                    initialValue: data.productImage,
+                    rules: [
+                      {
+                        required: true,
+                        message: '请选择产品图片',
+                      },
+                    ],
+                  })(
+                    <div>
+                      <div className={styles.imgBtn}>
+                        <MultiUpload {...multiProps} text="上传图片" />
+                      </div>
+                      {
+                        data.productImage  && data.productImage.length ?
+                          <SortableList {...sortProps} /> : ''
+                      }
                     </div>
-                    {
-                      config.productImage  && config.productImage.length ?
-                        <SortableList {...sortProps} /> : ''
-                    }
-                  </div>
-                )}
-              </FormItem>
-              <UEditor
-                  name="content"
-                  height="350"
-                  content={data.productPropText == null ? '' : data.productPropText}
+                  )}
+                </FormItem>
+                <UEditor
+                    name="content"
+                    height="350"
+                    content={data.productPropText == null ? '' : data.productPropText}
                 />
               </Card>
               

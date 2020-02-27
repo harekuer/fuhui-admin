@@ -816,7 +816,6 @@
                     img_id: data.img_id,
                     img_thumb: prefix + data.img_thumb,
                     img_original: prefix + data.img_original,
-                    is_back: '0',
                 });
             }
             return list;
@@ -1191,9 +1190,8 @@
                         img_id = img.getAttribute('img_id')
                         src = img.getAttribute('_src');
                     list.push({
-                        src: src,
+                        img_original: src,
                         img_id: img_id,
-                        alt: src.substr(src.lastIndexOf('/') + 1),
                     });
                 }
 

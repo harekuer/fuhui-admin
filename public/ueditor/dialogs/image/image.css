@@ -746,6 +746,8 @@
 }
 #online li img {
     cursor: pointer;
+    max-width: 113px;
+    max-height: 113px;
 }
 #online li .icon {
     cursor: pointer;

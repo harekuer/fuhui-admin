@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styles from './SortableList.less'
-import Lightbox from 'react-images'
+import Carousel, { Modal, ModalGateway } from 'react-images';
 
 export default class Gallery extends Component {
   static propTypes = {
@@ -59,7 +59,7 @@ export default class Gallery extends Component {
   render () {
     return (
       <div className="section">
-        <Lightbox
+        {/* <Lightbox
           currentImage={this.state.currentImage}
           images={this.props.images}
           isOpen={this.state.lightboxIsOpen}
@@ -70,7 +70,14 @@ export default class Gallery extends Component {
           onClose={this.closeLightbox.bind(this)}
           showThumbnails={this.props.showThumbnails}
           theme={this.props.theme}
-        />
+        /> */}
+        <ModalGateway>
+        {this.state.lightboxIsOpen ? (
+          <Modal onClose={this.closeLightbox.bind(this)}>
+            <Carousel views={this.props.images} currentIndex={this.state.currentImage}/>
+          </Modal>
+        ) : null}
+      </ModalGateway>
       </div>
     )
   }
