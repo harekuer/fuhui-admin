@@ -7,7 +7,7 @@ export async function queryCurrent() {
 }
 
 export async function queryMenu() {
-  return request('/_os/index.php?com=menu&t=display&app_id=10002');
+  return request('/_os/index.php?com=menu&t=display');
 }
 
 export async function queryNotices() {

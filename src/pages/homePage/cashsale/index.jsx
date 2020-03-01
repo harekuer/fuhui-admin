@@ -43,7 +43,7 @@ class EditableCell extends React.Component {
       if(record.module === 'index-spot-cate'){
         return <SingleUpload
         limit={2}
-        file={record.image.split(',')}
+        file={record.image == '' ? [] : record.image.split(',')}
         isEdit={true}
         action={`/_os/index.php?com=common&t=imageUpload&module=${record.module}`}
         changeImage={(fileList) => {
@@ -67,7 +67,7 @@ class EditableCell extends React.Component {
             return item
           })
           dispatch({
-            type: 'banner/updateState',
+            type: 'cashsale/updateState',
             payload: {
                 list:newList,
             },
@@ -93,12 +93,12 @@ class EditableCell extends React.Component {
           }
           newList.map(item => {
             if(item.id === newData.id){
-              item.image = fileList[0].url
+              item.image = fileList.length ?fileList[0].url : ''
             }
             return item
           })
           dispatch({
-            type: 'banner/updateState',
+            type: 'cashsale/updateState',
             payload: {
                 list:newList,
             },

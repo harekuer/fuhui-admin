@@ -40,7 +40,7 @@ const EditableContext = React.createContext();
 class EditableCell extends React.Component {
   getInput = (record, setFieldsValue) => {
     if (this.props.inputType === 'upload') {
-      if(record.module === 'index-customized-cate'){
+      if(record.module === 'index-hot-sale-cate'){
         return <SingleUpload
         limit={2}
         file={record.image == '' ? [] : record.image.split(',')}
@@ -67,7 +67,7 @@ class EditableCell extends React.Component {
             return item
           })
           dispatch({
-            type: 'banner/updateState',
+            type: 'hotsale/updateState',
             payload: {
                 list:newList,
             },
@@ -98,7 +98,7 @@ class EditableCell extends React.Component {
             return item
           })
           dispatch({
-            type: 'banner/updateState',
+            type: 'hotsale/updateState',
             payload: {
                 list:newList,
             },
@@ -107,6 +107,7 @@ class EditableCell extends React.Component {
         }}
       />;
       }
+      
     }
     return <Input />;
   };
@@ -186,9 +187,9 @@ const DragableBodyRow = DropTarget('row', rowTarget, (connect, monitor) => ({
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ customized, loading }) => ({
-    customized,
-    loading: loading.models.customized,
+@connect(({ hotsale, loading }) => ({
+    hotsale,
+    loading: loading.models.hotsale,
 }))
 class TableList extends React.Component {
     constructor(props) {
@@ -201,9 +202,9 @@ class TableList extends React.Component {
     componentDidMount() {
         const { dispatch } = this.props;
         dispatch({
-          type: 'customized/fetch',
+          type: 'hotsale/fetch',
           payload: {
-            module: 'index-customized-image',
+            module: 'index-hot-sale-image',
           }
         });
     }
@@ -215,12 +216,12 @@ class TableList extends React.Component {
     };
   
     moveRow = (dragIndex, hoverIndex) => {
-      const { dispatch, customized} = this.props;
-      let { list } = customized;
+      const { dispatch, hotsale} = this.props;
+      let { list } = hotsale;
       const dragRow = list[dragIndex];
       list = update(list, {$splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]]})
       dispatch({
-        type: 'customized/updateState',
+        type: 'hotsale/updateState',
         payload: {
             list,
         },
@@ -229,8 +230,8 @@ class TableList extends React.Component {
 
 
     columnList = () => {
-      const { customized } = this.props
-      const { key } = customized
+      const { hotsale } = this.props
+      const { key } = hotsale
       let column = [
         {
           title: 'ID',
@@ -243,8 +244,8 @@ class TableList extends React.Component {
           key: 'image',
           editable: true,
           render: (text, record) => {
-            if(record.module === 'index-customized-cate') {
-              var images = text.split(',')
+            if(record.module === 'index-hot-sale-cate' ) {
+              var images = text != ''? text.split(',') : []
               return (
                 <div>
                   {
@@ -266,7 +267,7 @@ class TableList extends React.Component {
           editable: true,
         },
         {
-          title: key === 'index-customized-cate'? '分类': '标题',
+          title: key === 'index-hot-sale-cate'? '分类': '标题',
           dataIndex: 'title',
           key: 'title',
           editable: true,
@@ -313,7 +314,7 @@ class TableList extends React.Component {
             },
         },
       ];
-      if(key === 'index-customized-image'){
+      if(key === 'index-hot-sale-image'){
         let obj = {
           title: '副标题',
           dataIndex: 'content',
@@ -332,10 +333,10 @@ class TableList extends React.Component {
     };
 
     onDelete(key) {
-      const { dispatch, customized } = this.props;
-      const module = customized.key
+      const { dispatch, hotsale } = this.props;
+      const module = hotsale.key
       dispatch({
-        type: 'customized/remove',
+        type: 'hotsale/remove',
         payload: {
           id: key,
           module,
@@ -348,11 +349,10 @@ class TableList extends React.Component {
             if (error) {
               return;
             }
-            const { dispatch, customized} = this.props;
-            let { list,key } = customized;
+            const { dispatch, hotsale} = this.props;
+            let { list,key } = hotsale;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
-            
             if (index > -1) {
               let images = row.image
               let imgArr = images.split(',')
@@ -365,14 +365,14 @@ class TableList extends React.Component {
               const item = newData[index];
               newData.splice(index, 1, { ...item, ...row });
                 dispatch({
-                    type: 'customized/update',
+                    type: 'hotsale/update',
                     payload: {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: relPath.join(','),
                         url: row.url,
                         title: row.title,
-                        content: key === 'index-customized-image' ? row.content : undefined
+                        content: key === 'index-hot-sale-image'? row.content : undefined,
                     },
                 })
                 this.setState({
@@ -394,32 +394,32 @@ class TableList extends React.Component {
     }
 
     onAdd = () => {
-        const { dispatch, customized} = this.props;
-        let {list, key } = customized;
+        const { dispatch, hotsale} = this.props;
+        let {list, key } = hotsale;
         let obj ={
             id: '0',
             title: '',
-            content: '',
             module: key,
+            content: '',
             image: '',
         }
         list.push(obj)
         dispatch({
-            type: 'customized/queryList',
+            type: 'hotsale/queryList',
             payload: list,
         })
         this.setState({ editingKey: '0'});
     }
 
     onSaveSort = () => {
-      const { dispatch, customized} = this.props;
-      let { list,key } = customized;
+      const { dispatch, hotsale} = this.props;
+      let { list,key } = hotsale;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
       })
       dispatch({
-          type: 'customized/updateSort',
+          type: 'hotsale/updateSort',
           payload: {
             module: key,
             sort_array: sort,
@@ -431,13 +431,13 @@ class TableList extends React.Component {
       const { dispatch } = this.props;
       this.setState({ editingKey: ''});
       dispatch({
-        type: 'customized/fetch',
+        type: 'hotsale/fetch',
         payload: {
           module: key,
         }
       })
       dispatch({
-        type: 'customized/updateState',
+        type: 'hotsale/updateState',
         payload: {
           key,
         }
@@ -446,7 +446,7 @@ class TableList extends React.Component {
   
     render() {
         const {
-            customized: { list, key},
+            hotsale: { list, key},
             loading,
             dispatch,
         } = this.props;
@@ -478,7 +478,7 @@ class TableList extends React.Component {
       return (
         <Card bordered={false}>
           <Tabs  onChange={this.onChangeTab} type="card">
-            <TabPane tab="侧边大图" key="index-customized-image">
+            <TabPane tab="侧边大图" key="index-hot-sale-image">
 
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
@@ -504,7 +504,7 @@ class TableList extends React.Component {
                   : null
               }
             </TabPane>
-            <TabPane tab="右侧分类" key="index-customized-cate">
+            <TabPane tab="右侧分类" key="index-hot-sale-cate">
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
                   <Table
@@ -524,21 +524,18 @@ class TableList extends React.Component {
                   </DndProvider>
               </EditableContext.Provider>
               {
-                  list.length < 16? 
+                  list.length < 8? 
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }
             </TabPane>
           </Tabs>
-          
           {
-            key === 'index-customized-cate'? 
+            key === 'index-hot-sale-cate'? 
             <div className={styles.btnWrap}>
               <Button onClick={this.onSaveSort}>保存排序</Button>
           </div> : null
           }
-            
-            
         </Card>
       );
     }

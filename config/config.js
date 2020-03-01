@@ -171,6 +171,24 @@ export default {
                   component: './homePage/cashsale',
                 },
                 {
+                  name: 'hotsale',
+                  icon: 'fire',
+                  path: '/osAdmin/homePage/hotsale',
+                  component: './homePage/hotsale',
+                },
+                {
+                  name: 'newArrival',
+                  icon: 'folder-add',
+                  path: '/osAdmin/homePage/newArrival',
+                  component: './homePage/newArrival',
+                },
+                {
+                  name: 'newArrivalSec',
+                  icon: 'folder-add',
+                  path: '/osAdmin/homePage/newArrivalSec',
+                  component: './homePage/newArrivalSec',
+                },
+                {
                   name: 'customized',
                   icon: 'profile',
                   path: '/osAdmin/homePage/customized',
