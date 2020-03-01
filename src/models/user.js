@@ -90,7 +90,7 @@ const UserModel = {
     },
 
     *fetchMenu(_, { call, put }) {
-      const response = yield call(queryMenu);
+      const response = yield call(queryMenu,{app_id:10002});
       const { data, code } = response
       if(code === 200){
         let list = []

@@ -1,4 +1,4 @@
-import { query, save, getConfig, categoryTree } from './service';
+import { query, save, getConfig, categoryTree,shopCateTree } from './service';
 import { routerRedux } from 'dva/router';
 import { message} from 'antd';
 
@@ -20,6 +20,7 @@ const Model = {
         }
       ],
       productImage: [],
+      packagingImage:[],
       sku: [],
     },
     config: {},
@@ -28,6 +29,7 @@ const Model = {
     choosedColor: [],
     priceUnit: '',
     categoryList: [],
+    shopCateList: [],
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -49,14 +51,11 @@ const Model = {
         }
     },
 
-    *update({ payload }, { call, put }) {
-      const response = yield call(update, payload); // post
+    *save({ payload }, { call, put }) {
+      const response = yield call(save, payload); // post
       const { data, code } =response
       if(code === 200){
-        yield put({
-            type: 'fetch',
-            payload: {},
-        });
+        message.success(response.message)
       } else if(code === 401){
         yield put(
             routerRedux.replace({
@@ -76,6 +75,21 @@ const Model = {
           type: 'updateState',
           payload: {
             categoryList: data,
+          },
+        })
+      } else {
+        throw message
+      }
+    },
+
+    * getShopTree ({  payload }, { call, put }) {
+      const result = yield call(shopCateTree, payload)
+      const { code, message, data } = result
+      if (code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            shopCateList: data,
           },
         })
       } else {

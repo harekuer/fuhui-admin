@@ -18,7 +18,6 @@ import {
   import SortableList from '@/components/SortableList'
   import 'rc-color-picker/assets/index.css'
   import MultiUpload from '@/components/MultiUpload'
-  import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
   import ColorPicker from 'rc-color-picker';
   import { connect } from 'dva';
   import styles from './style.less';
@@ -53,12 +52,18 @@ import {
     };
 
     handleSubmit = e => {
-      const { dispatch, form } = this.props;
+      const { dispatch, form, productDetail } = this.props;
+      const { data } = productDetail
       e.preventDefault();
       form.validateFieldsAndScroll((err, values) => {
         if (!err) {
+          let obj ={
+            ...values,
+            productKeywords: data.productKeywords,
+            sku: data.sku,
+          }
           dispatch({
-            type: 'formAndbasicForm/submitRegularForm',
+            type: 'productDetail/save',
             payload: values,
           });
         }
@@ -68,11 +73,17 @@ import {
     componentDidMount() {
         const { dispatch,location } = this.props;
         const { state } = location;
+        //获取配置表
         dispatch({
           type: 'productDetail/getConfig',
         });
+        //获取平台分类
         dispatch({
           type: 'productDetail/getCategoryTree',
+        });
+        //获取店铺分类
+        dispatch({
+          type: 'productDetail/getShopTree',
         });
         if(state && state.products_id) {
           dispatch({
@@ -143,9 +154,9 @@ import {
   
     render() {
       const { submitting,productDetail, dispatch } = this.props;
-      const { data, config,initColor,priceUnit,categoryList } = productDetail
+      const { data, config,initColor,priceUnit,categoryList, shopCateList } = productDetail
       const { 
-        form: { getFieldDecorator, getFieldValue },
+        form: { getFieldDecorator, getFieldValue, setFieldsValue },
       } = this.props;
       const { ladderValidate } = this.state
       const formItemLayout = {
@@ -199,6 +210,7 @@ import {
       }
 
       const treeData = categoryTreeList(categoryList);
+      const shopTreeData = categoryTreeList(shopCateList);
 
       //图片排序组件船只
       const sortProps = {
@@ -215,7 +227,7 @@ import {
         },
       }
     
-      //多图上传组件传值
+      //产品多图上传组件传值
       const multiProps = {
         id: 'flashContainer',
         products_id: '',
@@ -230,6 +242,29 @@ import {
             return item
           })
           newData.productImage = newData.productImage.concat(newItem)
+          dispatch({
+            type: 'productDetail/updateState',
+            payload: {
+              data: newData,
+            }
+          });
+        },
+      }
+
+      //打包多图上传组件传值
+      const multiPackProps = {
+        id: 'packageContainer',
+        products_id: '',
+        onUploadItem: (addItem) => {
+          let newData = data
+          let newItem = addItem.map(item => {
+            const path = item.img_original.split('upload')
+            const imgPath = path[path.length -1]
+            item.image_path = `upload${imgPath}`
+            item.image_url = item.img_original
+            return item
+          })
+          newData.packagingImage = newData.packagingImage.concat(newItem)
           dispatch({
             type: 'productDetail/updateState',
             payload: {
@@ -278,6 +313,7 @@ import {
         }else {
           newData.productKeywords[index] = value
         }
+        setFieldsValue({productKeywords: newData.productKeywords})
         dispatch({
           type: 'productDetail/updateState',
           payload: {
@@ -543,7 +579,7 @@ import {
               }}
             >
               <Card size="small" title="基础信息" >
-              <FormItem
+                <FormItem
                   {...formItemLayout}
                   label="产品类目"
                 >
@@ -568,14 +604,14 @@ import {
                 >
                   {getFieldDecorator('spCategoriesId', {
                     initialValue: data.spCategoriesId,
-                    rules: [{required: true,message: '必填项不能为空'}],
+                    rules: [],
                   })(
                     <TreeSelect
                       style={{width: '50%'}}
                       dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       getPopupContainer={triggerNode => triggerNode.parentNode}
-                      treeData={treeData}
-                      placeholder="请选择产品分类"
+                      treeData={shopTreeData}
+                      placeholder="请选择产品分组"
                       treeDefaultExpandAll
                       allowClear
                     />
@@ -604,7 +640,7 @@ import {
                     rules: [
                       {
                         required: true,
-                        message: '',
+                        message: '请输入产品名称',
                       },
                     ],
                   })(
@@ -637,7 +673,6 @@ import {
                     rules: [
                       {
                         required: true,
-                        type: array,
                         message: '请至少填写一个关键词',
                       },
                     ],
@@ -688,10 +723,10 @@ import {
                               {
                                 item.uiType === 'select' || item.uiType === 'combobox' || item.uiType === 'sequentialCombobox'? <div>
                                   {getFieldDecorator(item.name, {
-                                    initialValue: data.productAttr? data.productAttr[item.name].value : [],
+                                    initialValue: data.productAttr? item.uiType === 'select'? formatLabel(data.productAttr[item.name][0]):formatLabel(data.productAttr[item.name]) : [],
                                     rules: [{required: item.required, message: item.required? '请补充该选项' : ''}],
                                   })(
-                                    <Select mode={item.uiType === 'select' ? '' : 'multiple'} showArrow allowClear style={{width: '50%'}}>
+                                    <Select mode={item.uiType === 'select' ? '' : 'multiple'} showArrow allowClear labelInValue style={{width: '50%'}}>
                                       {
                                         item.dataSource.map((option,_index) => {
                                         return <Option key={option.value}>{option.text}</Option>
@@ -971,7 +1006,7 @@ import {
                   )}
 
                   {getFieldDecorator('measureUnit', {
-                    initialValue: data.supply? data.supply.measureUnit: '',
+                    initialValue: data.supply? data.supply.measureUnit: undefined,
                     rules: [],
                   })(
                     <Select allowClear showSearch style={{width: '150px'}} 
@@ -990,7 +1025,7 @@ import {
                   )}
                   <span style={{padding: '0 6px'}} >per</span>
                   {getFieldDecorator('timeUnit', {
-                    initialValue: data.supply? data.supply.timeUnit: '',
+                    initialValue: data.supply? data.supply.timeUnit: undefined,
                     rules: [],
                   })(
                     <Select allowClear showSearch style={{width: '150px'}} 
@@ -1016,15 +1051,20 @@ import {
                     initialValue: data.packagingImage? data.packagingImage : '',
                     rules: [],
                   })(
-                    <Select allowClear style={{width: '50%'}} 
-                    >
-                      {
-                        config.logisticsMode && config.logisticsMode.props.dataSource.map((option,_index) => {
-                        return <Option value={option.value} key={_index}>{option.text}</Option>
-                        })
-                      }
-                    </Select>
+                    <div>
+                      <div className={styles.imgBtn}>
+                        <MultiUpload {...multiPackProps} text="上传图片" />
+                      </div>
+                      <ul className={styles.packImgList} >
+                        {
+                          data.packagingImage && data.packagingImage.map((option,index) => {
+                            return <li key={index} ><img src={option.image_url} /></li>
+                          })
+                        } 
+                      </ul>
+                    </div>
                   )}
+                  
                 </FormItem>
               </Card>
               <FormItem
@@ -1036,13 +1076,13 @@ import {
                 <Button type="primary" htmlType="submit" loading={submitting}>
                   <FormattedMessage id="formandbasic-form.form.submit" />
                 </Button>
-                <Button
+                {/* <Button
                   style={{
                     marginLeft: 8,
                   }}
                 >
                   <FormattedMessage id="formandbasic-form.form.save" />
-                </Button>
+                </Button> */}
               </FormItem>
             </Form>
           </Card>
