@@ -31,6 +31,31 @@ ul{
   line-height: 32px;
 }
 
+.uintCon{
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: stretch;
+  border-radius: 5px;
+  .leftTable{
+    width: 70%;
+  }
+  .rightPart{
+    width: 30%;
+    border-left: 1px solid #ccc;
+    .title{
+      height: 54px;
+      padding-left: 10px;
+      background: #fafafa;
+      line-height: 54px;
+    }
+  }
+}
+
+.errorTip{
+  color: red;
+  line-height: 22px;
+}
+
 .heading {
   margin: 0 0 16px 0;
   font-size: 14px;
@@ -56,6 +81,19 @@ ul{
   color: #999;
   padding-left: 10px;
   cursor: pointer;
+}
+
+.ladderList{
+  padding: 0 10px;
+  & .ladderLi{
+    display: flex;
+    justify-content: space-between;
+    & > div{
+      & span {
+        color: red;
+      }
+    }
+  }
 }
 
 .attrTitle{

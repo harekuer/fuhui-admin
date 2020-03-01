@@ -1,22 +1,24 @@
 import {
     Button,
     Card,
-    DatePicker,
     Form,
     Icon,
     Input,
+    InputNumber,
     Switch,
     Select,
+    TreeSelect,
     Checkbox,
     Tooltip,
     Table,
   } from 'antd';
   import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
-  import React, { Component } from 'react';
+  import React, { PureComponent } from 'react';
   import UEditor from '@/components/Ueditor'
   import SortableList from '@/components/SortableList'
   import 'rc-color-picker/assets/index.css'
   import MultiUpload from '@/components/MultiUpload'
+  import SingleUpload from '@/components/SinglePicture/SingleUpload.js';
   import ColorPicker from 'rc-color-picker';
   import { connect } from 'dva';
   import styles from './style.less';
@@ -24,17 +26,32 @@ import {
   
   const FormItem = Form.Item;
   const { Option } = Select;
-  const { RangePicker } = DatePicker;
   const { Search } = Input;
   
-  class BasicForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          data: props.list,
-          editingKey: '',
-        };
+  // 新sku与之前已编辑的sku对比，保留之前编辑的数据
+  function combineData (prevSku, sku) {
+    let newData = []
+    sku.map((item) => {
+      let obj = item
+      prevSku.forEach((option) => {
+        if(option.sizeId === item.sizeId&& option.colorId === item.colorId){
+          obj = option
+        } 
+      })
+      newData.push(obj)
+    })
+    return newData
+  }
+
+  class BasicForm extends PureComponent {
+    state = {
+      ladderValidate: {
+        isEmpty: true,
+        isRangeError: false,
+        isPriceError: false,
       }
+    };
+
     handleSubmit = e => {
       const { dispatch, form } = this.props;
       e.preventDefault();
@@ -49,18 +66,88 @@ import {
     };
 
     componentDidMount() {
-        const { dispatch } = this.props;
+        const { dispatch,location } = this.props;
+        const { state } = location;
         dispatch({
           type: 'productDetail/getConfig',
         });
+        dispatch({
+          type: 'productDetail/getCategoryTree',
+        });
+        if(state && state.products_id) {
+          dispatch({
+            type: 'productDetail/query',
+            payload: {
+              products_id: state.products_id,
+            }
+          });
+        }
+
+    }
+
+    //新增阶梯价
+    onAddLadder = () => {
+      const { dispatch, productDetail } = this.props;
+      const { data } = productDetail
+      let newData = data
+      let obj = {
+        min_order:'',
+        price:''
+      }
+      const { ladderValidate } = this.state
+      newData.ladderPrice.push(obj)
+      dispatch({
+        type: 'productDetail/updateState',
+        payload: {
+          data: newData,
+        }
+      });
+      this.setState({
+        ladderValidate: {
+          isEmpty: true,
+          isRangeError: ladderValidate.isRangeError,
+          isPriceError: ladderValidate.isPriceError,
+        }
+      })
+    }
+
+    //验证是否有未填的输入框，以及是否为空
+    validateLadder = () => {
+      const { dispatch, productDetail } = this.props;
+      const { data } = productDetail
+      let newData = data
+      let obj = {
+        isEmpty: false,
+        isRangeError: false,
+        isPriceError: false,
+      }
+      newData.ladderPrice.forEach((item,index) => {
+        if(Number(item.min_order) === 0 || Number(item.price) === 0){
+          obj.isEmpty = true
+        }
+        if(index > 0){
+          if(newData.ladderPrice[index-1].min_order >= item.min_order ){
+            obj.isRangeError = true
+          }
+          if(item.price >= newData.ladderPrice[index-1].price) {
+            obj.isPriceError = true
+          }
+        }
+      })
+      this.setState({
+        ladderValidate: {
+          ...obj,
+        },
+      })
     }
   
     render() {
       const { submitting,productDetail, dispatch } = this.props;
-      const { data, config,initColor } = productDetail
+      const { data, config,initColor,priceUnit,categoryList } = productDetail
       const { 
         form: { getFieldDecorator, getFieldValue },
       } = this.props;
+      const { ladderValidate } = this.state
       const formItemLayout = {
         labelCol: {
           xs: {
@@ -78,7 +165,7 @@ import {
             span: 12,
           },
           md: {
-            span: 18,
+            span: 19,
           },
         },
       };
@@ -95,6 +182,25 @@ import {
         },
       };
 
+      //递归拷贝类目数据
+      const categoryTreeList = (nodeList) => {
+        let list = [];
+        nodeList.forEach(item => {
+          let obj = {};
+          obj.key = item.categories_id;
+          obj.value = item.categories_id;
+          obj.title = item.categories_name;
+          if(item.children) {
+            obj.children = categoryTreeList(item.children)
+          }
+          list.push(obj)
+        })
+        return list
+      }
+
+      const treeData = categoryTreeList(categoryList);
+
+      //图片排序组件船只
       const sortProps = {
         data: data.productImage,
         onSaveState (items) {
@@ -109,6 +215,7 @@ import {
         },
       }
     
+      //多图上传组件传值
       const multiProps = {
         id: 'flashContainer',
         products_id: '',
@@ -158,6 +265,10 @@ import {
         return list
       }
 
+      //编辑关键词
+      /*
+      @param  key   add/delete/update
+      */
       const changeKeyword = (key,index,value) => {
         let newData = data
         if(key === 'delete'){
@@ -228,14 +339,28 @@ import {
       const onChangeSku = (values,key) => {
         var colorArr = key === 'productSize' ?getFieldValue('productColor') : values
         var sizeArr = key === 'productSize' ? values : getFieldValue('productSize')
+        let colorObjArr = []
+        let sizeObjArr = []
+        config.productColor.props.dataSource.map(item => { //获取color数组配置的text和value
+          if(colorArr.includes(item.value)){
+            colorObjArr.push(item)
+          }
+        })
+        config.productSize.props.dataSource.map(item => {//获取size数组配置的text和value
+          if(sizeArr.includes(item.value)){
+            sizeObjArr.push(item)
+          }
+        })
         let newData = data
         let sku = []
-        if(sizeArr.length && colorArr.length ){
-          sizeArr.forEach(item => {
-            colorArr.forEach(option => {
+        if(sizeObjArr.length && colorObjArr.length ){
+          sizeObjArr.forEach(item => {
+            colorObjArr.forEach(option => {
               let obj = {
-                colorName: option,
-                sizeName: item,
+                colorName: option.text,
+                colorId: option.value,
+                sizeName: item.text,
+                sizeId: item.value,
                 skuCode:'',
                 status: '0'
               }
@@ -243,15 +368,69 @@ import {
             })
           })
         }
-        newData.sku = sku
+        if(newData.sku.length && sku.length){
+          newData.sku = combineData(newData.sku,sku)
+        } else {
+          newData.sku = sku
+        }
+        dispatch({
+          type: 'productDetail/updateState',
+          payload: {
+            data: newData,
+            choosedSize: sizeObjArr,
+            choosedColor: colorObjArr,
+          }
+        });
+
+      }
+
+      //sku编辑
+      const onEditSku = (value,key,index) => {
+        let newData = data
+        if(key === 'skuCode'){
+          newData.sku[index][key] = value
+        } else {
+          newData.sku[index][key] = value? '1' : '0'
+        }
         dispatch({
           type: 'productDetail/updateState',
           payload: {
             data: newData,
           }
         });
-
       }
+
+      //阶梯价编辑或删除
+      /* 
+      @param  operate   delete/update
+      @param  value    输入框值
+      @param   key     字段key值
+      */
+      const onEditLadder = (operate, value,key,index) => {
+        let newData = data
+        if(operate === 'delete'){
+          newData.ladderPrice = newData.ladderPrice.filter((item,_index) => _index !== index)
+        } else {
+          newData.ladderPrice[index][key] = value
+        }
+        dispatch({
+          type: 'productDetail/updateState',
+          payload: {
+            data: newData,
+          }
+        });
+      }
+
+      //保存计量单位label
+      const onEditUnit = (value,option) => {
+        const priceUnit = option.props.children
+        dispatch({
+          type: 'productDetail/updateState',
+          payload: {
+            priceUnit,
+          }
+        });
+      }     
 
       //sku列信息配置
       const columns = [
@@ -294,19 +473,65 @@ import {
           title: '商品编码',
           dataIndex: 'skuCode',
           key: 'skuCode',
-          render: (text,record) => {
-            return <Input value={text} maxLength={20} style={{width: '200px'}}/>
+          render: (text,record,index) => {
+            return <Input value={text} maxLength={20} style={{width: '200px'}} onChange={(e) => onEditSku(e.target.value,'skuCode',index)}/>
           }
         },
         {
           title: '操作',
           dataIndex: 'status',
           key: 'status',
-          render: (text,record) => {
-            return <Switch size="small" checked={text == '1'} />
+          render: (text,record,index) => {
+            return <Switch size="small" checked={text == '1'} onChange={checked => onEditSku(checked,'status',index)} />
           }
         },
       ];
+
+      //阶梯价配置
+      const ladderColumns = [
+        {
+          title: (<div>最小起订量<span style={{color: '#999'}} >({priceUnit == ''? '计量单位' : priceUnit })</span></div>),
+          dataIndex: 'min_order',
+          key: 'min_order',
+          render: (text,record,index) => {
+            return <div>
+              ≥ <InputNumber value={text} min={1} max={99999} precision={0} 
+                style={{width: '150px',borderColor: Number(text) === 0 ? '#f04134' : '#d9d9d9' }} 
+                onChange={(value) => onEditLadder('update',value,'min_order',index)}
+                onBlur={this.validateLadder}
+              />
+            </div>
+          }
+        },
+        {
+          title: (<div>FOB价格<span style={{color: '#999'}} >({priceUnit== ''? '计量单位' : priceUnit })</span></div>),
+          dataIndex: 'price',
+          key: 'price',
+          render: (text,record,index) => {
+            return <div>
+              US $ <InputNumber value={text} min={0.01} max={9999999.99} precision={2} 
+                style={{width: '150px',borderColor: Number(text) === 0 ? '#f04134' : '#d9d9d9' }} 
+                onChange={(value) => onEditLadder('update',value,'price',index)}
+                onBlur={this.validateLadder}
+              />
+            </div>
+          }
+        },
+        {
+          title: '',
+          dataIndex: 'operate',
+          key: 'operate',
+          render: (text,record,index) => {
+            if(data.ladderPrice.length > 1){
+              return <Icon type="delete" className={styles.delete} onClick={() => onEditLadder('delete','','', index)} ></Icon>
+            } else {
+              return null
+            }
+          }
+        },
+      ];
+
+      
 
 
       return (
@@ -318,6 +543,44 @@ import {
               }}
             >
               <Card size="small" title="基础信息" >
+              <FormItem
+                  {...formItemLayout}
+                  label="产品类目"
+                >
+                  {getFieldDecorator('categoriesId', {
+                    initialValue: data.categoriesId,
+                    rules: [{required: true,message: '必填项不能为空'}],
+                  })(
+                    <TreeSelect
+                      style={{width: '50%'}}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      getPopupContainer={triggerNode => triggerNode.parentNode}
+                      treeData={treeData}
+                      placeholder="请选择产品分类"
+                      treeDefaultExpandAll
+                      allowClear
+                    />
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label="产品分组"
+                >
+                  {getFieldDecorator('spCategoriesId', {
+                    initialValue: data.spCategoriesId,
+                    rules: [{required: true,message: '必填项不能为空'}],
+                  })(
+                    <TreeSelect
+                      style={{width: '50%'}}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      getPopupContainer={triggerNode => triggerNode.parentNode}
+                      treeData={treeData}
+                      placeholder="请选择产品分类"
+                      treeDefaultExpandAll
+                      allowClear
+                    />
+                  )}
+                </FormItem>
                 <FormItem
                   {...formItemLayout}
                   label={
@@ -508,57 +771,57 @@ import {
               </Card>
 
               <Card size="small" title="SKU属性编辑" >
-              <FormItem
-                {...formItemLayout}
-                label={config.productSize? config.productSize.props.label : ''}
-              >
-                {getFieldDecorator('productSize', {
-                  initialValue: data.productSize? data.productSize : [],
-                  rules: [],
-                })(
-                  <Checkbox.Group
-                    options={formatLabel(config.productSize? config.productSize.props.dataSource : [])}
-                    onChange={values =>onChangeSku(values,'productSize')}
+                <FormItem
+                  {...formItemLayout}
+                  label={config.productSize? config.productSize.props.label : ''}
+                >
+                  {getFieldDecorator('productSize', {
+                    initialValue: data.productSize? data.productSize : [],
+                    rules: [],
+                  })(
+                    <Checkbox.Group
+                      options={formatLabel(config.productSize? config.productSize.props.dataSource : [])}
+                      onChange={values =>onChangeSku(values,'productSize')}
+                    />
+                  )}
+                  <Search
+                    placeholder="新增尺码"
+                    enterButton="添加"
+                    maxLength={50}
+                    style={{width:'200px'}}
+                    onSearch={value => onAddSize(value)}
                   />
-                )}
-                <Search
-                  placeholder="新增尺码"
-                  enterButton="添加"
-                  maxLength={50}
-                  style={{width:'200px'}}
-                  onSearch={value => onAddSize(value)}
-                />
-              </FormItem>
-              <FormItem
-                {...formItemLayout}
-                label={config.productColor? config.productColor.props.label : ''}
-              >
-                {getFieldDecorator('productColor', {
-                  initialValue: data.productColor? data.productColor : [],
-                  rules: [],
-                })(
-                  <Checkbox.Group onChange={values =>onChangeSku(values,'productColor')}>
-                    {
-                      config.productColor && config.productColor.props.dataSource.map(option => {
-                        return <Checkbox key={option.value} value={option.value} style={{marginBottom: '15px'}}> {option.text}
-                        (色值：<div className={styles.outline}><div className={styles.inline} style={{background: option.rgb}}></div></div>）
-                        </Checkbox>
-                      })
-                    }
-                  </ Checkbox.Group>
-                )}
-                <div className={styles.colorPicker}>
-                  <ColorPicker color={initColor} onChange={changeColorHandler} placement="topRight" />
-                </div>
-                <Search
-                  placeholder="新增颜色名称"
-                  enterButton="添加"
-                  maxLength={50}
-                  style={{width:'200px'}}
-                  onSearch={value => onAddColor(value)}
-                />
-              </FormItem>
-              <Table dataSource={data.sku} columns={columns} bordered/>
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label={config.productColor? config.productColor.props.label : ''}
+                >
+                  {getFieldDecorator('productColor', {
+                    initialValue: data.productColor? data.productColor : [],
+                    rules: [],
+                  })(
+                    <Checkbox.Group onChange={values =>onChangeSku(values,'productColor')}>
+                      {
+                        config.productColor && config.productColor.props.dataSource.map(option => {
+                          return <Checkbox key={option.value} value={option.value} style={{marginBottom: '15px'}}> {option.text}
+                          (色值：<div className={styles.outline}><div className={styles.inline} style={{background: option.rgb}}></div></div>）
+                          </Checkbox>
+                        })
+                      }
+                    </ Checkbox.Group>
+                  )}
+                  <div className={styles.colorPicker}>
+                    <ColorPicker color={initColor} onChange={changeColorHandler} placement="topRight" />
+                  </div>
+                  <Search
+                    placeholder="新增颜色名称"
+                    enterButton="添加"
+                    maxLength={50}
+                    style={{width:'200px'}}
+                    onSearch={value => onAddColor(value)}
+                  />
+                </FormItem>
+                <Table dataSource={data.sku} columns={columns} bordered rowKey={(record, index) => index} pagination={false} />
               </Card>
 
               <Card size="small" title="商品描述" >
@@ -592,7 +855,178 @@ import {
                     content={data.productPropText == null ? '' : data.productPropText}
                 />
               </Card>
+              <Card size="small" title="交易信息" extra={<span>完善交易信息，方便买家做出采购决定。</span>} >
+              <FormItem
+                  {...formItemLayout}
+                  label={config.priceUnit ? config.priceUnit.props.label : ''}
+                >
+                  {getFieldDecorator('priceUnit', {
+                    initialValue: data.priceUnit? data.priceUnit : '',
+                    rules: [{required: true, message: '请补充该选项'}],
+                  })(
+                    <Select showSearch style={{width: '50%'}} 
+                      optionFilterProp="children"
+                      onChange={onEditUnit}
+                      filterOption={(input, option) =>
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {
+                        config.priceUnit && config.priceUnit.props.dataSource.map((option,_index) => {
+                        return <Option value={option.value} key={_index}>{option.text}</Option>
+                        })
+                      }
+                    </Select>
+                  )}
+                </FormItem>
+
+                <FormItem
+                  {...formItemLayout}
+                  label={config.ladderPrice ? config.ladderPrice.props.label : ''}
+                >
+                  {getFieldDecorator('ladderPrice', {
+                    initialValue: data.ladderPrice? data.ladderPrice : '',
+                    rules: [{required: true, message: '请补充该选项'}],
+                  })(
+                    <div className={styles.uintCon} >
+                      <div className={styles.leftTable}>
+                        <Table dataSource={data.ladderPrice} columns={ladderColumns} rowKey={(record, index) => index} pagination={false} />
+                        <Button onClick={this.onAddLadder} disabled={data.ladderPrice && data.ladderPrice.length > 3} style={{marginLeft: '10px'}} >新增价格区间</Button><span>（可设置不超过 4 个区间价格）</span>
+                      </div>
+                      <div className={styles.rightPart} > 
+                      <div className={styles.title}>预览 <span style={{color: '#999'}} >({priceUnit== ''? '计量单位' : priceUnit })</span> </div>
+                      {
+                        ladderValidate.isRangeError || ladderValidate.isPriceError || ladderValidate.isEmpty ? <span style={{marginLeft:'10px'}} >内容为空提示</span> : 
+                          <ul className={styles.ladderList}>
+                          {
+                            data.ladderPrice && data.ladderPrice.map((option,index) => {
+                              if(index === data.ladderPrice.length -1) {
+                                return <li key={index} className={styles.ladderLi}><div>≥ {option.min_order} </div><div>US $ <span> {option.price} </span></div></li>
+                              } else {
+                                return <li  key={index} className={styles.ladderLi}><div>{option.min_order} ~ {Number(data.ladderPrice[index+1].min_order) -1} </div><div>US $ <span> {option.price} </span></div></li>
+                              }
+                            })
+                          }
+                        </ul>
+                      }
+                      </div>
+                      
+                    </div>
+                  )}
+                  {
+                    ladderValidate.isEmpty ? <div className={styles.errorTip} > * 请输入起订量及价格 </div> : null
+                  }
+                  {
+                    ladderValidate.isRangeError ? <div className={styles.errorTip} > * 起订量必须是由小到大 </div> : null
+                  }
+                  {
+                    ladderValidate.isPriceError ? <div className={styles.errorTip} > * 价格必须是由大到小 </div> : null
+                  }
+                </FormItem>
+
+                {/* <FormItem
+                  {...formItemLayout}
+                  label={config.paymentMethod? config.paymentMethod.props.label : ''}
+                >
+                  {getFieldDecorator('paymentMethod', {
+                    initialValue: data.paymentMethod? data.paymentMethod : [],
+                    rules: [],
+                  })(
+                    <Checkbox.Group
+                      options={formatLabel(config.paymentMethod? config.paymentMethod.props.dataSource : [])}
+                      //onChange={values =>onChangeSku(values,'productSize')}
+                    />
+                  )}
+                </FormItem> */}
+              </Card>
               
+              <Card size="small" title="物流信息" >
+                <FormItem
+                  {...formItemLayout}
+                  label={config.logisticsMode? config.logisticsMode.props.label : ''}
+                >
+                  {getFieldDecorator('logisticsMode', {
+                    initialValue: data.logisticsMode? data.logisticsMode : '',
+                    rules: [],
+                  })(
+                    <Select allowClear style={{width: '50%'}} 
+                    >
+                      {
+                        config.logisticsMode && config.logisticsMode.props.dataSource.map((option,_index) => {
+                        return <Option value={option.value} key={_index}>{option.text}</Option>
+                        })
+                      }
+                    </Select>
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label={config.supply? config.supply.props.label : ''}
+                >
+                  {getFieldDecorator('supplyNumber', {
+                    initialValue: data.supply? data.supply.supplyNumber : '',
+                    rules: [],
+                  })(
+                    <Input style={{width: '200px'}} />
+                  )}
+
+                  {getFieldDecorator('measureUnit', {
+                    initialValue: data.supply? data.supply.measureUnit: '',
+                    rules: [],
+                  })(
+                    <Select allowClear showSearch style={{width: '150px'}} 
+                      placeholder="请选择"
+                      optionFilterProp="children"
+                      filterOption={(input, option) =>
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {
+                        config.supply && config.supply.props.measureUnits.map((option,_index) => {
+                        return <Option value={option.value} key={_index}>{option.text}</Option>
+                        })
+                      }
+                    </Select>
+                  )}
+                  <span style={{padding: '0 6px'}} >per</span>
+                  {getFieldDecorator('timeUnit', {
+                    initialValue: data.supply? data.supply.timeUnit: '',
+                    rules: [],
+                  })(
+                    <Select allowClear showSearch style={{width: '150px'}} 
+                      placeholder="请选择"
+                      optionFilterProp="children"
+                      filterOption={(input, option) =>
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {
+                        config.supply && config.supply.props.timeUnits.map((option,_index) => {
+                        return <Option value={option.value} key={_index}>{option.text}</Option>
+                        })
+                      }
+                    </Select>
+                  )}
+                </FormItem>
+                <FormItem
+                  {...formItemLayout}
+                  label={config.packagingImage? config.packagingImage.props.label : ''}
+                >
+                  {getFieldDecorator('packagingImage', {
+                    initialValue: data.packagingImage? data.packagingImage : '',
+                    rules: [],
+                  })(
+                    <Select allowClear style={{width: '50%'}} 
+                    >
+                      {
+                        config.logisticsMode && config.logisticsMode.props.dataSource.map((option,_index) => {
+                        return <Option value={option.value} key={_index}>{option.text}</Option>
+                        })
+                      }
+                    </Select>
+                  )}
+                </FormItem>
+              </Card>
               <FormItem
                 {...submitFormLayout}
                 style={{

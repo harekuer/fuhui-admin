@@ -22,6 +22,13 @@ export async function save (params) {
     });
 }
 
+export async function categoryTree (params) {
+  return request('/_shop/index.php?com=category&t=getCategoryTree', {
+    method: 'get',
+    data: qs.stringify(params),
+  });
+}
+
 
 
 

@@ -1,4 +1,4 @@
-import { query, save, getConfig } from './service';
+import { query, save, getConfig, categoryTree } from './service';
 import { routerRedux } from 'dva/router';
 import { message} from 'antd';
 
@@ -13,10 +13,21 @@ const Model = {
           value: '',
         }
       ],
-      productImage: []
+      ladderPrice: [
+        {
+          min_order:'',
+          price:''
+        }
+      ],
+      productImage: [],
+      sku: [],
     },
     config: {},
     initColor: '#F10',
+    choosedSize: [],
+    choosedColor: [],
+    priceUnit: '',
+    categoryList: [],
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -54,6 +65,21 @@ const Model = {
         );
       } else {
         message.error(response.message)
+      }
+    },
+
+    * getCategoryTree ({  payload }, { call, put }) {
+      const result = yield call(categoryTree, payload)
+      const { code, message, data } = result
+      if (code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            categoryList: data,
+          },
+        })
+      } else {
+        throw message
       }
     },
 
