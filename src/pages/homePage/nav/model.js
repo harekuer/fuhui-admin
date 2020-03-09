@@ -1,4 +1,4 @@
-import { query, update,updateSort } from './service';
+import { query, update,updateSort,remove } from './service';
 import { routerRedux } from 'dva/router';
 import { message} from 'antd';
 
@@ -7,6 +7,7 @@ const Model = {
   state: {
     list: [],
     key: 'index-nav-top',
+    lang:'en',
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -38,6 +39,7 @@ const Model = {
                 type: 'fetch',
                 payload: {
                   module: payload.module,
+                  lang: payload.lang,
                 },
             });
         }
@@ -60,6 +62,7 @@ const Model = {
             type: 'fetch',
             payload: {
               module: payload.module,
+              lang: payload.lang,
             },
           });
       } else if(code === 401){

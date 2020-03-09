@@ -1,4 +1,4 @@
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button } from 'antd';
+  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button,Radio } from 'antd';
   import React, { Component, Fragment } from 'react';
   import { connect } from 'dva';
   import moment from 'moment';
@@ -184,6 +184,9 @@ class TableList extends React.Component {
         const { dispatch } = this.props;
         dispatch({
           type: 'search/fetch',
+          payload: {
+            lang: 'en'
+          }
         });
 
     }
@@ -219,7 +222,7 @@ class TableList extends React.Component {
               return;
             }
             const { dispatch, search} = this.props;
-            let { list } = search;
+            let { list,lang } = search;
             const newData = list;
             const index = newData.findIndex(item => key === item.id);
             
@@ -230,7 +233,8 @@ class TableList extends React.Component {
                     type: 'search/update',
                     payload: {
                         id: key !== '0'? key : undefined,
-                        title: row.title
+                        title: row.title,
+                        lang,
                     },
                 })
                 this.setState({
@@ -250,13 +254,15 @@ class TableList extends React.Component {
         this.setState({ editingKey: key });
     }
     onDelete(key) {
-        const { dispatch } = this.props;
-        dispatch({
-            type: 'search/remove',
-            payload: {
-                id: key,
-            }
-        })
+      const { dispatch, search} = this.props;
+      let { lang } = search;
+      dispatch({
+          type: 'search/remove',
+          payload: {
+              id: key,
+              lang,
+          }
+      })
     }
 
     onAdd = () => {
@@ -276,7 +282,7 @@ class TableList extends React.Component {
 
     onSaveSort = () => {
         const { dispatch, search} = this.props;
-        let { list } = search;
+        let { list,lang } = search;
         let sort= []
         let id = []
         list.forEach((item,index) => {
@@ -286,8 +292,26 @@ class TableList extends React.Component {
             type: 'search/updateSort',
             payload: {
               sort_array: sort,
+              lang,
             }
         })
+    }
+
+    onChange = (e) =>{
+      const { dispatch } = this.props;
+      const value = e.target.value
+      dispatch({
+        type: 'search/fetch',
+        payload: {
+          lang: value,
+        }
+      })
+      dispatch({
+        type: 'search/updateState',
+        payload: {
+          lang: value,
+        }
+      })
     }
   
     render() {
@@ -320,8 +344,11 @@ class TableList extends React.Component {
         });
       return (
         <Card bordered={false}>
-            <Alert style={{marginBottom: '15px'}} message="*备注：搜索推荐词最多可设置10个，页面外显最多6个。" type="error" />
-
+            {/* <Alert style={{marginBottom: '15px'}} message="*备注：搜索推荐词最多可设置10个，页面外显最多6个。" type="error" /> */}
+            <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+              <Radio.Button value="en">EN</Radio.Button>
+              <Radio.Button value="zh">ZH</Radio.Button>
+            </Radio.Group>
             <EditableContext.Provider value={this.props.form}>
                 <DndProvider backend={HTML5Backend} context={window}>
                 <Table

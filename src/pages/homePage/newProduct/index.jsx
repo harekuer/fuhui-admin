@@ -1,4 +1,4 @@
-import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button } from 'antd';
+import { Table, Card, Alert, Input, Radio, Form, Popconfirm, Button } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -241,6 +241,9 @@ class TableList extends React.Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'newProduct/fetch',
+      payload: {
+        lang: 'en'
+      }
     });
   }
 
@@ -277,7 +280,7 @@ class TableList extends React.Component {
       }
 
       const { dispatch, newProduct } = this.props;
-      let { list } = newProduct;
+      let { list,lang } = newProduct;
       const newData = list;
       const index = newData.findIndex(item => key === item.id);
 
@@ -291,6 +294,7 @@ class TableList extends React.Component {
             url: row.url,
             image: row.image,
             title: row.title,
+            lang,
           },
         });
         this.setState({
@@ -311,11 +315,13 @@ class TableList extends React.Component {
   }
 
   onDelete(key) {
-    const { dispatch } = this.props;
+    const { dispatch, newProduct } = this.props;
+    let { lang } = newProduct;
     dispatch({
       type: 'newProduct/remove',
       payload: {
         id: key,
+        lang,
       },
     });
   }
@@ -339,9 +345,10 @@ class TableList extends React.Component {
       editingKey: '0',
     });
   };
+
   onSaveSort = () => {
     const { dispatch, newProduct } = this.props;
-    let { list } = newProduct;
+    let { list,lang } = newProduct;
     let sort = [];
     let id = [];
     list.forEach((item, index) => {
@@ -354,9 +361,29 @@ class TableList extends React.Component {
       type: 'newProduct/updateSort',
       payload: {
         sort_array: sort,
+        lang,
       },
     });
   };
+
+  onChange = (e) =>{
+    const { dispatch, newProduct} = this.props;
+    let { key } = newProduct;
+    const value = e.target.value
+    dispatch({
+      type: 'newProduct/fetch',
+      payload: {
+        module: key,
+        lang: value,
+      }
+    })
+    dispatch({
+      type: 'newProduct/updateState',
+      payload: {
+        lang: value,
+      }
+    })
+  }
 
   render() {
     const {
@@ -390,8 +417,11 @@ class TableList extends React.Component {
     });
     return (
       <Card bordered={false}>
-        <Alert message="*备注：顶部newProduct最多可添加5个" type="error" />
-
+        {/* <Alert message="*备注：顶部newProduct最多可添加3个" type="error" /> */}
+        <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+          <Radio.Button value="en">EN</Radio.Button>
+          <Radio.Button value="zh">ZH</Radio.Button>
+        </Radio.Group>
         <EditableContext.Provider value={this.props.form}>
           <DndProvider backend={HTML5Backend} context={window}>
             <Table

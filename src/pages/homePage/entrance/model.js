@@ -6,7 +6,8 @@ const Model = {
   namespace: 'entrance',
   state: {
     list: [],
-    key: 'index-entrance-design',
+    key: 'index-entrance-spot',
+    lang: 'en',
   },
   effects: {
     *fetch({ payload }, { call, put }) {

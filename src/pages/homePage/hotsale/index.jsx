@@ -1,5 +1,5 @@
 
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button, Tabs } from 'antd';
+  import { Table, Card,Alert,Input, Radio, Form ,Popconfirm, Button, Tabs } from 'antd';
   import React from 'react';
   import { connect } from 'dva';
   import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -205,6 +205,7 @@ class TableList extends React.Component {
           type: 'hotsale/fetch',
           payload: {
             module: 'index-hot-sale-image',
+            lang: 'en'
           }
         });
     }
@@ -335,11 +336,13 @@ class TableList extends React.Component {
     onDelete(key) {
       const { dispatch, hotsale } = this.props;
       const module = hotsale.key
+      let { lang } = hotsale;
       dispatch({
         type: 'hotsale/remove',
         payload: {
           id: key,
           module,
+          lang,
         },
       });
     }
@@ -350,7 +353,7 @@ class TableList extends React.Component {
               return;
             }
             const { dispatch, hotsale} = this.props;
-            let { list,key } = hotsale;
+            let { list,key,lang } = hotsale;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
             if (index > -1) {
@@ -368,6 +371,7 @@ class TableList extends React.Component {
                     type: 'hotsale/update',
                     payload: {
                         module: key,
+                        lang,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: relPath.join(','),
                         url: row.url,
@@ -413,7 +417,7 @@ class TableList extends React.Component {
 
     onSaveSort = () => {
       const { dispatch, hotsale} = this.props;
-      let { list,key } = hotsale;
+      let { list,key,lang } = hotsale;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
@@ -423,23 +427,45 @@ class TableList extends React.Component {
           payload: {
             module: key,
             sort_array: sort,
+            lang,
           }
       })
   }
 
     onChangeTab = (key) => {
-      const { dispatch } = this.props;
+      const { dispatch, hotsale} = this.props;
+      let { lang } = hotsale;
       this.setState({ editingKey: ''});
       dispatch({
         type: 'hotsale/fetch',
         payload: {
           module: key,
+          lang,
         }
       })
       dispatch({
         type: 'hotsale/updateState',
         payload: {
           key,
+        }
+      })
+    }
+
+    onChange = (e) =>{
+      const { dispatch, hotsale} = this.props;
+      let { key } = hotsale;
+      const value = e.target.value
+      dispatch({
+        type: 'hotsale/fetch',
+        payload: {
+          module: key,
+          lang: value,
+        }
+      })
+      dispatch({
+        type: 'hotsale/updateState',
+        payload: {
+          lang: value,
         }
       })
     }
@@ -477,6 +503,10 @@ class TableList extends React.Component {
 
       return (
         <Card bordered={false}>
+          <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+          </Radio.Group>
           <Tabs  onChange={this.onChangeTab} type="card">
             <TabPane tab="侧边大图" key="index-hot-sale-image">
 

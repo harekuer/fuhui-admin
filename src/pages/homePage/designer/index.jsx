@@ -193,6 +193,7 @@ class TableList extends React.Component {
       type: 'designer/fetch',
       payload: {
         module: 'index-designer',
+        lang: 'en'
       }
     });
   }

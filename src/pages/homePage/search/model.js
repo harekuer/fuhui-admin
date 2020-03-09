@@ -6,6 +6,7 @@ const Model = {
   namespace: 'search',
   state: {
     list: [],
+    lang: 'en'
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -35,7 +36,9 @@ const Model = {
         if(!payload.id){
             yield put({
                 type: 'fetch',
-                payload: {},
+                payload: {
+                  lang: payload.lang,
+                },
             });
         } 
       } else if(code === 401){
@@ -55,7 +58,9 @@ const Model = {
         if(code === 200){
             yield put({
                 type: 'fetch',
-                payload: {},
+                payload: {
+                  lang: payload.lang,
+                },
             });
         } else if(code === 401){
           yield put(

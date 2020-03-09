@@ -3,7 +3,7 @@ import qs from 'qs'
 
 export async function query (params) {
     return request('/_os/index.php?com=common&t=getList&module=index-search-keyword', {
-      method: 'get',
+      method: 'post',
       data: qs.stringify(params),
     });
 }

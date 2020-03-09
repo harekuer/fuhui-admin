@@ -1,5 +1,5 @@
 
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button, Tabs } from 'antd';
+  import { Table, Card,Alert,Input, Radio, Form ,Popconfirm, Button, Tabs } from 'antd';
   import React from 'react';
   import { connect } from 'dva';
   import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -206,6 +206,7 @@ class TableList extends React.Component {
           type: 'newArrival/fetch',
           payload: {
             module: 'index-newest1-image',
+            lang: 'en'
           }
         });
     }
@@ -336,11 +337,13 @@ class TableList extends React.Component {
     onDelete(key) {
       const { dispatch, newArrival } = this.props;
       const module = newArrival.key
+      let { lang } = newArrival;
       dispatch({
         type: 'newArrival/remove',
         payload: {
           id: key,
           module,
+          lang,
         },
       });
     }
@@ -351,7 +354,7 @@ class TableList extends React.Component {
               return;
             }
             const { dispatch, newArrival} = this.props;
-            let { list,key } = newArrival;
+            let { list,key,lang } = newArrival;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
             if (index > -1) {
@@ -369,6 +372,7 @@ class TableList extends React.Component {
                     type: 'newArrival/update',
                     payload: {
                         module: key,
+                        lang,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: relPath.join(','),
                         url: row.url,
@@ -414,7 +418,7 @@ class TableList extends React.Component {
 
     onSaveSort = () => {
       const { dispatch, newArrival} = this.props;
-      let { list,key } = newArrival;
+      let { list,key,lang } = newArrival;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
@@ -424,23 +428,45 @@ class TableList extends React.Component {
           payload: {
             module: key,
             sort_array: sort,
+            lang,
           }
       })
   }
 
     onChangeTab = (key) => {
-      const { dispatch } = this.props;
+      const { dispatch, newArrival} = this.props;
+      let { lang } = newArrival;
       this.setState({ editingKey: ''});
       dispatch({
         type: 'newArrival/fetch',
         payload: {
           module: key,
+          lang,
         }
       })
       dispatch({
         type: 'newArrival/updateState',
         payload: {
           key,
+        }
+      })
+    }
+
+    onChange = (e) =>{
+      const { dispatch, newArrival} = this.props;
+      let { key } = newArrival;
+      const value = e.target.value
+      dispatch({
+        type: 'newArrival/fetch',
+        payload: {
+          module: key,
+          lang: value,
+        }
+      })
+      dispatch({
+        type: 'newArrival/updateState',
+        payload: {
+          lang: value,
         }
       })
     }
@@ -478,6 +504,10 @@ class TableList extends React.Component {
 
       return (
         <Card bordered={false}>
+          <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+          </Radio.Group>
           <Tabs  onChange={this.onChangeTab} type="card">
             <TabPane tab="侧边大图" key="index-newest1-image">
 

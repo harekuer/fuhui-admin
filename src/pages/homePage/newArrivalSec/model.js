@@ -7,6 +7,7 @@ const Model = {
   state: {
     list: [],
     key: 'index-newest2-image',
+    lang:'en'
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -37,6 +38,7 @@ const Model = {
           type: 'fetch',
           payload: {
             module: payload.module,
+            lang: payload.lang,
           },
       });
       } else if(code === 401){
@@ -58,6 +60,7 @@ const Model = {
             type: 'fetch',
             payload: {
               module: payload.module,
+              lang: payload.lang,
             },
           });
       } else if(code === 401){

@@ -1,5 +1,5 @@
 
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button, Tabs } from 'antd';
+  import { Table, Card,Alert,Input, Radio, Form ,Popconfirm, Button, Tabs } from 'antd';
   import React from 'react';
   import { connect } from 'dva';
   import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -237,7 +237,8 @@ class TableList extends React.Component {
         dispatch({
           type: 'entrance/fetch',
           payload: {
-            module: 'index-entrance-design',
+            module: 'index-entrance-spot',
+            lang: 'en'
           }
         });
     }
@@ -270,11 +271,13 @@ class TableList extends React.Component {
     onDelete(key) {
       const { dispatch, entrance } = this.props;
       const module = entrance.key
+      const { lang } =entrance
       dispatch({
         type: 'entrance/remove',
         payload: {
           id: key,
           module,
+          lang,
         },
       });
     }
@@ -285,7 +288,7 @@ class TableList extends React.Component {
               return;
             }
             const { dispatch, entrance} = this.props;
-            let { list,key } = entrance;
+            let { list,key,lang} = entrance;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
             
@@ -300,6 +303,7 @@ class TableList extends React.Component {
                         image: row.image,
                         url: row.url,
                         title: row.title,
+                        lang,
                     },
                 })
                 this.setState({
@@ -339,7 +343,7 @@ class TableList extends React.Component {
 
     onSaveSort = () => {
       const { dispatch, entrance} = this.props;
-      let { list,key } = entrance;
+      let { list,key,lang } = entrance;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
@@ -349,23 +353,45 @@ class TableList extends React.Component {
           payload: {
             module: key,
             sort_array: sort,
+            lang,
           }
       })
   }
 
     onChangeTab = (key) => {
-      const { dispatch } = this.props;
+      const { dispatch, entrance} = this.props;
+      let { lang } = entrance;
       this.setState({ editingKey: ''});
       dispatch({
         type: 'entrance/fetch',
         payload: {
           module: key,
+          lang,
         }
       })
       dispatch({
         type: 'entrance/updateState',
         payload: {
           key,
+        }
+      })
+    }
+
+    onChange = (e) =>{
+      const { dispatch, entrance} = this.props;
+      let { key } = entrance;
+      const value = e.target.value
+      dispatch({
+        type: 'entrance/fetch',
+        payload: {
+          module: key,
+          lang: value,
+        }
+      })
+      dispatch({
+        type: 'entrance/updateState',
+        payload: {
+          lang: value,
         }
       })
     }
@@ -404,8 +430,12 @@ class TableList extends React.Component {
 
       return (
         <Card bordered={false}>
+          <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+          </Radio.Group>
           <Tabs  onChange={this.onChangeTab} type="card">
-            <TabPane tab="设计专区" key="index-entrance-design">
+            {/* <TabPane tab="设计专区" key="index-entrance-design">
 
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>
@@ -430,7 +460,7 @@ class TableList extends React.Component {
                   <div style={{width: '100%',marginTop: '10px'}}><Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>+新增</Button></div>
                   : null
               }
-            </TabPane>
+            </TabPane> */}
             <TabPane tab="现货专区" key="index-entrance-spot">
               <EditableContext.Provider value={this.props.form}>
                   <DndProvider backend={HTML5Backend}>

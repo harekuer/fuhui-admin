@@ -233,6 +233,7 @@ class TableList extends React.Component {
           type: 'logistics/fetch',
           payload: {
             module: 'index-check-supplier',
+            lang: 'en'
           }
         });
     }
