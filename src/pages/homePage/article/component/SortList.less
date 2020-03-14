@@ -1,0 +1,120 @@
+:global {
+  .rst__nodeContent{
+    right: 0;
+  }
+  .rst__rowLabel {
+    width: 100%;
+  }
+  .rst__rowWrapper {
+    padding: 10px 0;
+  }
+  .rst__rowToolbar {
+    width: 10%;
+    justify-content: center;
+  }
+  .ReactVirtualized__Grid__innerScrollContainer {
+    border-top: none;
+    border-bottom: none;
+  }
+  .rst__node{
+    border-bottom: 1px solid #eee;
+  }
+  .rst__rowContents{
+    border:none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  .rst__lineHalfHorizontalRight::before, .rst__lineFullVertical::after, .rst__lineHalfVerticalTop::after, .rst__lineHalfVerticalBottom::after {
+    background-color: #bbb;
+  }
+  .rst__lineChildren::after{
+    background-color: #bbb;
+  }
+}
+
+.addBtnLeft {
+  padding: 0px 0px 15px 0px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.clearBtn{
+  margin-right: 15px;
+  background-color: #109AB8;
+  border-color: #109AB8;
+}
+
+.line{
+  width: 100%;
+  text-align: center;
+  position: relative;
+  font-weight: normal;
+  > div {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.table_th {
+  position: relative;
+  width: 100%;
+  background: #f7f7f7;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  .title{
+    width: 90%;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    padding: 0;
+    & li {
+      display: inline-block;
+      border-right: 1px solid #f4f4f4;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      padding: 16px 8px;
+      word-break: break-all;
+      vertical-align: middle;
+    }
+  }
+  .title_fr{
+    width: 10%;
+    background: #f7f7f7;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    & li {
+      display: inline-block;
+      border-right: 1px solid #f4f4f4;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      padding: 16px 0;
+      word-break: break-all;
+      vertical-align: middle;
+    }
+  }
+}
+
+.list_id{
+  width: 7%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+  padding: 0;
+  & li {
+    height: 62px;
+    line-height: 62px;
+    width: 100%;
+    display: block;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.list_tree{
+  width: 93%;
+  height: 100%;
+  display: inline-block;
+}

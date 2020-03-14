@@ -1,61 +1,40 @@
 /* global location */
 import pathToRegexp from 'path-to-regexp'
-import { routerRedux } from 'dva/router'
 import { message } from 'antd'
-import { detail, create, update, categoryTree } from '../service'
+import { detail, update } from '../service'
 
 export default {
 
-  namespace: 'categoryDetail',
+  namespace: 'articleDetail',
 
   state: {
     data: {
-      categoriesArr: [],
-      add_time: '',
-      categories_id: '',
-      categories_name: '',
-      meta_description: '',
-      meta_keyword: '',
-      meta_title: '',
-      parent_id: '',
-      sort: '',
+      title: '',
+      content: ''
     },
-    categoryList: [],
+    articleList: [],
   },
 
   subscriptions: {
     setup ({ dispatch, history }) {
       history.listen((location) => {
-        const match = pathToRegexp('/osAdmin/category/detail').exec(location.pathname);
+        const match = pathToRegexp('/osAdmin/home/article/detail').exec(location.pathname);
         const { state } = location;
         if (match) {
           dispatch({
             type: 'querySuccess',
             payload: {
               data: {
-                categoriesArr: [],
-                add_time: '',
-                categories_id: '',
-                categories_description:'',
-                categories_name: '',
-                meta_description: '',
-                meta_keyword: '',
-                meta_title: '',
-                parent_id: '',
-                sort: '',
+                title: '',
+                content: ''
               },
             },
           })
-          dispatch({
-            type: 'getCategoryTree',
-          })
-          if(state.type && state.type === 'update') {
-            
+          if(state && state.type === 'update') {
             dispatch({
               type: 'query',
               payload: {
-                categories_id: state.category,
-                lang: state.lang,
+                id: state.id,
               }
             })
           }
@@ -68,7 +47,7 @@ export default {
   effects: {
     * query ({  payload }, { call, put }) {
       const result = yield call(detail, payload)
-      const { code, data } = result
+      const { code,  data } = result
       if (code === 200) {
         yield put({
           type: 'querySuccess',
@@ -99,20 +78,6 @@ export default {
       }
     },
 
-    * getCategoryTree ({  payload }, { call, put }) {
-      const result = yield call(categoryTree, payload)
-      const { code,  data } = result
-      if (code === 200) {
-        yield put({
-          type: 'updateState',
-          payload: {
-            categoryList: data,
-          },
-        })
-      } else {
-        message.error(result.message)
-      }
-    },
 
   },
 

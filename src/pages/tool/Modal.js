@@ -61,8 +61,8 @@ const modal = ({
   )
 
   const listProps = {
-    dataSource: currentItem,
-    listData: currentItem,
+    dataSource: Array.isArray(currentItem)? currentItem : [],
+    listData: Array.isArray(currentItem)? currentItem : [],
     column: editConfig.table,
     pagination: false,
     scroll: { x: 580 },
@@ -118,7 +118,10 @@ const modal = ({
             )
           })
         }
-      </Form> : <List {...listProps} />
+      </Form> : null
+      }
+      {
+        editConfig.table ? <List {...listProps} /> : null
       }
       
     </Modal>

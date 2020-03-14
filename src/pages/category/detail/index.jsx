@@ -52,6 +52,7 @@ const Detail = ({
           payload: {
             ...formData,
             categories_id: data.categories_id,
+            lang: state.lang,
           },
         })
       } else {
@@ -59,6 +60,7 @@ const Detail = ({
           type: 'categoryDetail/add',
           payload: {
             ...formData,
+            lang: state.lang,
           },
         })
       }

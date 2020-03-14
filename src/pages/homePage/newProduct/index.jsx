@@ -420,6 +420,7 @@ class TableList extends React.Component {
         {/* <Alert message="*备注：顶部newProduct最多可添加3个" type="error" /> */}
         <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
           <Radio.Button value="en">EN</Radio.Button>
+          <Radio.Button value="es">ES</Radio.Button>
           <Radio.Button value="zh">ZH</Radio.Button>
         </Radio.Group>
         <EditableContext.Provider value={this.props.form}>

@@ -3,7 +3,7 @@ import qs from 'qs'
 
 export async function query (params) {
     return request('/_os/index.php?com=category&t=getCategoryTree', {
-      method: 'get',
+      method: 'post',
       data: qs.stringify(params),
     });
 }

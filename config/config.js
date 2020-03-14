@@ -206,6 +206,19 @@ export default {
                   path: '/osAdmin/home/logistics',
                   component: './homePage/logistics',
                 },
+                {
+                  name: 'article',
+                  icon: 'car',
+                  path: '/osAdmin/home/article',
+                  component: './homePage/article',
+                  routes: [
+                    {
+                      name: 'articleEdit',
+                      path: '/osAdmin/home/article/detail',
+                      component: './/homePage/article/detail',
+                    },
+                  ],
+                },
               ],
             },
             {

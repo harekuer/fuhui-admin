@@ -1,12 +1,12 @@
 
-import { query, remove, update, categoryTree, updateCategory, removeDefaultCate, checkDefaultCate } from './service'
+import { query, remove,  updateSort } from './service'
 import { message } from 'antd'
 
 //数据添加nav_id数组
 function addTreeNode(list, id, pid) {
   if(list.length) {
     list.map((item, index) => {
-      item.par_id = pid.concat(item.categories_id);
+      item.par_id = pid.concat(item.id);
       item.nav_id = id.concat(index);
       item.sort = index;
       item.expanded = true;
@@ -22,7 +22,7 @@ function addTreeNode(list, id, pid) {
 function treeExpandedKeys(list, keys) {
   if(list.length) {
     list.forEach((item, index) => {
-      keys.push(item.categories_id);
+      keys.push(item.id);
       if(item.children) {
         treeExpandedKeys(item.children, keys)
       }
@@ -31,20 +31,20 @@ function treeExpandedKeys(list, keys) {
   return keys
 }
 export default {
-  namespace: 'category',
+  namespace: 'article',
 
   state: {
     data: [],
     expandedRowKeys: [],
     cateIds: [],
     status: 0,
-    lang:'en'
+    key: 'footer-article-list1'
   },
 
   subscriptions: {
     setup ({ dispatch, history }) {
       history.listen((location) => {
-        if (location.pathname === '/osAdmin/category') {
+        if (location.pathname === '/osAdmin/home/article') {
           dispatch({
             type: 'updateState',
             payload: {
@@ -55,6 +55,7 @@ export default {
             type: 'query',
             payload: {
               ...location.query,
+              module: 'footer-article-list1',
             },
           })
 
@@ -67,7 +68,7 @@ export default {
 
     * query ({ payload = {} }, { call, put }) {
       const result = yield call(query, payload);
-      const { code, data} = result;
+      const { code, data, } = result;
       if (code === 200) {
         let list = data === null? [] : data;
         const rowKeys = treeExpandedKeys(list, []);
@@ -80,47 +81,38 @@ export default {
           },
         })
       } else if (code === 401) {
-        window.location = `${location.origin}/user/login`
+        window.location = './login.html'
       } else {
         message.error(result.message)
-        //throw message
       }
     },
 
     * singleRemove ({ payload }, { call, put }) {
       const result = yield call(remove, payload)
-      const { code} = result;
+      const { code, } = result;
       if (code === 200) {
         yield put({
            type: 'query',
-           payload: {
-             lang: payload.lang,
-           }
          })
       } else if (code === 401) {
-        window.location = `${location.origin}/user/login`
+        window.location = './login.html'
       } else {
         message.error(result.message)
-        //throw message
       }
     },
 
     * saveCategory ({ payload }, { call, put }) {
-      const result = yield call(updateCategory, payload)
+      const result = yield call(updateSort, payload)
       const { code } = result;
       if (code === 200) {
-          yield put({
+        yield put({
            type: 'query',
-           payload: {
-            lang: payload.lang,
-           }
          })
          message.success(result.message)
       } else if (code === 401) {
-        window.location = `${location.origin}/user/login`
+        window.location = './login.html'
       } else {
         message.error(result.message)
-        //throw message
       }
     },
 

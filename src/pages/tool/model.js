@@ -16,7 +16,8 @@ export default {
     filterForm: {},
     currentItem: {},
     editConfig: {
-      data: []
+      data: [],
+      table: [],
     },
     modalVisible: false,
     isPaging: false,
@@ -42,7 +43,7 @@ export default {
         cfg: 'supplier_datalist'
       }
       const result = yield call(query, queryObj, payload.url)
-      const { code, count, data, message } = result
+      const { code, count, data, } = result
 
       if (code === 200) {
         const FilterList = data.search.filter
@@ -76,7 +77,7 @@ export default {
             }),
         );
       } else {
-          throw message
+        message.error(result.message)
       }
     },
 
@@ -135,7 +136,7 @@ export default {
 
     * editConfig({ payload = {} }, { select, call, put }) {
       const result = yield call(getConfig, payload.data, payload.url)
-      const { code, data, message, } = result
+      const { code, data,  } = result
       if (code === 200) {
           yield put({
             type: 'updateState',
@@ -154,7 +155,7 @@ export default {
               }),
           );
         } else {
-            throw message
+          message.error(result.message)
         }
     },
 
@@ -176,7 +177,7 @@ export default {
 
     * saveEdit({ payload = {} }, { select, call, put }) {
       const result = yield call(getList, payload.data, payload.url)
-      const { code, data, message, } = result
+      const { code, data, } = result
 
       if (code === 200) {
           yield put({
@@ -192,7 +193,7 @@ export default {
               }),
           );
         } else {
-            throw message
+          message.error(result.message)
         }
     },
 

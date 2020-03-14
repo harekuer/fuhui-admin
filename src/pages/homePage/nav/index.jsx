@@ -378,6 +378,7 @@ class TableList extends React.Component {
         <Card bordered={false}>
           <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
             <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="es">ES</Radio.Button>
             <Radio.Button value="zh">ZH</Radio.Button>
           </Radio.Group>
           <Tabs  onChange={this.onChangeTab} type="card">

@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Card,
+  Radio,
 } from 'antd';
 import PropTypes from 'prop-types'
 import { routerRedux } from 'dva/router'
@@ -29,6 +30,7 @@ class Category extends React.Component {
       type: 'query',
       payload: {
         ...location.query,
+        lang: 'en'
       },
     })
   }
@@ -36,7 +38,7 @@ class Category extends React.Component {
 
   render(){
     const { location, dispatch, category, user, loading } = this.props
-    const { data, expandedRowKeys, status } = category
+    const { data, expandedRowKeys, status,lang } = category
     const listLoading = loading
   const sortProps = {
     data: data,
@@ -51,7 +53,8 @@ class Category extends React.Component {
           obj.activeTab = {
             ...item,
             state: {
-              type: 'create'
+              type: 'create',
+              lang,
             }
           }
           obj.changeActiveTab = true
@@ -67,6 +70,7 @@ class Category extends React.Component {
         pathname: '/osAdmin/category/detail',
         state: {
           type: 'create',
+          lang,
         },
       }))
     },
@@ -80,6 +84,7 @@ class Category extends React.Component {
             state: {
               category: id,
               type: 'update',
+              lang,
             }
           }
           obj.changeActiveTab = true
@@ -96,6 +101,7 @@ class Category extends React.Component {
         state: {
           category: id,
           type: 'update',
+          lang,
         },
       }))
     },
@@ -146,10 +152,36 @@ class Category extends React.Component {
     return arrayData
   }
 
+  const onChange = (e) =>{
+    const { dispatch, category} = this.props;
+    let { key } = category;
+    const value = e.target.value
+    dispatch({
+      type: 'category/query',
+      payload: {
+        lang: value,
+      }
+    })
+    dispatch({
+      type: 'category/updateState',
+      payload: {
+        lang: value,
+      }
+    })
+  }
+
   return (
     <GridContent>
       <Card bordered={false}>
+        <div style={{borderBottom:'1px solid #ddd'}}>
+          <Radio.Group onChange={onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="es">ES</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+          </Radio.Group>
+          </div>
         <div className="content-inner">
+          
           {!listLoading && <SortList {...sortProps} key={Math.random()}/> }
         </div>
       </Card> 

@@ -69,7 +69,7 @@ const Model = {
 
     * getCategoryTree ({  payload }, { call, put }) {
       const result = yield call(categoryTree, payload)
-      const { code, message, data } = result
+      const { code,  data } = result
       if (code === 200) {
         yield put({
           type: 'updateState',
@@ -78,13 +78,13 @@ const Model = {
           },
         })
       } else {
-        throw message
+        message.error(result.message)
       }
     },
 
     * getShopTree ({  payload }, { call, put }) {
       const result = yield call(shopCateTree, payload)
-      const { code, message, data } = result
+      const { code, data } = result
       if (code === 200) {
         yield put({
           type: 'updateState',
@@ -93,7 +93,7 @@ const Model = {
           },
         })
       } else {
-        throw message
+        message.error(result.message)
       }
     },
 
