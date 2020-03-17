@@ -41,28 +41,6 @@ export default {
     key: 'footer-article-list1'
   },
 
-  subscriptions: {
-    setup ({ dispatch, history }) {
-      history.listen((location) => {
-        if (location.pathname === '/osAdmin/home/article') {
-          dispatch({
-            type: 'updateState',
-            payload: {
-              expandedRowKeys: [],
-            },
-          })
-          dispatch({
-            type: 'query',
-            payload: {
-              ...location.query,
-              module: 'footer-article-list1',
-            },
-          })
-
-        }
-      })
-    },
-  },
 
   effects: {
 

@@ -132,7 +132,7 @@ export default class SortList extends Component {
                 buttons: [
                   <div>
                     <div className="operate">
-                      <a  onClick={() => toEditPage(node.categories_id)}>编辑</a> &nbsp;&nbsp;
+                      <a  onClick={() => toEditPage(node.id)}>编辑</a> &nbsp;&nbsp;
                       <a onClick={() => this.showDeleteConfirm(node)}>删除</a>
                     </div>
                   </div>

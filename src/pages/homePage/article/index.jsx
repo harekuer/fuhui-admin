@@ -22,17 +22,18 @@ const { TabPane } = Tabs;
 class ArticleList extends React.Component {
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch,location } = this.props;
     dispatch({
-      type: 'updateState',
+      type: 'article/updateState',
       payload: {
         expandedRowKeys: [],
       },
     })
     dispatch({
-      type: 'query',
+      type: 'article/query',
       payload: {
-        ...location.query,
+        ...location.state,
+        module: 'footer-article-list1',
       },
     })
   }

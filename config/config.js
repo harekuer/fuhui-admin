@@ -219,6 +219,12 @@ export default {
                     },
                   ],
                 },
+                {
+                  name: 'followUs',
+                  icon: 'car',
+                  path: '/osAdmin/home/followUs',
+                  component: './homePage/followUs',
+                },
               ],
             },
             {

@@ -14,6 +14,7 @@ export default class SortList extends Component {
     this.state = {
       treeData: props.data,
       expendedKeys:props.ids,
+      expendAll: true,
     };
   }
 
@@ -31,16 +32,29 @@ export default class SortList extends Component {
   }
 
   expand(expanded) {
+    const { treeData } = this.state
+    const { ids } = this.props
+    let levelIds = []
+    if(expanded === false){
+      treeData.forEach(item => {
+        levelIds.push(item.categories_id)
+      })
+    } else {
+      levelIds = ids
+    }
     this.setState({
       treeData: toggleExpandedForAll({
         treeData: this.state.treeData,
         expanded,
       }),
+      expendedKeys: levelIds,
+      expendAll: expanded
     });
   }
 
   expandAll() {
-    this.expand(true);
+    let { expendAll } = this.state
+    this.expand(!expendAll);
   }
 
   //数据添加nav_id数组
@@ -80,13 +94,14 @@ export default class SortList extends Component {
 
   render() {
     const getNodeKey = ({ treeIndex }) => treeIndex;
-    const { expendedKeys } = this.state;
+    const { expendedKeys,expendAll } = this.state;
     const {  toEditPage, addItem } = this.props;
     return (
       <div>
         <div className={styles.addBtnLeft}>
           <div>
-            <Button size="large" type="ghost" onClick={() => addItem()}>新增类目</Button>
+            <Button size="large" type="primary" onClick={() => addItem()} className="margin-right" >新增类目</Button>
+            <Button size="large" type="ghost" onClick={() => this.expandAll()}>{expendAll? '收起': '展开'}全部</Button>
           </div>
           <div>
             <Button size="large"  onClick={() => this.SaveAllNode(this.state.treeData)}>保存</Button>
