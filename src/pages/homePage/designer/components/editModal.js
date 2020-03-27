@@ -135,9 +135,9 @@ class editModal extends Component {
         }
       },
       {
-        title: props.tabkey === 'index-designer' ? '设计师ID' : '工厂ID',
-        dataIndex: props.tabkey === 'index-designer' ? 'designer_id' : 'factory_id',
-        key: props.tabkey === 'index-designer' ? 'designer_id' : 'factory_id',
+        title: props.tabkey === 'index-designer' ? '设计师ID' : props.tabkey === 'index-factory'? '工厂ID' : '产品ID',
+        dataIndex: props.tabkey === 'index-designer' ? 'designer_id' : props.tabkey === 'index-factory'? 'factory_id' :'product_id',
+        key: props.tabkey === 'index-designer' ? 'designer_id' : props.tabkey === 'index-factory'? 'factory_id' : 'product_id',
         editable: true,
       },
       {
@@ -165,9 +165,10 @@ class editModal extends Component {
             </span>
           ) : (
               <span>
-                <a disabled={editingKey !== -1} onClick={() => this.edit(index)}>
-                  编辑
-                  </a>
+                <a disabled={editingKey !== -1} onClick={() => this.edit(index)} style={{ marginRight: 8 }}>
+                编辑
+                </a>
+                {props.tabkey === 'index-group-image'? <a onClick={() => this.onDelete(index)}>删除</a>: null}
               </span>
             );
         },
@@ -245,12 +246,14 @@ class editModal extends Component {
     });
   }
 
-  onDelete(key) {
-    const { dispatch } = this.props;
+  onDelete(index) {
+    const { dispatch, designer } = this.props;
+    let { extraData } = designer;
+    extraData.extra.rows.splice(index,1);
     dispatch({
-      type: 'designer/delDesigner',
+      type: 'designer/updateState',
       payload: {
-        designer_id: key,
+        extraData,
       },
     });
   }
@@ -261,8 +264,10 @@ class editModal extends Component {
     let extraObj = {}
     if(key === 'index-designer'){
       extraObj.designer_id= ''
-    } else {
+    } else if(key === 'index-factory'){
       extraObj.factory_id = ''
+    } else {
+      extraObj.product_id = ''
     }
     extraData.extra.rows.push(extraObj);
     dispatch({
@@ -312,6 +317,7 @@ class editModal extends Component {
       },
     } = this.props
     const { extra } = extraData
+    const limit = tabkey === 'index-designer' ? 2 : 10
 
     const components = {
       body: {
@@ -372,7 +378,8 @@ class editModal extends Component {
         maskClosable={false}
       >
         <Spin tip="Loading..." spinning={infoLoading}>
-          <div style={{marginBottom: '15px'}}>
+          {this.props.tabkey === 'index-designer'?
+            <div style={{marginBottom: '15px'}}>
             <label>等级：</label>
             <Select defaultValue="A" style={{ width: 150 }} onChange={handleChange}>
               <Option value="A">A</Option>
@@ -380,7 +387,9 @@ class editModal extends Component {
               <Option value="C" >C</Option>
               <Option value="D">D</Option>
             </Select>
-          </div>
+          </div> : null
+          }
+          
           <EditableContext.Provider value={this.props.form}>
             <DndProvider backend={HTML5Backend} context={window}>
               <Table
@@ -399,7 +408,7 @@ class editModal extends Component {
 
             </DndProvider>
           </EditableContext.Provider>
-          {extra.rows.length < 2 ? (
+          {extra.rows.length < limit ? (
               <div
                 style={{
                   width: '100%',

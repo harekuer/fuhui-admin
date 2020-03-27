@@ -212,7 +212,7 @@ import {
       const treeData = categoryTreeList(categoryList);
       const shopTreeData = categoryTreeList(shopCateList);
 
-      //图片排序组件船只
+      //图片排序组件传值
       const sortProps = {
         data: data.productImage,
         onSaveState (items) {
@@ -265,6 +265,21 @@ import {
             return item
           })
           newData.packagingImage = newData.packagingImage.concat(newItem)
+          dispatch({
+            type: 'productDetail/updateState',
+            payload: {
+              data: newData,
+            }
+          });
+        },
+      }
+
+      //打包图片列表传值
+      const packSortProps = {
+        data: data.packagingImage,
+        onSaveState (items) {
+          let newData = data
+          newData.packagingImage = items
           dispatch({
             type: 'productDetail/updateState',
             payload: {
@@ -1055,13 +1070,9 @@ import {
                       <div className={styles.imgBtn}>
                         <MultiUpload {...multiPackProps} text="上传图片" />
                       </div>
-                      <ul className={styles.packImgList} >
-                        {
-                          data.packagingImage && data.packagingImage.map((option,index) => {
-                            return <li key={index} ><img src={option.image_url} /></li>
-                          })
+                      {
+                          data.packagingImage && data.packagingImage.length && <SortableList {...packSortProps} />
                         } 
-                      </ul>
                     </div>
                   )}
                   

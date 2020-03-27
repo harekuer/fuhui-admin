@@ -1,5 +1,5 @@
 
-  import { Table, Card,Alert,Input, InputNumber, Form ,Popconfirm, Button, Tabs } from 'antd';
+  import { Table, Card,Alert,Input, Radio, Form ,Popconfirm, Button, Tabs } from 'antd';
   import React from 'react';
   import { connect } from 'dva';
   import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -364,7 +364,7 @@ class TableList extends React.Component {
         }
       })
     }
-  
+
     render() {
         const {
             logistics: { list},

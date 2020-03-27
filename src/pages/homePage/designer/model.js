@@ -9,6 +9,7 @@ const Model = {
     key:'index-designer',
     editModalVisible: false,   // 编辑弹窗
     extraData:{},//弹窗详情
+    lang:'en',
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -107,6 +108,7 @@ const Model = {
           type: 'fetch',
           payload: {
             module: payload.module,
+            lang: payload.lang,
           },
         });
         message.success(response.message)

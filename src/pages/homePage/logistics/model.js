@@ -7,6 +7,7 @@ const Model = {
   state: {
     list: [],
     key: 'index-check-supplier',
+    lang: 'en',
   },
   effects: {
     *fetch({ payload }, { call, put }) {

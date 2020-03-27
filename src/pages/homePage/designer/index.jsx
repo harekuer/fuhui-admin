@@ -1,4 +1,4 @@
-import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button, Tabs } from 'antd';
+import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button, Tabs,Radio } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import lodash from 'lodash'
@@ -232,7 +232,7 @@ class TableList extends React.Component {
       }
 
       const { dispatch, designer } = this.props;
-      let { list, key } = designer;
+      let { list, key,lang } = designer;
       const newData = list;
       const index = newData.findIndex(item => currentKey === item.id);
 
@@ -245,6 +245,7 @@ class TableList extends React.Component {
             module: key,
             id: currentKey !== '0' ? currentKey : undefined,
             title: row.title,
+            lang,
             //extra: row.extra,
           },
         });
@@ -297,7 +298,7 @@ class TableList extends React.Component {
 
   onSaveSort = () => {
     const { dispatch, designer } = this.props;
-    let { list, key  } = designer;
+    let { list, key,lang  } = designer;
     let sort = [];
     let id = [];
     list.forEach((item, index) => {
@@ -311,6 +312,7 @@ class TableList extends React.Component {
       payload: {
         module: key,
         sort_array: sort,
+        lang,
       }
     });
   };
@@ -353,6 +355,25 @@ class TableList extends React.Component {
 
    }
 
+   onChange = (e) =>{
+    const { dispatch, designer} = this.props;
+    let { key } = designer;
+    const value = e.target.value
+    dispatch({
+      type: 'designer/fetch',
+      payload: {
+        module: key,
+        lang: value,
+      }
+    })
+    dispatch({
+      type: 'designer/updateState',
+      payload: {
+        lang: value,
+      }
+    })
+  }
+
 
 
   render() {
@@ -362,8 +383,8 @@ class TableList extends React.Component {
       loading,
       dispatch,
     } = this.props;
-    const { editModalVisible,extraData, key } = designer
-    console.log(key)
+    const { editModalVisible,extraData, key,lang } = designer
+
     const components = {
       body: {
         cell: EditableCell,
@@ -403,7 +424,8 @@ class TableList extends React.Component {
           payload: { 
             id:currentKey,
             module:key,
-            extra:JSON.stringify(extra)
+            extra:JSON.stringify(extra),
+            lang,
            }
         })
       }
@@ -424,6 +446,11 @@ class TableList extends React.Component {
 
     return (
       <Card bordered={false}>
+        <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="es">ES</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+        </Radio.Group>
         <Tabs onChange={this.onChangeTab} type="card">
           <TabPane tab="设计师推荐" key="index-designer">
             <Alert message="*备注：最多可添加5个分类" type="error" style={{ marginBottom: '15px' }} />
@@ -463,8 +490,47 @@ class TableList extends React.Component {
               </div>
             ) : null}
           </TabPane>
-
+          
           <TabPane tab="工厂推荐" key="index-factory">
+            <Alert message="*备注：最多可添加5个分类" type="error" style={{ marginBottom: '15px' }} />
+
+            <EditableContext.Provider value={this.props.form}>
+              <DndProvider backend={HTML5Backend} context={window}>
+                <Table
+                  columns={columns}
+                  bordered
+                  dataSource={list}
+                  components={components}
+                  pagination={false}
+                  loading={loading.effects['designer/fetch']}
+                  rowKey={(record, index) => index}
+                  rowClassName="editable-row"
+                  onRow={(record, index) => ({
+                    index,
+                    moveRow: this.moveRow,
+                  })}
+                />
+
+              </DndProvider>
+            </EditableContext.Provider>
+
+            {editModalVisible && <EditModal {...editProps} />}
+
+            {list.length < 5 ? (
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '10px',
+                }}
+              >
+                <Button onClick={this.onAdd} disabled={this.state.editingKey !== ''} block>
+                  +新增
+            </Button>
+              </div>
+            ) : null}
+          </TabPane>
+
+          <TabPane tab="产品组图" key="index-group-image">
             <Alert message="*备注：最多可添加5个分类" type="error" style={{ marginBottom: '15px' }} />
 
             <EditableContext.Provider value={this.props.form}>
