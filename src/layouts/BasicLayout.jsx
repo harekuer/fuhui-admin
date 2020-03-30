@@ -452,9 +452,9 @@ class BasicLayout extends React.PureComponent {
         <ProLayout
           logo={logo}
           menuHeaderRender={(logoDom, titleDom) => (
-            <Link to="/">
+            <a href="/" target="_blank">
               {titleDom}
-            </Link>
+            </a>
           )}
           route={{
             routes: user.menuList,

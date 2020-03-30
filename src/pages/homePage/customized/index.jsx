@@ -108,7 +108,7 @@ class EditableCell extends React.Component {
       />;
       }
     }
-    return <Input />;
+    return <Input onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable className="contenteditable-element"/>;
   };
 
   renderCell = ({ getFieldDecorator, setFieldsValue }) => {
@@ -130,7 +130,7 @@ class EditableCell extends React.Component {
             {getFieldDecorator(dataIndex, {
               rules: [
                 {
-                  required: true,
+                  required: record.module === 'index-customized-image' && (dataIndex === 'title' || dataIndex === 'content')? false : true,
                   message: `Please Input ${title}!`,
                 },
               ],

@@ -35,9 +35,9 @@ const EditableContext = React.createContext();
 class EditableCell extends React.Component {
   getInput = () => {
     if (this.props.inputType === 'number') {
-      return <InputNumber />;
+      return <InputNumber onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable className="contenteditable-element"/>;
     }
-    return <Input />;
+    return <Input onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable className="contenteditable-element"/>;
   };
   renderCell = ({ getFieldDecorator, setFieldsValue }) => {
     const {
@@ -63,7 +63,7 @@ class EditableCell extends React.Component {
                 },
               ],
               initialValue: record[dataIndex],
-            })(<InputNumber min={0}/>)}
+            })(<InputNumber min={0} onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable />)}
           </Form.Item>
         ) : (
             children

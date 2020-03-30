@@ -75,7 +75,7 @@ class EditableCell extends React.Component {
       );
     }
 
-    return <Input />;
+    return <Input onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable className="contenteditable-element"/>;
   };
   renderCell = ({ getFieldDecorator, setFieldsValue }) => {
     const {
@@ -275,13 +275,19 @@ class TableList extends React.Component {
       const index = newData.findIndex(item => key === item.id);
 
       if (index > -1) {
+        let relPath = ''
+        if(row.iamge !== ''){
+          const path = row.image.split('upload')
+          const imgPath = path[path.length -1]
+          relPath = `upload${imgPath}`
+        }
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         dispatch({
           type: 'banner/update',
           payload: {
             id: key !== '0' ? key : undefined,
-            image: row.image,
+            image: relPath,
             url: row.url,
           },
         });

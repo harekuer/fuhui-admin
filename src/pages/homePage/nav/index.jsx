@@ -41,7 +41,7 @@ class EditableCell extends React.Component {
     if (this.props.inputType === 'number') {
       return <InputNumber />;
     }
-    return <Input />;
+    return <Input onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable className="contenteditable-element"/>;
   };
 
   renderCell = ({ getFieldDecorator }) => {
@@ -67,7 +67,7 @@ class EditableCell extends React.Component {
                 },
               ],
               initialValue: record[dataIndex],
-            })(<Input />)}
+            })(<Input onDragStart={e => { e.stopPropagation();e.preventDefault(); }} draggable  className="contenteditable-element"/>)}
           </Form.Item>
         ) : (
           children
