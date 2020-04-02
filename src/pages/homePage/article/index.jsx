@@ -1,7 +1,8 @@
 import React from 'react'
 import {
   Card,
-  Tabs
+  Tabs,
+  Radio,
 } from 'antd';
 import PropTypes from 'prop-types'
 import { routerRedux } from 'dva/router'
@@ -34,16 +35,19 @@ class ArticleList extends React.Component {
       payload: {
         ...location.state,
         module: 'footer-article-list1',
+        lang: 'en'
       },
     })
   }
 
   onChangeTab = (key) => {
-    const { dispatch } = this.props;
+    const { dispatch,article } = this.props;
+    const { lang } = article;
     dispatch({
       type: 'article/query',
       payload: {
         module: key,
+        lang,
       }
     })
     dispatch({
@@ -54,10 +58,29 @@ class ArticleList extends React.Component {
     })
   }
 
+  onChange = (e) =>{
+    const { dispatch, article} = this.props;
+    let { key } = article;
+    const value = e.target.value
+    dispatch({
+      type: 'article/query',
+      payload: {
+        module: key,
+        lang: value,
+      }
+    })
+    dispatch({
+      type: 'article/updateState',
+      payload: {
+        lang: value,
+      }
+    })
+  }
+
 
   render(){
     const { location, dispatch, article, user, queryLoading } = this.props
-    const { data, expandedRowKeys, status,key } = article
+    const { data, expandedRowKeys, status,key,lang } = article
 
     const sortProps = {
       data: data,
@@ -74,6 +97,7 @@ class ArticleList extends React.Component {
               state: {
                 type: 'create',
                 module: key,
+                lang,
               }
             }
             obj.changeActiveTab = true
@@ -90,6 +114,7 @@ class ArticleList extends React.Component {
           state: {
             type: 'create',
             module: key,
+            lang,
           },
         }))
       },
@@ -104,6 +129,7 @@ class ArticleList extends React.Component {
                 id: id,
                 type: 'update',
                 module: key,
+                lang,
               }
             }
             obj.changeActiveTab = true
@@ -121,6 +147,7 @@ class ArticleList extends React.Component {
             id: id,
             type: 'update',
             module: key,
+            lang,
           },
         }))
       },
@@ -129,6 +156,7 @@ class ArticleList extends React.Component {
           type: 'article/singleRemove',
           payload: {
             categories_id: id,
+            lang,
           },
         })
       },
@@ -139,6 +167,7 @@ class ArticleList extends React.Component {
           type: 'article/saveArticle',
           payload: {
             sort_array: listData,
+            lang,
           },
         })
       },
@@ -170,6 +199,11 @@ class ArticleList extends React.Component {
     <GridContent>
       <Card bordered={false}>
         <div className="content-inner">
+        <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="es">ES</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+          </Radio.Group>
         <Tabs  onChange={this.onChangeTab} type="card">
             <TabPane tab="文章列1" key="footer-article-list1">
                {!queryLoading && <SortList {...sortProps} key={Math.random()}/> }

@@ -233,7 +233,7 @@ class TableList extends React.Component {
           type: 'logistics/fetch',
           payload: {
             module: 'index-check-supplier',
-            lang: 'en'
+            lang: 'en',
           }
         });
     }
@@ -265,12 +265,14 @@ class TableList extends React.Component {
 
     onDelete(key) {
       const { dispatch, logistics } = this.props;
+      const { lang } = logistics
       const module = logistics.key
       dispatch({
         type: 'logistics/remove',
         payload: {
           id: key,
           module,
+          lang,
         },
       });
     }
@@ -281,7 +283,7 @@ class TableList extends React.Component {
               return;
             }
             const { dispatch, logistics} = this.props;
-            let { list,key } = logistics;
+            let { list,key,lang } = logistics;
             const newData = list;
             const index = newData.findIndex(item => currentKey === item.id);
             
@@ -300,7 +302,8 @@ class TableList extends React.Component {
                         module: key,
                         id: currentKey !== '0'? currentKey : undefined,
                         image: relPath,
-                        url: row.url
+                        url: row.url,
+                        lang
                     },
                 })
                 this.setState({
@@ -340,7 +343,7 @@ class TableList extends React.Component {
 
     onSaveSort = () => {
       const { dispatch, logistics} = this.props;
-      let { list,key } = logistics;
+      let { list,key,lang } = logistics;
       let sort= []
       list.forEach((item,index) => {
           sort.push({id:item.id,sort:index})
@@ -350,6 +353,7 @@ class TableList extends React.Component {
           payload: {
             module: key,
             sort_array: sort,
+            lang,
           }
       })
   }
@@ -367,6 +371,25 @@ class TableList extends React.Component {
         type: 'logistics/updateState',
         payload: {
           key,
+        }
+      })
+    }
+
+    onChange = (e) =>{
+      const { dispatch, logistics} = this.props;
+      let { key } = logistics;
+      const value = e.target.value
+      dispatch({
+        type: 'logistics/fetch',
+        payload: {
+          module: key,
+          lang: value,
+        }
+      })
+      dispatch({
+        type: 'logistics/updateState',
+        payload: {
+          lang: value,
         }
       })
     }
@@ -405,6 +428,11 @@ class TableList extends React.Component {
 
       return (
         <Card bordered={false}>
+          <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+            <Radio.Button value="en">EN</Radio.Button>
+            <Radio.Button value="es">ES</Radio.Button>
+            <Radio.Button value="zh">ZH</Radio.Button>
+          </Radio.Group>
           <Tabs  onChange={this.onChangeTab} type="card">
             <TabPane tab="验货商推荐" key="index-check-supplier">
               <Alert message="*备注：验货商最多可添加15个" type="error" style={{marginBottom: '15px'}}/>

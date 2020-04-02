@@ -52,6 +52,7 @@ const Detail = ({
           ...formData,
           id: data.id,
           module: state.module? state.module : 'footer-article-list1',
+          lang: state.lang? state.lang : 'en'
         },
       })
     })

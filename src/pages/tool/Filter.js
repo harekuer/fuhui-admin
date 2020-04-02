@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Form, Button, Row, Col, Input, Select, DatePicker, Tooltip, Icon } from 'antd'
+import { Form, Button, Row, Col, Input, Select, DatePicker, TreeSelect} from 'antd'
 import { searchConfig } from './autoConfig'
 
 const Option = Select.Option
 const RangePicker = DatePicker.RangePicker
 const InputGroup = Input.Group;
+const { TreeNode } = TreeSelect;
 
 const ColProps = {
   xs: 24,
@@ -81,6 +82,21 @@ const Filter = ({
   }
   const {} = filter
 
+    // category tree node
+  const TreeNodes = (data) => {
+    if (!data) return
+
+    const tns = data.map((item, index) => (
+      <TreeNode value={item.value} title={item.label} key={item.value}>
+        {
+          item.children && TreeNodes(item.children)
+        }
+      </TreeNode>
+    ))
+
+    return tns
+  }
+
 
   return (
     <Row gutter={24}>
@@ -103,6 +119,26 @@ const Filter = ({
               <Col {...ColProps} xl={{ span: 6 }} md={{ span: 8 }} key={index}>
                 {getFieldDecorator(item.key, { initialValue: undefined })(<RangePicker size="large" placeholder={item.placeholder} style={{ width: '100%' }} />)}
               </Col>
+            )
+          } else if(item.type === 'TreeSelect'){
+            return (
+              <Col {...ColProps} xl={{ span: 4 }} md={{ span: 6 }} key={index}>
+              {getFieldDecorator(item.key)(
+                 <TreeSelect
+                 style={{ width: '100%' ,height:'40px'}}
+                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                 placeholder={item.placeholder}
+                 allowClear
+                 multiple
+                 treeDefaultExpandAll={false}
+                 size="large"
+               >
+                 {
+                   TreeNodes(item.options)
+                 }
+               </TreeSelect>
+              )}
+            </Col>
             )
           }
           return (

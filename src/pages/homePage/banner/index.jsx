@@ -1,4 +1,4 @@
-import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button } from 'antd';
+import { Table, Card, Alert, Input, InputNumber, Form, Popconfirm, Button,Radio, } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { DndProvider, DragSource, DropTarget } from 'react-dnd';
@@ -231,9 +231,13 @@ class TableList extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, banner } = this.props;
+    const { lang } = banner
     dispatch({
       type: 'banner/fetch',
+      payload: {
+        lang,
+      }
     });
   }
 
@@ -270,7 +274,7 @@ class TableList extends React.Component {
       }
 
       const { dispatch, banner } = this.props;
-      let { list } = banner;
+      let { list,lang } = banner;
       const newData = list;
       const index = newData.findIndex(item => key === item.id);
 
@@ -289,6 +293,7 @@ class TableList extends React.Component {
             id: key !== '0' ? key : undefined,
             image: relPath,
             url: row.url,
+            lang,
           },
         });
         this.setState({
@@ -309,18 +314,20 @@ class TableList extends React.Component {
   }
 
   onDelete(key) {
-    const { dispatch } = this.props;
+    const { dispatch, banner } = this.props;
+    let { lang } = banner;
     dispatch({
       type: 'banner/remove',
       payload: {
         id: key,
+        lang,
       },
     });
   }
 
   onAdd = () => {
     const { dispatch, banner } = this.props;
-    let { list } = banner;
+    let { list,lang } = banner;
     let obj = {
       id: '0',
       image: '',
@@ -337,7 +344,7 @@ class TableList extends React.Component {
   };
   onSaveSort = () => {
     const { dispatch, banner } = this.props;
-    let { list } = banner;
+    let { list,lang } = banner;
     let sort = [];
     let id = [];
     list.forEach((item, index) => {
@@ -350,9 +357,28 @@ class TableList extends React.Component {
       type: 'banner/updateSort',
       payload: {
         sort_array: sort,
+        lang,
       },
     });
   };
+
+  onChange = (e) => {
+    const { dispatch} = this.props;
+    const value = e.target.value
+    this.setState({ editingKey: ''});
+    dispatch({
+      type: 'banner/fetch',
+      payload: {
+        lang:value,
+      }
+    })
+    dispatch({
+      type: 'banner/updateState',
+      payload: {
+        lang: value,
+      }
+    })
+  }
 
   render() {
     const {
@@ -386,8 +412,12 @@ class TableList extends React.Component {
     });
     return (
       <Card bordered={false}>
+        <Radio.Group onChange={this.onChange} defaultValue="en" style={{marginBottom: '15px'}}>
+          <Radio.Button value="en">EN</Radio.Button>
+          <Radio.Button value="es">ES</Radio.Button>
+          <Radio.Button value="zh">ZH</Radio.Button>
+        </Radio.Group>
         <Alert message="*备注：顶部banner最多可添加5个" type="error" style={{marginBottom: '15px'}}/>
-
         <EditableContext.Provider value={this.props.form}>
           <DndProvider backend={HTML5Backend} context={window}>
             <Table

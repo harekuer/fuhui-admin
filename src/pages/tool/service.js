@@ -29,15 +29,15 @@ export async function getConfig (params,url) {
 
 // 子账号编辑
 export async function accountEdit (params) {
-  return request('/_os/index.php?com=supplier&t=detail', {
+  return request('/_os/index.php?com=supplier&t=saveAccount', {
     method: 'post',
     data: qs.stringify(params),
   });
 }
 
-// 子账号编辑
+// 子账号删除
 export async function accountDelete (params) {
-  return request('/_os/index.php?com=supplier&t=t=delAccount', {
+  return request('/_os/index.php?com=supplier&t=delAccount', {
     method: 'post',
     data: qs.stringify(params),
   });

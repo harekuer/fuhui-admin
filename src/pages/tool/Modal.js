@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { FormConfig } from './autoConfig'
 import { Form, Input,  Modal,Button } from 'antd'
-import List from './List'
+import TableList from './TableModal'
 
 const FormItem = Form.Item
 
@@ -121,7 +121,7 @@ const modal = ({
       </Form> : null
       }
       {
-        editConfig.table ? <List {...listProps} /> : null
+        editConfig.table ? <TableList {...listProps} /> : null
       }
       
     </Modal>

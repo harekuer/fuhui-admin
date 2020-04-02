@@ -116,11 +116,30 @@ const tableConfig = (item, renderItem, onCopyLink, loading) => { // 根据参数
               //   <a href={`${item.url}?${url}`} target={item.target} style={{ marginRight: '10px' }} key={index}>
               //   {Array.isArray(item.text) ? item.text : item.text}
               // </a>
-              return (
-                <a onClick={() => renderItem(record, item)} key={index}>
-                  {item.text}
-                </a>
-              )
+              if(item.type=== 'linkURL') {
+                let url = '' 
+                let baseLink = item.linkUrl
+                if (item.query) { // 将返回的query数组拼接成字符串,如需插入到链接则优先该逻辑
+                  item.query.forEach((option,index) => {
+                    if(baseLink.indexOf(`{${option}}`) > -1){
+                      baseLink  = baseLink.replace(`{${option}}`,record[option])
+                    } else {
+                      url += `${index > 0 ? '&' : '?'}${option}=${record[option]}`
+                    }
+                  })
+                }
+                return (
+                    <a href={`${baseLink}${url}`} target='_blank' style={{ marginRight: '10px' }} key={index}>
+                      {item.text}
+                    </a>
+                )
+              } else {
+                return (
+                  <a onClick={() => renderItem(record, item)} key={index}>
+                    {item.text}
+                  </a>
+                )
+              }
             })
           }
         </div>

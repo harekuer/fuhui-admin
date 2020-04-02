@@ -51,16 +51,16 @@ class Tool extends Component {
         payload: {
           filterForm: {
             page: page.current,
-            limit: page.pageSize,
+            pageSize: page.pageSize,
           },
         },
       })
       dispatch({
-        type: 'tool/query',
+        type: 'tool/getList',
         payload: {
           data: {
             page: page.current,
-            limit: page.pageSize,
+            pageSize: page.pageSize,
           },
           url: search.url,
         },
@@ -197,7 +197,7 @@ class Tool extends Component {
     loading,
     dispatch,
     location,
-    width: 620,
+    width: 650,
     title: '编辑/查看',
     wrapClassName: 'vertical-center-modal',
     onOk (item, url) {

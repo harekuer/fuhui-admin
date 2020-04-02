@@ -34,14 +34,13 @@ const Model = {
       const response = yield call(update, payload); // post
       const { data, code } =response
       if(code === 200){
-        if(!payload.id){
-            yield put({
-                type: 'fetch',
-                payload: {
-                  module: payload.module,
-                },
-            });
-        }
+        yield put({
+          type: 'fetch',
+          payload: {
+            module: payload.module,
+            lang: payload.lang,
+          },
+        });
       } else if(code === 401){
         yield put(
             routerRedux.replace({
@@ -61,6 +60,7 @@ const Model = {
             type: 'fetch',
             payload: {
               module: payload.module,
+              lang: payload.lang,
             },
           });
       } else if(code === 401){

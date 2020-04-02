@@ -1,5 +1,5 @@
 import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
-
+import isEqual from 'lodash.isequal';
 
 const EditableContext = React.createContext();
 
@@ -58,17 +58,17 @@ class EditableTable extends React.Component {
         dataIndex: 'account_id',
       },
       {
-        title: 'email',
+        title: '邮箱',
         dataIndex: 'email',
         editable: true,
       },
       {
-        title: 'password',
+        title: '密码',
         dataIndex: 'password',
         editable: true,
       },
       {
-        title: 'operation',
+        title: '操作',
         dataIndex: 'operation',
         render: (text, record) => {
           const { editingKey } = this.state;
@@ -89,11 +89,11 @@ class EditableTable extends React.Component {
             </span>
           ) : (
             <div>
-              <a disabled={editingKey !== ''} onClick={() => this.edit(record.account_id)}>
+              <a disabled={editingKey !== ''} onClick={() => this.edit(record.account_id)} style={{ marginRight: 8,}}>
                 编辑
               </a>
-              <Popconfirm title="确定删除该子账号?" onConfirm={() => this.cancel(record.account_id)}>
-                <a>取消</a>
+              <Popconfirm title="确定删除该子账号?" onConfirm={() => this.onDelete(record.account_id)}>
+                <a>删除</a>
               </Popconfirm>
             </div>
             
@@ -103,6 +103,15 @@ class EditableTable extends React.Component {
     ]
   }
 
+  static getDerivedStateFromProps(nextProps, preState) {
+    if (isEqual(nextProps.listData, preState.data)) {
+      return null;
+    }
+
+    return {
+      data: nextProps.listData,
+    };
+  }
 
 
   isEditing = record => record.account_id === this.state.editingKey;
@@ -112,17 +121,37 @@ class EditableTable extends React.Component {
   };
 
   onDelete(key) {
-    const { dispatch, customized } = this.props;
-    const module = customized.key
-    let { lang } = customized;
+    const { dispatch } = this.props;
+    let obj = {
+      account_id: key,
+    }
+    this.promiseSave(obj,'tool/deleteAccount').then((result) => {
+      if(result === 200){
+        let newData = [...this.state.data];
+        this.setState({ data: newData, editingKey: '' });
+      }
+    })
     dispatch({
-      type: 'customized/remove',
+      type: 'tool/deleteAccount',
       payload: {
-        id: key,
-        module,
-        lang,
+        account_id: key,
       },
     });
+  }
+
+  promiseSave = (obj,action) => {
+    const { dispatch } = this.props;
+    return new Promise((resolve) => {
+      dispatch({
+        type: action,
+        payload: {
+          saveData: {
+            ...obj,
+          },
+          resolve,
+        },
+      })
+    })
   }
 
   save(form, key) {
@@ -138,10 +167,16 @@ class EditableTable extends React.Component {
           ...item,
           ...row,
         });
-        this.setState({ data: newData, editingKey: '' });
-      } else {
-        newData.push(row);
-        this.setState({ data: newData, editingKey: '' });
+        let obj = {
+          account_id: this.state.editingKey,
+          email: row.email,
+          password: row.password,
+        }
+        this.promiseSave(obj,'tool/saveAccount').then((result) => {
+          if(result === 200){
+            this.setState({ data: newData, editingKey: '' });
+          }
+        })
       }
     });
   }
@@ -157,7 +192,8 @@ class EditableTable extends React.Component {
       },
     };
 
-    const columns = this.columns.map(col => {
+
+    const columns = this.column.map(col => {
       if (!col.editable) {
         return col;
       }
@@ -181,6 +217,7 @@ class EditableTable extends React.Component {
           dataSource={this.state.data}
           columns={columns}
           rowClassName="editable-row"
+          rowKey={(record, index) => index}
           pagination={{
             onChange: this.cancel,
           }}

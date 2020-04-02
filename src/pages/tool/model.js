@@ -1,6 +1,7 @@
 
-import { query, getList,getConfig  } from './service'
+import { query, getList,getConfig,accountEdit,accountDelete  } from './service'
 import { routerRedux } from 'dva/router';
+import { message} from 'antd';
 
 const langIndex = 0 
 
@@ -84,18 +85,19 @@ export default {
     * getList({ payload = {} }, { select, call, put }) {
         const { filterForm } = yield select(_ => _.tool)
         const result = yield call(getList, { ...filterForm, ...payload.data }, payload.url);
-        const { code, data, count, message, page, limit } = result
+        const { code, data, message} = result
 
         if (code === 200) {
             let list = data.rows
+            const { page,pageSize,total } = data
             yield put({
                 type: 'querySuccess',
                 payload: {
                     list,
                     pagination: {
                         current: Number(page) || 1,
-                        pageSize: Number(limit) || 10,
-                        total: Number(count),
+                        pageSize: Number(pageSize) || 10,
+                        total: Number(total),
                     },
                 },
             })
@@ -118,14 +120,15 @@ export default {
 
         if (code === 200) {
             let list = data.rows
+            const { page,pageSize,total } = data
             yield put({
                 type: 'querySuccess',
                 payload: {
                     list,
                     pagination: {
-                        current: Number(page) || 1,
-                        pageSize: Number(limit) || 10,
-                        total: Number(count),
+                      current: Number(page) || 1,
+                      pageSize: Number(pageSize) || 20,
+                      total: Number(total),
                     },
                 },
             })
@@ -186,6 +189,42 @@ export default {
               modalVisible: false,
             },
           })
+        } else if(code === 401){
+          yield put(
+              routerRedux.replace({
+                pathname: '/user/login',
+              }),
+          );
+        } else {
+          message.error(result.message)
+        }
+    },
+
+    * saveAccount({ payload = {} }, { call, put }) {
+      const { resolve, saveData } = payload
+      const result = yield call(accountEdit,saveData )
+      const { code, } = result
+      !!resolve && resolve(code)
+      if (code === 200) {
+        message.success(result.message)
+        } else if(code === 401){
+          yield put(
+              routerRedux.replace({
+                pathname: '/user/login',
+              }),
+          );
+        } else {
+          message.error(result.message)
+        }
+    },
+
+    * deleteAccount({ payload = {} }, { call, put }) {
+      const { resolve, saveData } = payload
+      const result = yield call(accountDelete, saveData)
+      const { code, data, } = result
+      !!resolve && resolve(code)
+      if (code === 200) {
+        message.success(result.message)
         } else if(code === 401){
           yield put(
               routerRedux.replace({

@@ -38,7 +38,8 @@ export default {
     expandedRowKeys: [],
     cateIds: [],
     status: 0,
-    key: 'footer-article-list1'
+    key: 'footer-article-list1',
+    lang:'en'
   },
 
 
