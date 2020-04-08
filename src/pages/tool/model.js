@@ -179,6 +179,7 @@ export default {
     },
 
     * saveEdit({ payload = {} }, { select, call, put }) {
+      const { url } = yield select(_ => _.tool)
       const result = yield call(getList, payload.data, payload.url)
       const { code, data, } = result
 
@@ -187,6 +188,13 @@ export default {
             type: 'updateState',
             payload: {
               modalVisible: false,
+            },
+          })
+          yield put({
+            type: 'getList',
+            payload: {
+              data:{},
+              url: url,
             },
           })
         } else if(code === 401){

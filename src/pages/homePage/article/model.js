@@ -72,6 +72,10 @@ export default {
       if (code === 200) {
         yield put({
            type: 'query',
+           payload: {
+            module: payload.module,
+            lang: payload.lang,
+          },
          })
       } else if (code === 401) {
         window.location = './login.html'
@@ -80,12 +84,16 @@ export default {
       }
     },
 
-    * saveCategory ({ payload }, { call, put }) {
+    * saveArticle ({ payload }, { call, put }) {
       const result = yield call(updateSort, payload)
       const { code } = result;
       if (code === 200) {
         yield put({
            type: 'query',
+           payload: {
+            module: payload.module,
+            lang: payload.lang,
+          },
          })
          message.success(result.message)
       } else if (code === 401) {

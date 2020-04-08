@@ -155,7 +155,8 @@ class ArticleList extends React.Component {
         dispatch({
           type: 'article/singleRemove',
           payload: {
-            categories_id: id,
+            module: key,
+            id: id,
             lang,
           },
         })
@@ -167,6 +168,7 @@ class ArticleList extends React.Component {
           type: 'article/saveArticle',
           payload: {
             sort_array: listData,
+            module: key,
             lang,
           },
         })
@@ -205,16 +207,16 @@ class ArticleList extends React.Component {
             <Radio.Button value="zh">ZH</Radio.Button>
           </Radio.Group>
         <Tabs  onChange={this.onChangeTab} type="card">
-            <TabPane tab="文章列1" key="footer-article-list1">
+            <TabPane tab="关于我们" key="footer-article-list1">
                {!queryLoading && <SortList {...sortProps} key={Math.random()}/> }
             </TabPane>
-            <TabPane tab="文章列2" key="footer-article-list2">
+            <TabPane tab="客户服务" key="footer-article-list2">
                {!queryLoading && <SortList {...sortProps} key={Math.random()}/> }
             </TabPane>
-            <TabPane tab="文章列3" key="footer-article-list3">
+            <TabPane tab="支付&物流" key="footer-article-list3">
                {!queryLoading && <SortList {...sortProps} key={Math.random()}/> }
             </TabPane>
-            <TabPane tab="文章列4" key="footer-article-list4">
+            <TabPane tab="合作计划" key="footer-article-list4">
                {!queryLoading && <SortList {...sortProps} key={Math.random()}/> }
             </TabPane>
           </Tabs>
