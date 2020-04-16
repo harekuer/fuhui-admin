@@ -21,15 +21,14 @@ class Category extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'updateState',
+      type: 'category/updateState',
       payload: {
         expandedRowKeys: [],
       },
     })
     dispatch({
-      type: 'query',
+      type: 'category/query',
       payload: {
-        ...location.query,
         lang: 'en'
       },
     })

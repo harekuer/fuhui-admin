@@ -41,27 +41,27 @@ export default {
     lang:'en'
   },
 
-  subscriptions: {
-    setup ({ dispatch, history }) {
-      history.listen((location) => {
-        if (location.pathname === '/osAdmin/category') {
-          dispatch({
-            type: 'updateState',
-            payload: {
-              expandedRowKeys: [],
-            },
-          })
-          dispatch({
-            type: 'query',
-            payload: {
-              ...location.query,
-            },
-          })
+  // subscriptions: {
+  //   setup ({ dispatch, history }) {
+  //     history.listen((location) => {
+  //       if (location.pathname === '/osAdmin/category') {
+  //         dispatch({
+  //           type: 'updateState',
+  //           payload: {
+  //             expandedRowKeys: [],
+  //           },
+  //         })
+  //         dispatch({
+  //           type: 'query',
+  //           payload: {
+  //             ...location.query,
+  //           },
+  //         })
 
-        }
-      })
-    },
-  },
+  //       }
+  //     })
+  //   },
+  // },
 
   effects: {
 
